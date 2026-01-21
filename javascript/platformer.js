@@ -47,6 +47,28 @@ function createMap(width, height, data) {
   json.width = width
   json.height = height
   json.layers = []
+  let rle = []
+  let runVal = data[0]
+  let runCount = 1
+  for (let i = 1; i < data.length; i++) {
+    const v = data[i]
+    if (v === runVal) {
+      runCount++
+    } else {
+      if (runCount === 1) {
+        rle.push(runVal)
+      } else {
+        rle.push([runVal, runCount])
+      }
+      runVal = v
+      runCount = 1
+    }
+  }
+  if (runCount == 1) {
+    rle.push(runVal)
+  } else {
+    rle.push([runVal, runCount])
+  }
   let mapLayer = {
     "type": "tilelayer",
     "name": "level",
