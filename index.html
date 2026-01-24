@@ -5,13 +5,30 @@
   <link rel="stylesheet" href="../styles/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <title>Wild Wild West</title>
+  <link href="https://fonts.googleapis.com/css2?family=Madimi+One&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/e876f1963b.js" crossorigin="anonymous"></script>
+  <title>Platformed</title>
 </head>
 <body>
-  <h1 class="title">Wild Wild West</h1>
-  <div class="game">
-    <canvas class="canvas"></canvas>
+  <div class="grid">
+    <div class="topbar">
+      <h1 class="title">Platformed</h1>
+      <div class="actions">
+        <i class="fa-solid fa-eraser"></i>
+        <img src="/assets/icons/undo.svg">
+        <img src="/assets/icons/redo.svg">
+        <i class="fa-regular fa-floppy-disk"></i>
+        <i class="fa-solid fa-bars"></i>
+      </div>
+    </div>
+    <div class="game">
+      <canvas class="canvas"></canvas>
+    </div>
+    <div class="sidebar">
+      <div class="tile-selection">
+
+      </div>
+    </div>
   </div>
   <script src="../javascript/site.js"></script>
   <script src="../javascript/platformer.js"></script>

@@ -132,7 +132,7 @@ const editor = {
     x: 0,
     y: 0
   },
-  tileSize: 10,
+  tileSize: 32,
   selectedTile: 1,
   map: null,
   width: 100,
@@ -213,7 +213,7 @@ function initEditor() {
 function levelEditorLoop() {
   const { map, cam, tileSize, tileset} = editor
 
-  const speed = 5
+  const speed = 10
   if (input.keys['w'] && cam.y >= 0) cam.y -= speed
   if (input.keys['s'] && cam.y <= (map.h * tileSize) - canvas.height) cam.y += speed
   if (input.keys['a'] && cam.x >= 0) cam.x -= speed
