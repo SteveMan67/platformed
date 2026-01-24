@@ -20,6 +20,21 @@ function toggleErase() {
 // page event listeners
 const eraserButton = document.querySelector('i.fa-solid.fa-eraser')
 const saveButton = document.querySelector('i.fa-regular.fa-floppy-disk')
+const importButton = document.querySelector('i.fa-solid.fa-file-import')
+
+importButton.addEventListener('click', () => {
+  console.log("hi")
+  let input = document.createElement('input')
+  input.type = 'file'
+  input.id = 'mapFileInput'
+  input.accept = '.json,application/json'
+  input.style.display = 'none'
+  input.addEventListener('change', (e) => {
+    importMap(e)
+  })
+  input.value = ''
+  input.click()
+})
 
 saveButton.addEventListener('click', () => {
   const json = createMap(editor.map.w, editor.map.h, Array.from(editor.map.tiles))
@@ -56,6 +71,34 @@ function decodeRLE(rle) {
     }
   }
   return out
+}
+
+function importMap(e) {
+  console.log(e)
+  const file = e.target.files && e.target.files[0]
+  if (!file) return 
+  const reader = new FileReader()
+  reader.onerror = () => console.error('failed to read file', reader.error)
+  reader.onload = () => {
+    try {
+      const json = JSON.parse(reader.result)
+      const tileLayer = json.layers.find(l => l.type === 'tilelayer')
+      const raw = decodeRLE(tileLayer.data)
+      editor.width = json.width
+      editor.height = json.height
+      let tiles = calculateAdjacencies(raw, json.width, json.height)
+      tiles = new Uint16Array(tiles)
+      const map = {
+        tiles, 
+        w: json.width,
+        h: json.height
+      }
+      editor.map = map
+    } catch {
+      console.error('invalid map file')
+    }
+  }
+  reader.readAsText(file)
 }
 
 function loadMap(path) {
