@@ -87,24 +87,6 @@ function getTileId(num) {
   return num & 15
 }
 
-async function loadStripTileset(jsonPath) {
-  return fetch(manifestPath) 
-    .then(res => res.json())
-    .then(manifest => {
-      const promises = manifest.files.map(filename => {
-        return new Promise((resolve, reject) => {
-          const img = new Image()
-          img.src = manifest.path + filename
-          img.onload = () => resolve(img)
-          img.onerror = reject
-        })
-      })
-
-      return Promise.all(promises)
-        .then(images => [null, ...images])
-    })
-}
-
 async function loadTileset(manifestPath) {
   return fetch(manifestPath)
     .then(res => res.json())
@@ -145,6 +127,97 @@ const input = {
   y: 0,
   down: false,
   keys: {}
+}
+
+function isStrip(img) {
+  if (img) {
+    const w = img.naturalWidth, h = img.naturalHeight
+    console.log(w, h)
+    if (w && h) {
+      return w == h * 16
+    }
+  }
+}
+
+function splitStripImages(tileset) {
+  // split strip images 
+  const newTileset = []
+  tileset.forEach(tile => {
+    if (isStrip(tile)) {
+      console.log("found strip")
+      // split the strip into different pieces here 
+      const h = tile.naturalHeight
+      const w = tile.naturalWidth
+      const sublist = []
+      for (let i = 0; i < 16; i++) {
+        const c = document.createElement('canvas')
+        c.width = h
+        c.height = h
+        const ctx = c.getContext('2d')
+        ctx.drawImage(tile, i * h, 0, h, h, 0, 0, h, h)
+
+        sublist.push(c)
+      }
+      newTileset.push(sublist)
+    } else {
+      newTileset.push(tile)
+    }
+  })
+  return newTileset
+}
+
+function calculateAdjacencies(tiles) {
+  // calculate all the adjacencies in a given level
+}
+
+function calculateAdjacency(tileIdx, tileId) {
+  // calculate the adjacency for a given tile when it's placed
+  let variant = 0
+
+  // top
+  if (tileIdx - editor.width >= 0) {
+    if (editor.map.tiles[tileIdx - editor.width] !== 0) {
+      variant += 1
+      console.log("tile on top")
+    }
+  } else {
+    variant += 1
+    console.log("wall on top")
+  }
+  // right
+  if (tileIdx + 1 < editor.map.tiles.length) {
+    if(editor.map.tiles[tileIdx + 1] !== 0) {
+      variant += 2
+      console.log("tile on right")
+    }
+  } else {
+    variant += 2
+    console.log("wall on right")
+  }
+  // bottom
+  if (tileIdx + editor.width < editor.map.tiles.length) {
+    if (editor.map.tiles[tileIdx + editor.width] !== 0) {
+      variant += 4
+      console.log("tile on bottom")
+    }
+  } else {
+    variant += 4
+    console.log("wall on bottom")
+  }
+  // left
+  if (tileIdx - 1 >= 0) {
+    if(editor.map.tiles[tileIdx - 1] !== 0) {
+      variant += 8
+      console.log("tile on left")
+    }
+  } else {
+    variant += 8
+    console.log("wall on left")
+  }
+
+  console.log(variant)
+  return (tileId * 16) + variant
+
 }
 
 function updateLevelSize(width, height) {
@@ -202,7 +275,7 @@ function initEditor() {
   canvas.addEventListener('mouseup', () => input.down = false)
 
   loadTileset('assets/tileset.json').then(images => {
-    editor.tileset = images
+    editor.tileset = splitStripImages(images)
     editor.map = {
       w: 100, h: 50, tiles: new Uint16Array(5000)
     }
@@ -210,9 +283,10 @@ function initEditor() {
   })
 }
 
+let mouseNotDown = true
+
 function levelEditorLoop() {
   const { map, cam, tileSize, tileset} = editor
-
   const speed = 10
   if (input.keys['w'] && cam.y >= 0) cam.y -= speed
   if (input.keys['s'] && cam.y <= (map.h * tileSize) - canvas.height) cam.y += speed
@@ -225,11 +299,16 @@ function levelEditorLoop() {
   const ty = Math.floor(worldY / tileSize)
 
   if (input.down) {
-     if (tx >= 0 && tx < map.w && ty >= 0 && ty < map.h) {
-      const idx = ty * map.w + tx
-      console.log(ty, tx)
-      map.tiles[idx] = editor.selectedTile
-     }
+    if (mouseNotDown) {
+      if (tx >= 0 && tx < map.w && ty >= 0 && ty < map.h) {
+       const idx = ty * map.w + tx
+       console.log(ty, tx, idx)
+       map.tiles[idx] = calculateAdjacency(idx, editor.selectedTile)
+      }
+      mouseNotDown = false
+    }
+  } else {
+    mouseNotDown = true
   }
   
   ctx.fillStyle = '#C29A62'
@@ -243,15 +322,15 @@ function levelEditorLoop() {
   for (let y = startY; y < endY; y++) {
     for (let x = startX; x < endX; x++) {
       if (x < 0 || x >= map.w || y < 0 || y >= map.h) continue
-      const tileId = map.tiles[y * map.w + x]
+      const raw = map.tiles[y * map.w + x]
+      const tileId = raw >> 4
       const scrX = (x * tileSize) - cam.x
       const scrY = (y * tileSize) - cam.y
       
-      if (tileId > 0 && tileset[tileId]) {
+      if (tileId > 0 && Array.isArray(tileset[tileId])) {
+        ctx.drawImage(tileset[tileId][(raw & 15)], scrX, scrY, tileSize, tileSize)
+      } else if (tileId > 0 && !tileset[tileId].isArray) {
         ctx.drawImage(tileset[tileId], scrX, scrY, tileSize, tileSize)
-      } else {
-        ctx.strokeStyle = 'grey'
-        ctx.strokeRect(scrX, scrY, tileSize, tileSize)
       }
     }
   }
