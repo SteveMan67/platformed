@@ -19,6 +19,7 @@ function toggleErase() {
 
 // page event listeners
 const eraserButton = document.querySelector('i.fa-solid.fa-eraser')
+const saveButton = document.querySelector('i.fa-regular.fa-floppy-disk')
 
 eraserButton.addEventListener('click', () => {
   toggleErase()
@@ -48,12 +49,17 @@ function loadMap(path) {
   return fetch(path)
     .then(response => response.json())
     .then(json => {
-      const layer = json.layers.find(l => l.type === "tilelayer")
-      const raw = decodeRLE(json.data)
+      console.log(json)
+      const tileLayer = json.layers.find(l => l.type === "tilelayer")
+      const raw = decodeRLE(tileLayer.data)
       if (raw.length !== json.width * json.height) {
         console.warn('readData: data length not expected value', raw.length, json.width * json.height)
       }
-      const tiles = new Uint16Array(raw)
+      editor.width = json.width
+      editor.height = json.height
+      let tiles = calculateAdjacencies(raw, json.width, json.height)
+      console.log(tiles)
+      tiles = new Uint16Array(tiles)
       const map = {
         tiles, 
         w: json.width,
@@ -189,58 +195,58 @@ function splitStripImages(tileset) {
   return newTileset
 }
 
-function calculateAdjacencies(tiles) {
+function calculateAdjacencies(tiles, w, h) {
+  let out = []
   // calculate all the adjacencies in a given level
+  for (let i = 0; i < w * h; i++) {
+    if (tiles[i] !== 0) {
+      out.push(calculateAdjacency(i, tiles[i], tiles))
+    } else {
+      out.push(0)
+    }
+  }
+  return out
 }
 
-function calculateAdjacency(tileIdx, tileId) {
+function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles) {
   // calculate the adjacency for a given tile when it's placed
   // bug: walls other than the top and bottom don't work
   let variant = 0
 
-  tileId = (typeof tileId == 'number') ? tileId : editor.map.tiles[tileIdx] >> 4
+  tileId = (typeof tileId == 'number') ? tileId : tiles[tileIdx] >> 4
   if (tileId == 0) return 0
   if (tileIdx - editor.width >= 0) {
-    if (editor.map.tiles[tileIdx - editor.width] !== 0) {
+    if (tiles[tileIdx - editor.width] !== 0) {
       variant += 1
-      console.log("tile on top")
     }
   } else {
     variant += 1
-    console.log("wall on top")
   }
   // right
-  if (tileIdx + 1 < editor.map.tiles.length) {
-    if(editor.map.tiles[tileIdx + 1] !== 0) {
+  if (tileIdx + 1 < tiles.length) {
+    if(tiles[tileIdx + 1] !== 0) {
       variant += 2
-      console.log("tile on right")
     }
   } else {
     variant += 2
-    console.log("wall on right")
   }
   // bottom
-  if (tileIdx + editor.width < editor.map.tiles.length) {
-    if (editor.map.tiles[tileIdx + editor.width] !== 0) {
+  if (tileIdx + editor.width < tiles.length) {
+    if (tiles[tileIdx + editor.width] !== 0) {
       variant += 4
-      console.log("tile on bottom")
     }
   } else {
     variant += 4
-    console.log("wall on bottom")
   }
   // left
   if (tileIdx - 1 >= 0) {
-    if(editor.map.tiles[tileIdx - 1] !== 0) {
+    if(tiles[tileIdx - 1] !== 0) {
       variant += 8
-      console.log("tile on left")
     }
   } else {
     variant += 8
-    console.log("wall on left")
   }
 
-  console.log(variant)
   return (tileId * 16) + variant
 
 }
@@ -331,6 +337,7 @@ function initEditor() {
 
 let mouseDown = false
 let lastIdx
+let once = true
 
 function levelEditorLoop() {
   const { map, cam, tileSize, tileset} = editor
@@ -378,7 +385,7 @@ function levelEditorLoop() {
       
       if (tileId > 0 && Array.isArray(tileset[tileId])) {
         ctx.drawImage(tileset[tileId][(raw & 15)], scrX, scrY, tileSize, tileSize)
-      } else if (tileId > 0 && !tileset[tileId].isArray) {
+      } else if (tileId > 0 && !Array.isArray(tileset[tileId])) {
         ctx.drawImage(tileset[tileId], scrX, scrY, tileSize, tileSize)
       }
     }
