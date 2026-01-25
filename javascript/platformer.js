@@ -90,9 +90,9 @@ document.addEventListener('keypress', (e) => {
     console.log("switching modes")
     mode = mode === 'editor' ? 'play' : 'editor'
     if (mode == 'play') {
-      platformerLoop()
+      initPlatformer()
     } else {
-      levelEditorLoop()
+      initEditor()
     }
   }
 })
@@ -223,22 +223,22 @@ async function loadTileset(manifestPath) {
     })
 }
 
-function platformerLoop() {
-
-}
 
 let mode = "editor"
 
 const player = {
+  cam: {x: 0, y: 0},
   vy: 0,
   vx: 0, 
+  inertia: 1,
   x: 0, 
   y: 0,
   speed: 4,
   jump: 10,
   w: 30,
   h: 30,
-  grounded: false
+  grounded: false,
+  tileSize: 64
 }
 
 const editor = {
@@ -445,7 +445,7 @@ function addTileSelection() {
   }
 }
 
-function initEditor() {
+function init() {
   window.addEventListener('keydown', e => input.keys[e.key] = true)
   window.addEventListener('keyup', e => input.keys[e.key] = false)
 
@@ -467,8 +467,21 @@ function initEditor() {
   })
 }
 
-function drawMap() {
-  const { map, cam, tileSize, tileset} = editor
+function initEditor() {
+  levelEditorLoop()
+}
+
+function initPlatformer() {
+  player.w = 0.9 * player.tileSize
+  player.h = 0.9 * player.tileSize
+  player.jump = (0.15625 * player.tileSize) + 5
+  player.inertia = 1
+  player.speed = 5
+  platformerLoop()
+}
+
+function drawMap(tileSize = editor.tileSize) {
+  const { map, cam, tileset} = editor
   
   const startX = Math.floor(cam.x / tileSize)
   const endX = startX + (canvas.width / tileSize) + 1
@@ -480,8 +493,8 @@ function drawMap() {
       if (x < 0 || x >= map.w || y < 0 || y >= map.h) continue
       const raw = map.tiles[y * map.w + x]
       const tileId = raw >> 4
-      const scrX = (x * tileSize) - cam.x
-      const scrY = (y * tileSize) - cam.y
+      const scrX = Math.floor((x * tileSize) - cam.x)
+      const scrY = Math.floor((y * tileSize) - cam.y)
       
       if (tileId > 0 && Array.isArray(tileset[tileId])) {
         ctx.drawImage(tileset[tileId][(raw & 15)], scrX, scrY, tileSize, tileSize)
@@ -493,10 +506,10 @@ function drawMap() {
 }
 
 function checkCollision(x, y, w, h) {
-  const startX = Math.floor(x / editor.tileSize)
-  const endX = Math.floor((x + w - 0.01) / editor.tileSize)
-  const startY = Math.floor(y / editor.tileSize)
-  const endY = Math.floor((y + h - 0.01) / editor.tileSize)
+  const startX = Math.floor(x / player.tileSize)
+  const endX = Math.floor((x + w - 0.01) / player.tileSize)
+  const startY = Math.floor(y / player.tileSize)
+  const endY = Math.floor((y + h - 0.01) / player.tileSize)
 
   for (let py = startY; py <= endY; py++) {
     for (let px = startX; px <= endX; px++) {
@@ -510,23 +523,38 @@ function checkCollision(x, y, w, h) {
 }
 
 function updatePhysics() {
-  player.vy += 0.6
+  player.vy += player.inertia * 0.8
   if (player.vx < 0) {
-    player.vx += 0.5
+    player.vx += player.inertia * 0.45
   } else if (player.vx > 0) {
-    player.vx -= 0.5
+    player.vx -= player.inertia * 0.45
+  }
+  if (Math.abs(player.vx) < 0.4) {
+    player.vx = 0
   }
 
-  if (input.keys['w'] && player.grounded || input.keys[' '] && player.grounded) player.vy = -player.jump
-  if (input.keys['a']) player.vx = -player.speed
-  if (input.keys['d']) player.vx = player.speed
+  if (input.keys['w'] && player.grounded || input.keys[' '] && player.grounded) player.vy -= player.jump
+  if (input.keys['a']) {
+    if (player.vx > -player.speed) {
+      player.vx -= player.inertia * 1
+    } else {
+      player.vx = -player.speed
+    }
+  }
+  if (input.keys['d']) {
+    if (player.vx < player.speed) {
+      player.vx += player.inertia * 1
+    } else {
+      player.vx = player.speed
+    }
+  }
 
   player.x += player.vx
   if (checkCollision(player.x, player.y, player.w, player.h)) {
     if (player.vx > 0) {
-      player.x = (Math.floor((player.x + player.w) / editor.tileSize) * editor.tileSize) - player.w
+      player.x = (Math.floor((player.x + player.w) / player.tileSize) * player.tileSize) - player.w
     } else if (player.vx < 0) {
-      player.x = (Math.floor(player.x / editor.tileSize) + 1) * editor.tileSize
+      player.x = (Math.floor(player.x / player.tileSize) + 1) * player.tileSize
     }
     player.vx = 0
   }
@@ -536,17 +564,17 @@ function updatePhysics() {
 
   if (checkCollision(player.x, player.y, player.w, player.h)) {
     if (player.vy > 0) {
-      player.y = (Math.floor((player.y + player.h) / editor.tileSize) * editor.tileSize) - player.h
+      player.y = (Math.floor((player.y + player.h) / player.tileSize) * player.tileSize) - player.h
       player.grounded = true
     } else if (player.vy < 0) {
-      player.y = (Math.floor(player.y / editor.tileSize) + 1) * editor.tileSize
+      player.y = (Math.floor(player.y / player.tileSize) + 1) * player.tileSize
     }
     player.vy = 0
   } else {
     player.grounded = false
   }
 
-  if (player.y > editor.map.h * editor.tileSize) {
+  if (player.y > editor.map.h * player.tileSize) {
     player.vy = 0
     player.vx = 0
     player.x = editor.playerSpawn.x
@@ -555,27 +583,40 @@ function updatePhysics() {
 }
 
 function platformerLoop() {
-
   updatePhysics()
+  // don't update the camera if the player is in the middle section of the screen
+  if (player.x > editor.cam.x + (canvas.width * 0.75)) {
+    // moving right
+    editor.cam.x = player.x - (canvas.width * 0.75)
+  } else if (player.x < editor.cam.x + (canvas.width * 0.25)) {
+    // moving left
+    editor.cam.x = player.x - (canvas.width * 0.25)
+  }
+  if (player.y > editor.cam.y + (canvas.height * 0.5)) {
+    // moving down
+    editor.cam.y = player.y - (canvas.height * 0.5)
+  } else if (player.y < editor.cam.y + (canvas.height * 0.25)) {
+    // moving up
+    editor.cam.y = player.y - (canvas.height * 0.25)
+  }
 
-  editor.cam.x = player.x - (canvas.width / 2)
-  editor.cam.y = player.y - (canvas.height / 2)
   if (editor.cam.y < 0) {
     editor.cam.y = 0
-  } else if (editor.cam.y > (editor.map.h * editor.tileSize) - canvas.height) {
-    editor.cam.y = (editor.map.h * editor.tileSize) - canvas.height
+  } else if (editor.cam.y > (editor.map.h * player.tileSize) - canvas.height) {
+    editor.cam.y = (editor.map.h * player.tileSize) - canvas.height
   }
+
   if (editor.cam.x < 0) {
     editor.cam.x = 0
-  } else if (editor.cam.x > (editor.map.w * editor.tileSize) - canvas.width) {
-    editor.cam.x = (editor.map.w * editor.tileSize) - canvas.width
+  } else if (editor.cam.x > (editor.map.w * player.tileSize) - canvas.width) {
+    editor.cam.x = (editor.map.w * player.tileSize) - canvas.width
   }
 
  
   ctx.fillStyle = '#C29A62'
   ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-  drawMap()
+  drawMap(player.tileSize)
 
   ctx.fillStyle = 'black'
   ctx.fillRect(player.x - editor.cam.x, player.y - editor.cam.y, player.w, player.h)
@@ -646,4 +687,4 @@ function logCurrentMapAsJSON() {
   console.log(createMap(editor.map.w, editor.map.h, Array.from(editor.map.tiles)))
 }
 
-initEditor()
+init()
