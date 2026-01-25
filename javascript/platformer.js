@@ -419,7 +419,7 @@ function initEditor() {
   canvas.addEventListener('mousedown', () => input.down = true)
   canvas.addEventListener('mouseup', () => input.down = false)
 
-  loadTileset('assets/tileset.json').then(images => {
+  loadTileset('assets/tileset.JSON').then(images => {
     editor.tileset = splitStripImages(images)
     editor.map = {
       w: 100, h: 50, tiles: new Uint16Array(5000)
@@ -494,7 +494,7 @@ function levelEditorLoop() {
     ctx.globalAlpha = 0.5
     ctx.drawImage(img, cursorScrX, cursorScrY, tileSize, tileSize)
     ctx.restore()
-  } else {e
+  } else {
     ctx.strokeStyle = 'black'
     ctx.strokeRect(cursorScrX, cursorScrY, tileSize, tileSize)
   }
