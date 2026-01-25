@@ -94,6 +94,17 @@ document.addEventListener('keypress', (e) => {
     } else {
       initEditor()
     }
+  } else if (e.key == 'o') {
+    let input = document.createElement('input')
+    input.type = 'file'
+    input.id = 'mapFileInput'
+    input.accept = '.json,application/json'
+    input.style.display = 'none'
+    input.addEventListener('change', (e) => {
+      importMap(e)
+    })
+    input.value = ''
+    input.click()
   }
 })
 
@@ -239,14 +250,20 @@ const player = {
   cam: {x: 0, y: 0},
   vy: 0,
   vx: 0, 
-  inertia: 1,
+  xInertia: 1.5,
+  yInertia: 2,
   x: 0, 
   y: 0,
-  speed: 4,
-  jump: 10,
+  speed: 10,
+  jump: 22,
   w: 30,
   h: 30,
+  stopThreshold: 0.4,
   grounded: false,
+  coyoteTime: 5,
+  coyoteTimer: 0,
+  jumpBuffer: 3,
+  jumpBufferTimer: 0,
   tileSize: 64
 }
 
@@ -485,9 +502,13 @@ function initEditor() {
 function initPlatformer() {
   player.w = 0.9 * player.tileSize
   player.h = 0.9 * player.tileSize
-  player.jump = (0.15625 * player.tileSize) + 5
-  player.inertia = 1
-  player.speed = 5
+  const ratio = player.tileSize / 64
+  console.log(ratio)
+  player.jump = 22 * ratio
+  player.xInertia = 1.5 * ratio
+  player.yInertia = 2 * ratio
+  player.speed = 10 * ratio
+  player.stopThreshold = 0.4 * ratio
   platformerLoop()
 }
 
@@ -534,27 +555,45 @@ function checkCollision(x, y, w, h) {
 }
 
 function updatePhysics() {
-  player.vy += player.inertia 
-  if (player.vx < 0) {
-    player.vx += player.inertia * 0.45
-  } else if (player.vx > 0) {
-    player.vx -= player.inertia * 0.45
+  if (player.coyoteTimer > 0) player.coyoteTimer--
+  if (player.jumpBufferTimer > 0) player.jumpBufferTimer--
+
+  if (input.keys['w'] || input.keys[' '] || input.keys['ArrowUp']) {
+    player.jumpBufferTimer = player.jumpBuffer
+    console.log(player.jumpBufferTimer)
   }
-  if (Math.abs(player.vx) < 0.4) {
+
+  player.vy += 0.7 * player.yInertia
+
+  if (player.vy > player.tileSize * 0.9) {
+    player.vy = player.tileSize * 0.9
+  }
+
+  if (player.vx < 0) {
+    player.vx += player.xInertia * 0.45
+  } else if (player.vx > 0) {
+    player.vx -= player.xInertia * 0.45
+  }
+  if (Math.abs(player.vx) < player.stopThreshold) {
     player.vx = 0
   }
 
-  if (input.keys['w'] && player.grounded || input.keys[' '] && player.grounded) player.vy -= player.jump
-  if (input.keys['a']) {
+  if (player.jumpBufferTimer > 0 && player.coyoteTimer > 0) {
+    player.vy = - player.jump
+    player.jumpBufferTimer = 0
+    player.coyoteTimer = 0
+    player.grounded = false
+  }
+  if (input.keys['a'] || input.keys['ArrowLeft']) {
     if (player.vx > -player.speed) {
-      player.vx -= player.inertia * 1
+      player.vx -= player.xInertia * 1
     } else {
       player.vx = -player.speed
     }
   }
-  if (input.keys['d']) {
+  if (input.keys['d'] || input.keys['ArrowRight']) {
     if (player.vx < player.speed) {
-      player.vx += player.inertia * 1
+      player.vx += player.xInertia * 1
     } else {
       player.vx = player.speed
     }
@@ -577,6 +616,7 @@ function updatePhysics() {
     if (player.vy > 0) {
       player.y = (Math.floor((player.y + player.h) / player.tileSize) * player.tileSize) - player.h
       player.grounded = true
+      player.coyoteTimer = player.coyoteTime
     } else if (player.vy < 0) {
       player.y = (Math.floor(player.y / player.tileSize) + 1) * player.tileSize
     }
