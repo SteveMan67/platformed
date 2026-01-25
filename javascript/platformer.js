@@ -319,6 +319,31 @@ function splitStripImages(tileset) {
         sublist.push(c)
       }
       newTileset[tile.id] = { ...tile, images: sublist }
+    } else if (tile.type == 'rotation') {
+      const h = tile.image.naturalHeight
+      const w = tile.image.naturalWidth
+      const sublist = []
+      if (w == h * 4) {
+        for (let i = 0; i < 4; i++) {
+          const c = document.createElement('canvas')
+          c.width = h
+          c.height = h
+          const ctx = c.getContext('2d')
+          ctx.drawImage(tile.image, i * h, 0, h, h, 0, 0, h, h)
+          sublist.push(c)
+        }
+        newTileset[tile.id] = { ...tile, images: sublist }
+      } else if (w == h * 8) {
+        for (let i = 0; i < 8; i++) {
+          const c = document.createElement('canvas')
+          c.width = h
+          c.height = h
+          const ctx = c.getContext('2d')
+          ctx.drawImage(tile.image, i * h, 0, h, h, 0, 0, h, h)
+          sublist.push(c)
+        }
+        newTileset[tile.id] = { ...tile, images: sublist }
+      }
     } else {
       newTileset[tile.id] = tile
     }
@@ -396,7 +421,7 @@ function calcAdjacentAdjacency(centerTileIdx) {
   
   neighbors.forEach(n => {
     const tileId = tiles[n] >> 4
-    if (tileId !== 0) {
+    if (tileId !== 0 && editor.tileset[tileId].type == 'adjacency') {
       tiles[n] = calculateAdjacency(n)
     }
   })
@@ -444,8 +469,8 @@ function addTileSelection() {
     img.classList.add('tile-select')
     img.dataset.tile = i
     let src
-    if (Array.isArray(editor.tileset[i])) {
-      const c = editor.tileset[i][0]
+    if (editor.tileset[i].type == 'rotation' || editor.tileset[i].type == 'adjacency') {
+      const c = editor.tileset[i].images[0]
       if (c instanceof HTMLCanvasElement) {
         if (c.toBlob) {
           c.toBlob(blob => {
@@ -503,7 +528,6 @@ function initPlatformer() {
   player.w = 0.9 * player.tileSize
   player.h = 0.9 * player.tileSize
   const ratio = player.tileSize / 64
-  console.log(ratio)
   player.jump = 22 * ratio
   player.xInertia = 1.5 * ratio
   player.yInertia = 2 * ratio
@@ -529,9 +553,9 @@ function drawMap(tileSize = editor.tileSize) {
       const scrY = Math.floor((y * tileSize) - cam.y)
       const selectedTile = tileset[tileId]
       if (selectedTile.type == 'adjacency') {
-        ctx.drawImage(selectedTile.images[(raw & 15)], scrX, scrY, tileSize, tileSize)
-      } else if (selectedTile.type == "adjacency") {
-        ctx.drawImage(selectedTile.image, scrX, scrY, tileSize, tileSize)
+        ctx.drawImage(selectedTile.images[raw & 15], scrX, scrY, tileSize, tileSize)
+      } else if (selectedTile.type == "rotation") {
+        ctx.drawImage(selectedTile.images[raw & 15], scrX, scrY, tileSize, tileSize)
       }
     }
   } 
@@ -560,7 +584,6 @@ function updatePhysics() {
 
   if (input.keys['w'] || input.keys[' '] || input.keys['ArrowUp']) {
     player.jumpBufferTimer = player.jumpBuffer
-    console.log(player.jumpBufferTimer)
   }
 
   player.vy += 0.7 * player.yInertia
@@ -699,7 +722,11 @@ function levelEditorLoop() {
     const idx = ty * map.w + tx
     if (!mouseDown) {
       if (tx >= 0 && tx < map.w && ty >= 0 && ty < map.h) {
-       calcAdjacentAdjacency(idx, editor.selectedTile)
+        if (tileset[editor.selectedTile].type == "adjacency") {
+          calcAdjacentAdjacency(idx, editor.selectedTile)
+        } else if (tileset[editor.selectedTile].type == 'rotation') {
+          editor.map.tiles[idx] = editor.selectedTile * 16
+        }
       }
     }
     if (lastIdx !== idx) {
@@ -717,9 +744,11 @@ function levelEditorLoop() {
   const cursorScrX = (tx * tileSize) - cam.x
   const cursorScrY = (ty * tileSize) - cam.y
   let img
-  const selectedTileOfTileset = tileset.find(tile => tile.id == editor.selectedTile)
+  const selectedTileOfTileset = tileset[editor.selectedTile]
   if(selectedTileOfTileset.type == "adjacency") {
     img = selectedTileOfTileset.images[calculateAdjacency(ty * map.w + tx, editor.selectedTile) & 15]
+  } else if (selectedTileOfTileset.type == "rotation") {
+    img = selectedTileOfTileset.images[editor.map.tiles[ty * map.w + tx] & 15]
   } else {
     img = selectedTileOfTileset.image
   }

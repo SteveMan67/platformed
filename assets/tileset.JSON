@@ -12,6 +12,20 @@
       "file": "ground.png",
       "category": "blocks",
       "type": "adjacency"
+    },
+    {
+      "id": 2,
+      "name": "Spikes",
+      "file": "spikes.png",
+      "category": "hazards",
+      "type": "rotation"
+    },
+    {
+      "id": 3,
+      "name": "Double Spikes",
+      "file": "double-spikes.png",
+      "category": "hazards",
+      "type": "rotation"
     }
   ]
 }
