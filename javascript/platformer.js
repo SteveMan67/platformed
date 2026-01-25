@@ -13,6 +13,7 @@ function toggleErase() {
   if (editor.selectedTile == 0) {
     editor.selectedTile = editor.lastSelectedTile
   } else {
+    editor.lastSelectedTile = editor.selectedTile
     editor.selectedTile = 0
   }
 }
@@ -726,6 +727,8 @@ function levelEditorLoop() {
           calcAdjacentAdjacency(idx, editor.selectedTile)
         } else if (tileset[editor.selectedTile].type == 'rotation') {
           editor.map.tiles[idx] = editor.selectedTile * 16
+        } else {
+          calcAdjacentAdjacency(idx, editor.selectedTile)
         }
       }
     }
