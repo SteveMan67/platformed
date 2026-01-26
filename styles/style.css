@@ -26,10 +26,6 @@ body {
   align-items: center;
 }
 
-.actions img.import {
-  width: 35px;
-  height: 35px;
-}
 
 .sidebar {
   grid-area: sidebar;

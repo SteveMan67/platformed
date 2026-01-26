@@ -77,6 +77,7 @@ const tileSelection = document.querySelector('.tile-selection')
 const zoomIn = document.querySelector('.plus')
 const zoomOut = document.querySelector('.minus')
 const categories = document.querySelectorAll('.category')
+const play = document.querySelector(".play")
 
 categories.forEach(category => {
   category.addEventListener('click', () => {
@@ -108,6 +109,15 @@ zoomIn.addEventListener('click', () => {
 zoomOut.addEventListener('click', () => {
   zoomMap(true)
 })
+
+play.addEventListener('click', () => {
+  mode = mode === 'editor' ? 'play' : 'editor'
+    if (mode == 'play') {
+      initPlatformer()
+    } else {
+      initEditor()
+    }
+}) 
 
 importButton.addEventListener('click', () => {
   let input = document.createElement('input')
