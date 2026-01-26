@@ -79,8 +79,6 @@ categories.forEach(category => {
     let tileCount = sortByCategory(category.dataset.category)
     if (tileCount !== 0) category.classList.add('active')
   })
-let num = ((Array.from(categories).indexOf(category)) * -1) + categories.length
-console.log(num)
   window.addEventListener('keypress', (e) => {
     if (e.key == String(((Array.from(categories).indexOf(category)) * -1) + categories.length)) {
       categories.forEach(cat => {
@@ -333,7 +331,8 @@ const editor = {
   map: null,
   width: 100,
   height: 50,
-  tileset: []
+  tileset: [],
+  limitedPlacedTiles: []
 }
 
 const input = {
@@ -535,6 +534,7 @@ function updateLevelSize(width, height) {
   editor.map.w = width
   editor.map.h = height
 }
+
 function addTileSelection() {
   const categoryBlocks = document.querySelector('.category-blocks')
   for (let i = 1; i < editor.tileset.length; i++) {
@@ -643,6 +643,69 @@ function drawMap(tileSize = editor.tileSize) {
   } 
 }
 
+function killPlayer() {
+  player.vy = 0
+  player.vx = 0
+  player.x = editor.playerSpawn.x
+  player.y = editor.playerSpawn.y
+}
+
+const tileMaskCache = new Map()
+
+function checkPixelCollsion(tileId, tx, ty, px, py, pw, ph) {
+  let mask = tileMaskCache.get(tileId)
+  if (!mask) {
+    const tile = editor.tileset[tileId]
+    if (!tile) return false
+
+    let img = tile.image
+    if (!img && tile.images && tile.images[0]) img = tile.images[0]
+    if (!img) return false
+
+    const c = document.createElement('canvas')
+    c.width = img.naturalWidth
+    c.height = img.naturalHeight
+    const ctx = c.getContext('2d')
+    ctx.drawImage(img, 0, 0)
+    const data = ctx.getImageData(0, 0, c.width, c.height).data
+    mask = { w: c.width, h: c.height, data: data }
+    tileMaskCache.set(tileId, mask)
+  }
+
+  const tileWorldX = tx * player.tileSize
+  const tileWorldY = ty * player.tileSize
+
+  const intersectionLeft = Math.max(px, tileWorldX)
+  const intersectionTop = Math.max(py, tileWorldY)
+  const intersectionRight = Math.min(px + pw, tileWorldX + player.tileSize)
+  const intersectionBottom = Math.min(py + ph, tileWorldY + player.tileSize)
+
+  if (intersectionLeft >= intersectionRight || intersectionTop >= intersectionBottom) return false
+
+  for (let y = intersectionTop; y < intersectionBottom; y += 2) {
+    for (let x = intersectionLeft; x < intersectionRight; x += 2) {
+      const localX = Math.floor((x - tileWorldX) / player.tileSize * mask.w)
+      const localY = Math.floor((y - tileWorldY) / player.tileSize * mask.h)
+
+      const index = (localY * mask.w + localX) * 4 + 3
+      if (mask.data[index] > 10) {
+        return true;
+      }
+    }
+  }
+  return false
+} 
+
+function mechanics(tileId, tx, ty, x, y, w, h) {
+  const mechanics = editor.tileset[tileId].mechanics
+  if (!mechanics) return
+  if (mechanics.includes("killOnTouch")) {
+    if (checkPixelCollsion(tileId, tx, ty, x, y, w, h)) {
+      killPlayer()
+    }
+  }
+}
+
 function checkCollision(x, y, w, h) {
   const startX = Math.floor(x / player.tileSize)
   const endX = Math.floor((x + w - 0.01) / player.tileSize)
@@ -654,6 +717,7 @@ function checkCollision(x, y, w, h) {
       if (px < 0 || px >= editor.map.w || py < 0) return true
       const idx = py * editor.map.w + px
       const tileId = editor.map.tiles[idx] >> 4
+      mechanics(tileId, px, py, x, y, w, h)
       if (tileId !== 0) return true
     }
   }
@@ -731,10 +795,7 @@ function updatePhysics() {
   }
 
   if (player.y > editor.map.h * player.tileSize) {
-    player.vy = 0
-    player.vx = 0
-    player.x = editor.playerSpawn.x
-    player.y = editor.playerSpawn.y
+    killPlayer()
   }
 }
 
