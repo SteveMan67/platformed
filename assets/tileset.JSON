@@ -70,8 +70,7 @@
       "triggerAdjacency": false,
       "mechanics": [
         "onePerLevel",
-        "end",
-        "hidden"
+        "end"
       ]
     }
   ]

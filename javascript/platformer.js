@@ -662,6 +662,11 @@ function killPlayer() {
   }
 }
 
+function endLevel() {
+  mode = "editor" 
+  initEditor()
+}
+
 const tileMaskCache = new Map()
 
 function checkPixelCollsion(tileId, tx, ty, px, py, pw, ph) {
@@ -715,6 +720,9 @@ function mechanics(tileId, tx, ty, x, y, w, h) {
     if (checkPixelCollsion(tileId, tx, ty, x, y, w, h)) {
       killPlayer()
     }
+  }
+  if (mechanics.includes("end")) {
+    endLevel()
   }
 }
 
@@ -904,6 +912,9 @@ function levelEditorLoop() {
           }
           if (tileset[editor.selectedTile].mechanics.includes("spawn")) {
             editor.playerSpawn = { x: tx, y: ty}
+          }
+          if (tileset[editor.selectedTile].mechanics.includes("end")) {
+            editor.end = { x: tx, y: ty }
           }
         }
         console.log(tileLimitPlaced)
