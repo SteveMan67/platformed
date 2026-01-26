@@ -50,12 +50,19 @@ function zoomMap(zoomDirectionIsIn) {
 function sortByCategory(category) {
   let tileCount = 0
   const tileSelects = document.querySelectorAll('.tile-select-container')
+  let lowestIndexBlock
   tileSelects.forEach(tileSelect => {
     if (tileSelect.dataset.category == category) {
+      if (!lowestIndexBlock || tileSelect.dataset.tile < lowestIndexBlock) {
+        lowestIndexBlock = tileSelect.dataset.tile
+      }
       tileSelect.style.display = 'block'
       tileCount++
     } else {
       tileSelect.style.display = 'none'
+    }
+    if (lowestIndexBlock) {
+      editor.selectedTile = Number(lowestIndexBlock)
     }
   })
   updateCanvasSize()
@@ -63,12 +70,12 @@ function sortByCategory(category) {
 }
 
 // page event listeners
-const eraserButton = document.querySelector('i.fa-solid.fa-eraser')
-const saveButton = document.querySelector('i.fa-regular.fa-floppy-disk')
-const importButton = document.querySelector('i.fa-solid.fa-file-import')
+const eraserButton = document.querySelector('.eraser')
+const saveButton = document.querySelector('.save')
+const importButton = document.querySelector('.import')
 const tileSelection = document.querySelector('.tile-selection')
-const zoomIn = document.querySelector('i.fa-solid.fa-plus')
-const zoomOut = document.querySelector('i.fa-solid.fa-minus')
+const zoomIn = document.querySelector('.plus')
+const zoomOut = document.querySelector('.minus')
 const categories = document.querySelectorAll('.category')
 
 categories.forEach(category => {
@@ -615,6 +622,7 @@ function initPlatformer() {
   player.stopThreshold = 0.4 * ratio
   player.x = editor.playerSpawn.x * player.tileSize
   player.y = editor.playerSpawn.y * player.tileSize
+  player.lastCheckpointSpawn = { x: 0, y: 0 }
   platformerLoop()
 }
 
@@ -923,7 +931,7 @@ function levelEditorLoop() {
             editor.end = { x: tx, y: ty }
           }
         }
-        console.log(tileLimitPlaced)
+        console.log(editor.selectedTile)
         if (tileset[editor.selectedTile].type == "adjacency" && !tileLimitPlaced) {
           calcAdjacentAdjacency(idx, editor.selectedTile)
         } else if (tileset[editor.selectedTile].type == 'rotation' && !tileLimitPlaced) {

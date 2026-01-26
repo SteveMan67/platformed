@@ -26,6 +26,11 @@ body {
   align-items: center;
 }
 
+.actions img.import {
+  width: 35px;
+  height: 35px;
+}
+
 .sidebar {
   grid-area: sidebar;
   height: 100%;
@@ -116,10 +121,12 @@ body {
   align-items: center;
 }
 
-.zoom i {
-  font-size: 30px;
+.zoom img {
+  width: 35px;
+  height: 35px;
   margin: 15px auto;
 }
+
 
 .tile-selection {
   width: 80px;
@@ -128,6 +135,11 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: end;
+}
+
+div.eraser > img {
+  width: 50px;
+  height: 50px;
 }
 
 .tile-selection img {
