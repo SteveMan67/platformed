@@ -47,6 +47,21 @@ function zoomMap(zoomDirectionIsIn) {
   editor.tileSize = newZoom
 }
 
+function sortByCategory(category) {
+  let tileCount = 0
+  const tileSelects = document.querySelectorAll('.tile-select-container')
+  tileSelects.forEach(tileSelect => {
+    if (tileSelect.dataset.category == category) {
+      tileSelect.style.display = 'block'
+      tileCount++
+    } else {
+      tileSelect.style.display = 'none'
+    }
+  })
+  updateCanvasSize()
+  return tileCount
+}
+
 // page event listeners
 const eraserButton = document.querySelector('i.fa-solid.fa-eraser')
 const saveButton = document.querySelector('i.fa-regular.fa-floppy-disk')
@@ -54,6 +69,28 @@ const importButton = document.querySelector('i.fa-solid.fa-file-import')
 const tileSelection = document.querySelector('.tile-selection')
 const zoomIn = document.querySelector('i.fa-solid.fa-plus')
 const zoomOut = document.querySelector('i.fa-solid.fa-minus')
+const categories = document.querySelectorAll('.category')
+
+categories.forEach(category => {
+  category.addEventListener('click', () => {
+    categories.forEach(cat => {
+      cat.classList.remove('active')
+    })
+    let tileCount = sortByCategory(category.dataset.category)
+    if (tileCount !== 0) category.classList.add('active')
+  })
+let num = ((Array.from(categories).indexOf(category)) * -1) + categories.length
+console.log(num)
+  window.addEventListener('keypress', (e) => {
+    if (e.key == String(((Array.from(categories).indexOf(category)) * -1) + categories.length)) {
+      categories.forEach(cat => {
+        cat.classList.remove('active')
+      })
+      let tileCount = sortByCategory(category.dataset.category)
+      if (tileCount !== 0) category.classList.add('active')
+    }
+  })
+})
 
 window.addEventListener('resize', () => {
   updateCanvasSize()
@@ -501,10 +538,13 @@ function updateLevelSize(width, height) {
 function addTileSelection() {
   const categoryBlocks = document.querySelector('.category-blocks')
   for (let i = 1; i < editor.tileset.length; i++) {
+    let div = document.createElement('div')
+    div.classList.add('tile-select-container')
+    div.dataset.tile = i
+    div.dataset.category = editor.tileset[i].category
+    categoryBlocks.appendChild(div)
     let img = document.createElement('img')
     img.classList.add('tile-select')
-    img.dataset.tile = i
-    img.dataset.category = editor.tileset[i].category
     let src
     if (editor.tileset[i].type == 'rotation' || editor.tileset[i].type == 'adjacency') {
       const c = editor.tileset[i].images[0]
@@ -528,12 +568,13 @@ function addTileSelection() {
         img.src = ''
       }
     }
-    categoryBlocks.appendChild(img)
-    img.addEventListener('mousedown', (e) => {
+    div.appendChild(img)
+    div.addEventListener('mousedown', (e) => {
       e.preventDefault()
-      editor.selectedTile = Number(img.dataset.tile)
+      editor.selectedTile = Number(div.dataset.tile)
     })
   }
+  sortByCategory("")
 }
 
 function init() {
