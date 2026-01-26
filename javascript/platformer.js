@@ -273,6 +273,7 @@ const editor = {
     x: 0,
     y: 0
   },
+  currentRotation: 0,
   playerSpawn: {x: 0, y: 0},
   lastCheckpointSpawn: {x: 0, y: 0},
   tileSize: 32,
@@ -353,6 +354,18 @@ function splitStripImages(tileset) {
   return newTileset
 }
 
+function getMechanics(idx) {
+  let outList = []
+  if (idx >= 0 && idx < (editor.width * editor.height)) {
+    const tilesetItem = editor.tileset[editor.map.tiles[idx] >> 4]
+    if (tilesetItem.id == 0 || !tilesetItem.mechanics) return outList
+    outList = [...tilesetItem.mechanics]
+    return outList
+  } else {
+    return outList
+  } 
+}
+
 function calculateAdjacencies(tiles, w, h) {
   let out = []
   // calculate all the adjacencies in a given level
@@ -374,7 +387,7 @@ function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles) {
   tileId = (typeof tileId == 'number') ? tileId : tiles[tileIdx] >> 4
   if (tileId == 0) return 0
   if (tileIdx - editor.width >= 0) {
-    if (tiles[tileIdx - editor.width] !== 0) {
+    if (tiles[tileIdx - editor.width] !== 0 && editor.tileset[tiles[tileIdx - editor.width] >> 4].triggerAdjacency) {
       variant += 1
     }
   } else {
@@ -382,7 +395,7 @@ function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles) {
   }
   // right
   if (tileIdx + 1 < tiles.length) {
-    if(tiles[tileIdx + 1] !== 0) {
+    if(tiles[tileIdx + 1] !== 0 && editor.tileset[tiles[tileIdx + 1] >> 4].triggerAdjacency) {
       variant += 2
     }
   } else {
@@ -390,7 +403,7 @@ function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles) {
   }
   // bottom
   if (tileIdx + editor.width < tiles.length) {
-    if (tiles[tileIdx + editor.width] !== 0) {
+    if (tiles[tileIdx + editor.width] !== 0 && editor.tileset[tiles[tileIdx + editor.width] >> 4].triggerAdjacency) {
       variant += 4
     }
   } else {
@@ -398,7 +411,7 @@ function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles) {
   }
   // left
   if (tileIdx - 1 >= 0) {
-    if(tiles[tileIdx - 1] !== 0) {
+    if(tiles[tileIdx - 1] !== 0 && editor.tileset[tiles[tileIdx - 1] >> 4].triggerAdjacency) {
       variant += 8
     }
   } else {
@@ -493,7 +506,8 @@ function addTileSelection() {
       }
     }
     tileSelection.appendChild(img)
-    img.addEventListener('click', () => {
+    img.addEventListener('mousedown', (e) => {
+      e.preventDefault()
       editor.selectedTile = Number(img.dataset.tile)
     })
   }
@@ -557,6 +571,8 @@ function drawMap(tileSize = editor.tileSize) {
         ctx.drawImage(selectedTile.images[raw & 15], scrX, scrY, tileSize, tileSize)
       } else if (selectedTile.type == "rotation") {
         ctx.drawImage(selectedTile.images[raw & 15], scrX, scrY, tileSize, tileSize)
+      } else if (selectedTile.type == 'standalone') {
+        ctx.drawImage(selectedTile.image, scrX, scrY, tileSize, tileSize)
       }
     }
   } 
@@ -702,6 +718,7 @@ function platformerLoop() {
 }
 
 let mouseDown = false
+let rDown = false
 let lastIdx
 let once = true
 
@@ -726,8 +743,9 @@ function levelEditorLoop() {
         if (tileset[editor.selectedTile].type == "adjacency") {
           calcAdjacentAdjacency(idx, editor.selectedTile)
         } else if (tileset[editor.selectedTile].type == 'rotation') {
-          editor.map.tiles[idx] = editor.selectedTile * 16
+          editor.map.tiles[idx] = (editor.selectedTile * 16) + editor.currentRotation
         } else {
+          console.log(idx, editor.selectedTile)
           calcAdjacentAdjacency(idx, editor.selectedTile)
         }
       }
@@ -737,6 +755,27 @@ function levelEditorLoop() {
     }
   } else {
     mouseDown = false
+  }
+
+  if (input.keys['r']) {
+    const idx = ty * map.w + tx
+    if (!rDown) {
+      console.log(editor.map.tiles[idx] >> 4)
+      if (tx >= 0 && tx < map.w && ty >= 0 && ty < map.h) {
+        if (tileset[editor.map.tiles[idx] >> 4].type == 'rotation') {
+          const currentRotation = editor.map.tiles[idx] & 15
+          const newRotation = (currentRotation + 1) % 4
+          editor.map.tiles[idx] = (editor.map.tiles[idx] >> 4) + newRotation 
+          editor.currentRotation = newRotation
+        } else if (editor.map.tiles[idx] >> 4 == 0) {
+          const newRotation = (editor.currentRotation + 1) % 4
+          editor.currentRotation = newRotation
+        }
+      }
+      rDown = true
+    }
+  } else {
+    rDown = false
   }
   
   ctx.fillStyle = '#C29A62'
@@ -751,7 +790,7 @@ function levelEditorLoop() {
   if(selectedTileOfTileset.type == "adjacency") {
     img = selectedTileOfTileset.images[calculateAdjacency(ty * map.w + tx, editor.selectedTile) & 15]
   } else if (selectedTileOfTileset.type == "rotation") {
-    img = selectedTileOfTileset.images[editor.map.tiles[ty * map.w + tx] & 15]
+    img = selectedTileOfTileset.images[editor.currentRotation]
   } else {
     img = selectedTileOfTileset.image
   }

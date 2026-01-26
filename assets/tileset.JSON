@@ -4,13 +4,15 @@
     {
       "id": 0,
       "name": "air",
-      "type": "empty"
+      "type": "empty",
+      "triggerAdjacency": false
     },
     {
       "id": 1,
       "name": "Ground",
       "file": "ground.png",
       "category": "blocks",
+      "triggerAdjacency": true,
       "type": "adjacency"
     },
     {
@@ -18,14 +20,57 @@
       "name": "Spikes",
       "file": "spikes.png",
       "category": "hazards",
-      "type": "rotation"
+      "type": "rotation",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "killOnTouch"
+      ]
     },
     {
       "id": 3,
       "name": "Double Spikes",
       "file": "double-spikes.png",
       "category": "hazards",
-      "type": "rotation"
+      "type": "rotation",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "killOnTouch"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "checkpoint",
+      "file": "checkpoint.png",
+      "category": "mechanics",
+      "type": "standalone",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "checkpoint"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "spawn",
+      "file": "spawn.png",
+      "category": "mechanics",
+      "type": "standalone",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "onePerLevel",
+        "spawn"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "end",
+      "file": "end.png",
+      "category": "mechanics",
+      "type": "standalone",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "onePerLevel",
+        "end"
+      ]
     }
   ]
 }
