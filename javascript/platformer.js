@@ -866,14 +866,24 @@ function levelEditorLoop() {
     const idx = ty * map.w + tx
     if (!mouseDown) {
       if (tx >= 0 && tx < map.w && ty >= 0 && ty < map.h) {
-        if (tileset[editor.selectedTile].type == "adjacency") {
+        let tileLimitPlaced = false
+        if (editor.limitedPlacedTiles.includes(editor.selectedTile)) {
+          tileLimitPlaced = true
+        }
+        if (editor.tileset[editor.selectedTile].mechanics) {
+          if (editor.tileset[editor.selectedTile].mechanics.includes("onePerLevel")) {
+            editor.limitedPlacedTiles.push(editor.selectedTile)
+          }
+        }
+        if (tileset[editor.selectedTile].type == "adjacency" && !tileLimitPlaced) {
           calcAdjacentAdjacency(idx, editor.selectedTile)
-        } else if (tileset[editor.selectedTile].type == 'rotation') {
+        } else if (tileset[editor.selectedTile].type == 'rotation' && !tileLimitPlaced) {
           editor.map.tiles[idx] = (editor.selectedTile * 16) + editor.currentRotation
-        } else {
+        } else if (!tileLimitPlaced){
           console.log(idx, editor.selectedTile)
           calcAdjacentAdjacency(idx, editor.selectedTile)
         }
+
       }
     }
     if (lastIdx !== idx) {
