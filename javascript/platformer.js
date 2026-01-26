@@ -314,7 +314,8 @@ const player = {
   coyoteTimer: 0,
   jumpBuffer: 3,
   jumpBufferTimer: 0,
-  tileSize: 64
+  tileSize: 64,
+  lastCheckpointSpawn: {x: 0, y: 0},
 }
 
 const editor = {
@@ -324,7 +325,6 @@ const editor = {
   },
   currentRotation: 0,
   playerSpawn: {x: 0, y: 0},
-  lastCheckpointSpawn: {x: 0, y: 0},
   tileSize: 32,
   selectedTile: 1,
   lastSelectedTile: 1,
@@ -613,6 +613,8 @@ function initPlatformer() {
   player.yInertia = 2 * ratio
   player.speed = 10 * ratio
   player.stopThreshold = 0.4 * ratio
+  player.x = editor.playerSpawn.x * player.tileSize
+  player.y = editor.playerSpawn.y * player.tileSize
   platformerLoop()
 }
 
@@ -632,11 +634,15 @@ function drawMap(tileSize = editor.tileSize) {
       const scrX = Math.floor((x * tileSize) - cam.x)
       const scrY = Math.floor((y * tileSize) - cam.y)
       const selectedTile = tileset[tileId]
-      if (selectedTile.type == 'adjacency') {
+      let showTile = true
+      if (editor.tileset[tileId].mechanics && editor.tileset[tileId].mechanics.includes("hidden") && mode == 'play') {
+        showTile = false
+      }
+      if (selectedTile.type == 'adjacency' && showTile) {
         ctx.drawImage(selectedTile.images[raw & 15], scrX, scrY, tileSize, tileSize)
-      } else if (selectedTile.type == "rotation") {
+      } else if (selectedTile.type == "rotation" && showTile) {
         ctx.drawImage(selectedTile.images[raw & 15], scrX, scrY, tileSize, tileSize)
-      } else if (selectedTile.type == 'standalone') {
+      } else if (selectedTile.type == 'standalone' && showTile) {
         ctx.drawImage(selectedTile.image, scrX, scrY, tileSize, tileSize)
       }
     }
@@ -644,10 +650,16 @@ function drawMap(tileSize = editor.tileSize) {
 }
 
 function killPlayer() {
+  console.log(editor.playerSpawn)
   player.vy = 0
   player.vx = 0
-  player.x = editor.playerSpawn.x
-  player.y = editor.playerSpawn.y
+  if (player.lastCheckpointSpawn.y !== 0 && player.lastCheckpointSpawn.x !== 0) {
+    player.x = editor.lastCheckpointSpawn.x * player.tileSize
+    player.y = editor.lastCheckpointSpawn.y * player.tileSize
+  } else {
+    player.x = editor.playerSpawn.x * player.tileSize
+    player.y = editor.playerSpawn.y * player.tileSize
+  }
 }
 
 const tileMaskCache = new Map()
@@ -717,8 +729,23 @@ function checkCollision(x, y, w, h) {
       if (px < 0 || px >= editor.map.w || py < 0) return true
       const idx = py * editor.map.w + px
       const tileId = editor.map.tiles[idx] >> 4
+
+      const oldX = player.x;
+      const oldY = player.y
+
       mechanics(tileId, px, py, x, y, w, h)
-      if (tileId !== 0) return true
+      
+      if (player.x !== oldX || player.y !== oldY) return false
+      if (tileId !== 0) {
+        const tile = editor.tileset[tileId]
+        if (tile && tile.mechanics && tile.mechanics.includes("killOnTouch")) {
+          continue
+        }
+        if (tile && tile.mechanics && tile.mechanics.includes("hidden")) {
+          continue
+        }
+        return true
+      }
     }
   }
   return false
@@ -873,6 +900,9 @@ function levelEditorLoop() {
         if (editor.tileset[editor.selectedTile].mechanics) {
           if (editor.tileset[editor.selectedTile].mechanics.includes("onePerLevel")) {
             editor.limitedPlacedTiles.push(editor.selectedTile)
+          }
+          if (tileset[editor.selectedTile].mechanics.includes("spawn")) {
+            editor.playerSpawn = { x: tx, y: ty}
           }
         }
         if (tileset[editor.selectedTile].type == "adjacency" && !tileLimitPlaced) {

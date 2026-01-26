@@ -45,8 +45,7 @@
       "type": "standalone",
       "triggerAdjacency": false,
       "mechanics": [
-        "checkpoint",
-        "hideInPlay"
+        "checkpoint"
       ]
     },
     {
@@ -59,7 +58,7 @@
       "mechanics": [
         "onePerLevel",
         "spawn",
-        "hideInPlay"
+        "hidden"
       ]
     },
     {
@@ -72,7 +71,7 @@
       "mechanics": [
         "onePerLevel",
         "end",
-        "hideInPlay"
+        "hidden"
       ]
     }
   ]
