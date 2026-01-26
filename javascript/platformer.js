@@ -912,7 +912,7 @@ function levelEditorLoop() {
         } else if (tileset[editor.selectedTile].type == 'rotation' && !tileLimitPlaced) {
           editor.map.tiles[idx] = (editor.selectedTile * 16) + editor.currentRotation
         } else if (tileset[editor.selectedTile].type == 'empty' ) {
-          editor.limitedPlacedTiles = editor.limitedPlacedTiles.filter(f => f !== editor.lastSelectedTile)
+          editor.limitedPlacedTiles = editor.limitedPlacedTiles.filter(f => f !== editor.map.tiles[idx] >> 4)
           calcAdjacentAdjacency(idx, editor.selectedTile)
         } else if (!tileLimitPlaced) {
           calcAdjacentAdjacency(idx, editor.selectedTile)
