@@ -595,7 +595,7 @@ function checkCollision(x, y, w, h) {
 
   for (let py = startY; py <= endY; py++) {
     for (let px = startX; px <= endX; px++) {
-      if (px < 0 || px >= editor.map.w || py < 0 || py >= editor.map.h) continue
+      if (px < 0 || px >= editor.map.w || py < 0) return true
       const idx = py * editor.map.w + px
       const tileId = editor.map.tiles[idx] >> 4
       if (tileId !== 0) return true
