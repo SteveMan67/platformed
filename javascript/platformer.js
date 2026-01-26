@@ -133,7 +133,8 @@ function importMap(e) {
     try {
       const json = JSON.parse(reader.result)
       const tileLayer = json.layers.find(l => l.type === 'tilelayer')
-      const raw = decodeRLE(tileLayer.data)
+      let raw = decodeRLE(tileLayer.data)
+      raw = raw.map(id => id << 4)
       editor.width = json.width
       editor.height = json.height
       let tiles = calculateAdjacencies(raw, json.width, json.height)
@@ -160,6 +161,7 @@ function loadMap(path) {
       if (raw.length !== json.width * json.height) {
         console.warn('readData: data length not expected value', raw.length, json.width * json.height)
       }
+      raw = raw.map(id => id << 4)
       editor.width = json.width
       editor.height = json.height
       let tiles = calculateAdjacencies(raw, json.width, json.height)
@@ -370,11 +372,13 @@ function calculateAdjacencies(tiles, w, h) {
   let out = []
   // calculate all the adjacencies in a given level
   for (let i = 0; i < w * h; i++) {
-    if (tiles[i] !== 0) {
-      out.push(calculateAdjacency(i, tiles[i], tiles))
-    } else {
+    const raw = tiles[i]
+    if (!raw) {
       out.push(0)
+      continue
     }
+    const baseId = raw >> 4
+    out.push(calculateAdjacency(i, baseId, tiles))
   }
   return out
 }
@@ -386,34 +390,39 @@ function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles) {
 
   tileId = (typeof tileId == 'number') ? tileId : tiles[tileIdx] >> 4
   if (tileId == 0) return 0
+
+  const getNeighborId = (idx) => {
+    const val = tiles[idx]
+    return val ? val >> 4 : 0
+  }
+
+  const check = (idx) => {
+    const nid = getNeighborId(idx)
+    if (nid === 0) return false
+    const t = editor.tileset[nid]
+    return t && t.triggerAdjacency
+  }
+  // top
   if (tileIdx - editor.width >= 0) {
-    if (tiles[tileIdx - editor.width] !== 0 && editor.tileset[tiles[tileIdx - editor.width] >> 4].triggerAdjacency) {
-      variant += 1
-    }
+    if (check(tileIdx - editor.width)) variant += 1
   } else {
     variant += 1
   }
   // right
   if (tileIdx + 1 < tiles.length) {
-    if(tiles[tileIdx + 1] !== 0 && editor.tileset[tiles[tileIdx + 1] >> 4].triggerAdjacency) {
-      variant += 2
-    }
+    if (check(tileIdx + 1)) variant += 2
   } else {
     variant += 2
   }
   // bottom
   if (tileIdx + editor.width < tiles.length) {
-    if (tiles[tileIdx + editor.width] !== 0 && editor.tileset[tiles[tileIdx + editor.width] >> 4].triggerAdjacency) {
-      variant += 4
-    }
+    if (check(tileIdx + editor.width)) variant += 4
   } else {
     variant += 4
   }
   // left
   if (tileIdx - 1 >= 0) {
-    if(tiles[tileIdx - 1] !== 0 && editor.tileset[tiles[tileIdx - 1] >> 4].triggerAdjacency) {
-      variant += 8
-    }
+    if (check(tileIdx - 1)) variant += 8
   } else {
     variant += 8
   }
@@ -499,8 +508,8 @@ function addTileSelection() {
         img.src = c.src
       }
     } else {
-      if (editor.tileset[i] instanceof HTMLImageElement) {
-        img.src = editor.tileset[i].src
+      if (editor.tileset[i].image instanceof HTMLImageElement) {
+        img.src = editor.tileset[i].image.src
       } else {
         img.src = ''
       }
