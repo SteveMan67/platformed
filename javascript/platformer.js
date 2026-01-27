@@ -19,9 +19,8 @@ function updateCanvasSize() {
 
 function toggleErase() {
   if (editor.selectedTile == 0) {
-    editor.selectedTile = editor.lastSelectedTile
+    editor.selectedTile = editor.lastSelectedTiles[1]
   } else {
-    editor.lastSelectedTile = editor.selectedTile
     editor.selectedTile = 0
   }
 }
@@ -398,7 +397,7 @@ const editor = {
   playerSpawn: {x: 0, y: 0},
   tileSize: 32,
   selectedTile: 1,
-  lastSelectedTile: 1,
+  lastSelectedTiles: [2, 1],
   map: null,
   width: 100,
   height: 50,
@@ -647,7 +646,9 @@ function addTileSelection() {
     div.appendChild(img)
     div.addEventListener('mousedown', (e) => {
       e.preventDefault()
+      editor.lastSelectedTiles.shift()
       editor.selectedTile = Number(div.dataset.tile)
+      editor.lastSelectedTiles.push(editor.selectedTile)
     })
   }
   sortByCategory("")
@@ -966,6 +967,7 @@ function platformerLoop() {
 
 let mouseDown = false
 let rDown = false
+let spaceDown = false
 let lastIdx
 let once = true
 
@@ -1043,6 +1045,18 @@ function levelEditorLoop() {
     }
   } else {
     rDown = false
+  }
+
+  if (input.keys[" "]) {
+    if (!spaceDown) {
+      const otherTile = editor.lastSelectedTiles[0]
+      editor.lastSelectedTiles.shift()
+      editor.lastSelectedTiles.push(otherTile)
+      editor.selectedTile = editor.lastSelectedTiles[1]
+      spaceDown = true
+    }
+  } else {
+    spaceDown = false
   }
   
   ctx.fillStyle = '#C29A62'
