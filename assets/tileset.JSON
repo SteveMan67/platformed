@@ -1,5 +1,6 @@
 {
   "path": "assets/tiles/",
+  "characterFile": "player.png",
   "tiles": [
     {
       "id": 0,

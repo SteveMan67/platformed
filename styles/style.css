@@ -1,6 +1,6 @@
 body {
   background-color: #C29A62;
-  font-family: "Madimi One", monospace;
+  font-family: "Fredoka", sans-serif;
   margin: 0;
   scrollbar-width: none;
   width: 100vw;
@@ -302,7 +302,7 @@ input[type="radio"] {
 .menu-item select {
   background-color: #C29A62;
   border: none !important;
-  font-family: "Madimi One", monospace;
+  font-family: "Fredoka", sans-serif;
   font-size: 20px;
   font-weight: 200;
   text-align: end;

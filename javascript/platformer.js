@@ -328,7 +328,7 @@ function createMap(width, height, data) {
   json.jumpHeight = player.jumpHeight
   json.yInertia = player.yInertia
   json.jumpWidth = player.jumpWidth
-  json.xInertia = playeer.xInertia
+  json.xInertia = player.xInertia
   json.layers = []
   const tileIdRLE = encodeRLE(data.map(id => id >> 4))
   let mapLayer = {
@@ -365,9 +365,28 @@ function getTileId(num) {
   return num & 15
 }
 
+function loadPlayerSprites(playerImg) {
+  if (!playerImg) return 
+  const h = playerImg.naturalHeight
+  const w = playerImg.naturalWidth
+  const sprites = []
+
+  const count = Math.floor(w / h)
+  for (let i = 0; i < count; i++) {
+    const c = document.createElement('canvas')
+    c.width = h
+    c.height = h
+    const ctx = c.getContext('2d')
+    ctx.imageSmoothingEnabled = false
+    ctx.drawImage(playerImg, i *h, 0, h, h, 0, 0, h, h)
+    sprites.push(c)
+  }
+  player.sprites = sprites
+}
+
 async function loadTileset(manifestPath) {
   return fetch(manifestPath)
-    .then(res => res.json())
+    .then(response => response.json())
     .then(manifest => {
 
       const promises = manifest.tiles.map(tileData => {
@@ -381,13 +400,21 @@ async function loadTileset(manifestPath) {
         })
       })
 
-      return Promise.all(promises)
-        .then(items => {
+      const characterPromise = new Promise((resolve) => {
+        if (!manifest.characterFile) return resolve(null)
+        const img = new Image()
+        img.src = manifest.path + manifest.characterFile
+        img.onload = () => resolve(img) 
+        img.onerror = () => resolve(null)
+      })
+
+      return Promise.all([Promise.all(promises), characterPromise])
+        .then(([items, characterImage]) => {
           const tileset = []
           items.forEach(item => {
             tileset[item.id] = item
           })
-          return tileset
+          return { tileset, characterImage }
         })
     })
 }
@@ -415,6 +442,9 @@ const player = {
   jumpBufferTimer: 0,
   tileSize: 64,
   lastCheckpointSpawn: {x: 0, y: 0},
+  facingLeft: 1,
+  AnimationFrame: 0,
+  AnimationFrameCounter: 0,
 }
 
 const editor = {
@@ -695,8 +725,9 @@ function init() {
   canvas.addEventListener('mousedown', () => input.down = true)
   canvas.addEventListener('mouseup', () => input.down = false)
 
-  loadTileset('assets/tileset.JSON').then(images => {
-    editor.tileset = splitStripImages(images)
+  loadTileset('assets/tileset.JSON').then(({tileset, characterImage}) => {
+    editor.tileset = splitStripImages(tileset)
+    loadPlayerSprites(characterImage)
     editor.map = {
       w: 100, h: 50, tiles: new Uint16Array(5000)
     }
@@ -733,8 +764,10 @@ function getJumpSpeed(jumpLengthInTiles, jumpForce, yInertia, tilesize) {
 }
 
 function initPlatformer() {
-  player.w = 0.9 * player.tileSize
-  player.h = 0.9 * player.tileSize
+  player.w = player.tileSize
+  player.h = player.tileSize
+  player.hitboxW = 0.8 * player.tileSize
+  player.hitboxH = 0.8 * player.tileSize
   const ratio = player.tileSize / 64
   player.jump = getJumpHeight(player.jumpHeight + 0.3, player.yInertia, player.tileSize) * ratio
   player.yInertia = player.yInertia * ratio
@@ -767,15 +800,12 @@ function drawMap(tileSize = editor.tileSize) {
       if (editor.tileset[tileId].mechanics && editor.tileset[tileId].mechanics.includes("hidden") && mode == 'play') {
         showTile = false
       }
-      try {
-        if (selectedTile.type == 'adjacency' && showTile) {
-          ctx.drawImage(selectedTile.images[raw & 15], scrX, scrY, tileSize, tileSize)
-        } else if (selectedTile.type == "rotation" && showTile) {
-          ctx.drawImage(selectedTile.images[raw & 15], scrX, scrY, tileSize, tileSize)
-        } else if (selectedTile.type == 'standalone' && showTile) {
-          ctx.drawImage(selectedTile.image, scrX, scrY, tileSize, tileSize)
-        }
-      } catch {
+      if (selectedTile.type == 'adjacency' && showTile) {
+        ctx.drawImage(selectedTile.images[raw & 15], scrX, scrY, tileSize, tileSize)
+      } else if (selectedTile.type == "rotation" && showTile) {
+        ctx.drawImage(selectedTile.images[raw & 15], scrX, scrY, tileSize, tileSize)
+      } else if (selectedTile.type == 'standalone' && showTile) {
+        ctx.drawImage(selectedTile.image, scrX, scrY, tileSize, tileSize)
       }
     }
   } 
@@ -941,12 +971,17 @@ function updatePhysics() {
     }
   }
 
+  const offX = (player.w - player.hitboxW) / 2
+  const offY = (player.h - player.hitboxH)
+
   player.x += player.vx
-  if (checkCollision(player.x, player.y, player.w, player.h)) {
+  if (checkCollision(player.x + offX, player.y + offY, player.hitboxW, player.hitboxH)) {
     if (player.vx > 0) {
-      player.x = (Math.floor((player.x + player.w) / player.tileSize) * player.tileSize) - player.w
+      const hitRight = player.x + offX + player.hitboxW
+      player.x = (Math.floor(hitRight / player.tileSize) * player.tileSize) - player.hitboxW - offX
     } else if (player.vx < 0) {
-      player.x = (Math.floor(player.x / player.tileSize) + 1) * player.tileSize
+      const hitLeft = player.x + offX
+      player.x = ((Math.floor(hitLeft / player.tileSize) + 1) * player.tileSize) - offX
     }
     player.vx = 0
   }
@@ -954,9 +989,11 @@ function updatePhysics() {
   player.y += player.vy
   player.grounded = false
 
-  if (checkCollision(player.x, player.y, player.w, player.h)) {
+  if (checkCollision(player.x + offX, player.y + offY, player.hitboxW, player.hitboxH)) {
     if (player.vy > 0) {
-      player.y = (Math.floor((player.y + player.h) / player.tileSize) * player.tileSize) - player.h
+      const hitBottom = player.y + offY + player.hitboxH
+      const tileTop = Math.floor(hitBottom / player.tileSize) * player.tileSize
+      player.y = tileTop - player.hitboxH - offY 
       player.grounded = true
       player.coyoteTimer = player.coyoteTime
     } else if (player.vy < 0) {
@@ -970,6 +1007,41 @@ function updatePhysics() {
   if (player.y > editor.map.h * player.tileSize) {
     killPlayer()
   }
+}
+
+function drawPlayer() {
+  player.AnimationFrameCounter++ 
+  if (player.AnimationFrameCounter > 5) {
+    player.AnimationFrame = player.AnimationFrame == 0 ? 1 : 0
+    player.AnimationFrameCounter = 0
+  }
+  if (!player.sprites) return
+  let selectedFrame = 0
+  if (!player.facingLeft && (input.keys["a"] || input.keys["ArrowLeft"])) {
+    player.facingLeft = 1
+  } else if (player.facingLeft && (input.keys["d"] || input.keys["ArrowRight"])) [
+    player.facingLeft = 0
+  ]
+  if (player.grounded) {
+    // has to be one of the first 6
+    if (input.keys["a"] || input.keys["d"] || input.keys["ArrowRight"] || input.keys["ArrowLeft"]) {
+      // we're moving, calculate the animation frame of the movement
+      selectedFrame = (player.AnimationFrame << 1) + player.facingLeft + 2
+    } else {
+      // on the ground and not moving
+      selectedFrame = player.facingLeft
+    }
+  } else {
+    if (player.vy < 0) {
+      console.log("hi")
+      // jumping
+      selectedFrame = 6 + player.facingLeft
+    } else {
+      selectedFrame = 8 + player.facingLeft
+    }
+  }
+  ctx.imageSmoothingEnabled = false
+  ctx.drawImage(player.sprites[selectedFrame], Math.floor(player.x - editor.cam.x), Math.floor(player.y - editor.cam.y), player.w, player.h)
 }
 
 function platformerLoop() {
@@ -1008,8 +1080,7 @@ function platformerLoop() {
 
   drawMap(player.tileSize)
 
-  ctx.fillStyle = 'black'
-  ctx.fillRect(player.x - editor.cam.x, player.y - editor.cam.y, player.w, player.h)
+  drawPlayer()
 
   if (mode == 'play') {
     requestAnimationFrame(platformerLoop)
