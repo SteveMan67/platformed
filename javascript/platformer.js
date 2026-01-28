@@ -1058,14 +1058,20 @@ function drawPlayer() {
   }
   if (!player.sprites) return
   let selectedFrame = 0
-  if (!player.facingLeft && (input.keys["a"] || input.keys["ArrowLeft"])) {
+  if ((input.keys["a"] || input.keys["ArrowLeft"]) && (input.keys["d"] || input.keys["ArrowRight"])) {
+    // pressing both keys, don't rapidly switch between frames
+
+  } else if (!player.facingLeft && (input.keys["a"] || input.keys["ArrowLeft"])) {
     player.facingLeft = 1
   } else if (player.facingLeft && (input.keys["d"] || input.keys["ArrowRight"])) [
     player.facingLeft = 0
   ]
   if (player.grounded) {
     // has to be one of the first 6
-    if (input.keys["a"] || input.keys["d"] || input.keys["ArrowRight"] || input.keys["ArrowLeft"]) {
+      if ((input.keys["a"] || input.keys["ArrowLeft"]) && (input.keys["d"] || input.keys["ArrowRight"])) {
+      // pressing both keys, don't rapidly switch between frames
+
+      } else if (input.keys["a"] || input.keys["d"] || input.keys["ArrowRight"] || input.keys["ArrowLeft"]) {
       // we're moving, calculate the animation frame of the movement
       selectedFrame = (player.AnimationFrame << 1) + player.facingLeft + 2
     } else {
