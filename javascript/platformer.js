@@ -954,12 +954,22 @@ function checkCollision(x, y, w, h, simulate = false) {
   return false
 }
 
+let lastJumpInput = false;
 function updatePhysics() {
   if (player.coyoteTimer > 0) player.coyoteTimer--
   if (player.jumpBufferTimer > 0) player.jumpBufferTimer--
 
+  //determine whether jump was just pressed down
+  let isJumping = false;
   if (input.keys['w'] || input.keys[' '] || input.keys['ArrowUp']) {
-    player.jumpBufferTimer = player.jumpBuffer
+    if (!lastJumpInput) {
+      player.jumpBufferTimer = player.jumpBuffer;
+      lastJumpInput = true;
+      isJumping = true;
+    }
+  } else {
+      lastJumpInput = false;
+      isJumping = false;
   }
 
   player.vy += (0.7 * player.yInertia) + 0.5
@@ -1038,7 +1048,7 @@ function updatePhysics() {
   const touchingLeft = checkCollision(player.x + offX - 2, player.y + offY + 2, player.hitboxW, player.hitboxH - 4, true)
   const touchingRight = checkCollision(player.x + offX + 2, player.y + offY + 2, player.hitboxW, player.hitboxH - 4, true)
 
-  if (!player.grounded && player.wallJump && (input.keys[" "] || input.keys["w"] || input.keys["ArrowUp"])) {
+  if (!player.grounded && player.wallJump && isJumping) {
     if (touchingLeft) {
       player.vy = -player.jump
       player.vx = player.speed * 1.5
