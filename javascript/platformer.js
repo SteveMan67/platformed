@@ -236,6 +236,7 @@ function importMap(e) {
     player.jumpWidth = json.jumpWidth
     player.yInertia = json.yInertia
     player.xInertia = json.xInertia
+    player.wallJump = json.wallJump
     const tileLayer = json.layers.find(l => l.type === "tilelayer")
     const rotationLayer = json.layers.find(l => l.type === "rotation")
     const rawRotationLayer = decodeRLE(rotationLayer.data)
@@ -329,6 +330,7 @@ function createMap(width, height, data) {
   json.yInertia = player.yInertia
   json.jumpWidth = player.jumpWidth
   json.xInertia = player.xInertia
+  json.wallJump = player.wallJump
   json.layers = []
   const tileIdRLE = encodeRLE(data.map(id => id >> 4))
   let mapLayer = {
@@ -822,7 +824,6 @@ function drawMap(tileSize = editor.tileSize) {
 }
 
 function killPlayer() {
-  console.log(editor.playerSpawn)
   player.vy = 0
   player.vx = 0
   if (player.lastCheckpointSpawn.y !== 0 && player.lastCheckpointSpawn.x !== 0) {
