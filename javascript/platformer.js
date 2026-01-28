@@ -430,6 +430,7 @@ const player = {
   yInertia: 1,
   jumpWidth: 7,
   xInertia: 1.5,
+  bouncePadHeight: 8,
   x: 0, 
   y: 0,
   w: 30,
@@ -886,6 +887,11 @@ function mechanics(tileId, tx, ty, x, y, w, h) {
   if (mechanics.includes("end")) {
     endLevel()
   }
+  if (mechanics.includes("bouncePad")) {
+    if (checkPixelCollsion(tileId, tx, ty, x, y, w, h)) {
+      player.vy = -getJumpHeight(player.bouncePadHeight, player.yInertia, player.tileSize)
+    }
+  }
   if (mechanics.includes("checkpoint")) {
     player.lastCheckpointSpawn = { x: tx, y: ty }
   }
@@ -915,6 +921,9 @@ function checkCollision(x, y, w, h) {
           continue
         }
         if (tile && tile.mechanics && tile.mechanics.includes("hidden")) {
+          continue
+        }
+        if (tile && tile.mechanics && tile.mechanics.includes("bouncePad")) {
           continue
         }
         if (tile && tile.mechanics && tile.mechanics.includes("noCollision")) {
