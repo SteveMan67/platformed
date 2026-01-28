@@ -443,7 +443,10 @@ const player = {
   grounded: false,
   coyoteTime: 5,
   coyoteTimer: 0,
-  jumpBuffer: 3,
+  wallCoyoteTime: 5,
+  wallCoyoteTimer: 0,
+  lastWallSide: 0,
+  jumpBuffer: 10,
   jumpBufferTimer: 0,
   tileSize: 64,
   lastCheckpointSpawn: {x: 0, y: 0},
@@ -451,6 +454,8 @@ const player = {
   AnimationFrame: 0,
   AnimationFrameCounter: 0,
   wallJump: true,
+  decreaseAirControl: true,
+  autoJump: false,
 }
 
 const editor = {
@@ -964,6 +969,7 @@ function updatePhysics() {
   if (input.keys['w'] || input.keys[' '] || input.keys['ArrowUp']) {
     if (!lastJumpInput) {
       player.jumpBufferTimer = player.jumpBuffer;
+      player.wallCoyoteTimer = 0
       lastJumpInput = true;
       isJumping = true;
     }
@@ -993,16 +999,17 @@ function updatePhysics() {
     player.coyoteTimer = 0
     player.grounded = false
   }
+  const jumpControl = player.decreaseAirControl && !player.grounded ? 1 : 1
   if (input.keys['a'] || input.keys['ArrowLeft']) {
     if (player.vx > -player.speed) {
-      player.vx -= player.xInertia * 1
+      player.vx -= player.xInertia * 1 * jumpControl
     } else {
       player.vx = -player.speed
     }
   }
   if (input.keys['d'] || input.keys['ArrowRight']) {
     if (player.vx < player.speed) {
-      player.vx += player.xInertia * 1
+      player.vx += player.xInertia * 1 * jumpControl
     } else {
       player.vx = player.speed
     }
@@ -1048,15 +1055,41 @@ function updatePhysics() {
   const touchingLeft = checkCollision(player.x + offX - 2, player.y + offY + 2, player.hitboxW, player.hitboxH - 4, true)
   const touchingRight = checkCollision(player.x + offX + 2, player.y + offY + 2, player.hitboxW, player.hitboxH - 4, true)
 
+  // coyote timer
+  if (touchingLeft) {
+    player.wallCoyoteTimer = player.wallCoyoteTime
+    player.lastWallSide = -1
+  } else if (touchingRight) {
+    player.wallCoyoteTimer = player.wallCoyoteTime
+    player.lastWallSide = 1
+  } else if (player.wallCoyoteTimer > 0) {
+    player.wallCoyoteTimer--
+  }
+
+  // walljump
   if (!player.grounded && player.wallJump && player.jumpBufferTimer > 0) {
-    if (touchingLeft) {
+    if (player.lastWallSide == -1 && player.wallCoyoteTimer > 0) { 
+      if (input.keys['d'] || input.keys['ArrowRight']) {
+        // jump off wall
+        player.vx = player.speed * 2
+      } else {
+        // jump up wall
+        player.vx = player.speed * 1
+      }
       player.vy = -player.jump
-      player.vx = player.speed * 1.5
-      player.jumpBufferTimer
-    } else if (touchingRight) {
-      player.vy = -player.jump
-      player.vx = -player.speed * 1.5
       player.jumpBufferTimer = 0
+      player.lastWallSide = 0
+      player.wallCoyoteTimer = 0
+    } else if (player.lastWallSide == 1 && player.wallCoyoteTimer > 0) {
+      if (input.keys['a'] || input.keys['ArrowLeft']) {
+        player.vx = -player.speed * 2
+      } else {
+        player.vx = -player.speed * 1 
+      }
+      player.vy = -player.jump
+      player.jumpBufferTimer = 0
+      player.lastWallSide = 0
+      player.wallCoyoteTimer = 0
     }
   }
 }
