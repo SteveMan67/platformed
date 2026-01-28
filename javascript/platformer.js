@@ -448,6 +448,7 @@ const player = {
   facingLeft: 1,
   AnimationFrame: 0,
   AnimationFrameCounter: 0,
+  wallJump: true,
 }
 
 const editor = {
@@ -912,7 +913,7 @@ function mechanics(tileId, tx, ty, x, y, w, h) {
   }
 }
 
-function checkCollision(x, y, w, h) {
+function checkCollision(x, y, w, h, simulate = false) {
   const startX = Math.floor(x / player.tileSize)
   const endX = Math.floor((x + w - 0.01) / player.tileSize)
   const startY = Math.floor(y / player.tileSize)
@@ -920,14 +921,14 @@ function checkCollision(x, y, w, h) {
 
   for (let py = startY; py <= endY; py++) {
     for (let px = startX; px <= endX; px++) {
-      if (px < 0 || px >= editor.map.w || py < 0) return true
+      if ((px < 0 || px >= editor.map.w || py < 0) && !simulate) return true
       const idx = py * editor.map.w + px
       const tileId = editor.map.tiles[idx] >> 4
 
       const oldX = player.x;
       const oldY = player.y
 
-      if (!player.collectedCoinList.includes(idx)) mechanics(tileId, px, py, x, y, w, h)
+      if (!player.collectedCoinList.includes(idx) && !simulate) mechanics(tileId, px, py, x, y, w, h)
       
       if (player.x !== oldX || player.y !== oldY) return false
       if (tileId !== 0) {
@@ -1031,6 +1032,21 @@ function updatePhysics() {
 
   if (player.y > editor.map.h * player.tileSize) {
     killPlayer()
+  }
+
+  const touchingLeft = checkCollision(player.x + offX - 2, player.y + offY + 2, player.hitboxW, player.hitboxH - 4, true)
+  const touchingRight = checkCollision(player.x + offX + 2, player.y + offY + 2, player.hitboxW, player.hitboxH - 4, true)
+
+  if (!player.grounded && player.wallJump && (input.keys[" "] || input.keys["w"] || input.keys["ArrowUp"])) {
+    if (touchingLeft) {
+      player.vy = -player.jump
+      player.vx = player.speed * 1.5
+      player.jumpBufferTimer
+    } else if (touchingRight) {
+      player.vy = -player.jump
+      player.vx = -player.speed * 1.5
+      player.jumpBufferTimer = 0
+    }
   }
 }
 
