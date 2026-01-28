@@ -1080,7 +1080,6 @@ function drawPlayer() {
     }
   } else {
     if (player.vy < 0) {
-      console.log("hi")
       // jumping
       selectedFrame = 6 + player.facingLeft
     } else {

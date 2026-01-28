@@ -118,10 +118,9 @@
           </div>
           <div class="menu-item">
             <label for="walljump">Walljump</label>
-            <select name="walljump" id="walljump-input">
-              <option value="">Disabled</option>
-              <option value="">Enabled</option>
-              <option value="">Other Option</option>
+            <select name="walljump" id="walljump-input" oninput="player.wallJump = Boolean(this.value)">
+              <option value="false">Disabled</option>
+              <option value="true">Enabled</option>
             </select>
           </div>
         </div>

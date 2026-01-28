@@ -176,6 +176,7 @@ i::before {
 
 .title {
   font-size: 35px;
+  font-weight: 500;
   padding-left: 20px; 
 }
 
@@ -227,6 +228,7 @@ i::before {
   border-radius: 20px;
   min-height: 400px;
   user-select: none;
+  font-weight: 500;
 }
 
 input[type="radio"] {
@@ -276,7 +278,7 @@ input[type="radio"] {
   width: 120px;
   text-align: center;
   user-select: none;
-  cursor: pointer
+  cursor: pointer;
 }
 
 
@@ -304,7 +306,7 @@ input[type="radio"] {
   border: none !important;
   font-family: "Fredoka", sans-serif;
   font-size: 20px;
-  font-weight: 200;
+  font-weight: 500;
   text-align: end;
   padding: 5px;
 }
