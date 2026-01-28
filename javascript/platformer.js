@@ -423,6 +423,8 @@ async function loadTileset(manifestPath) {
 let mode = "editor"
 
 const player = {
+  collectedCoins: 0,
+  collectedCoinList: [],
   cam: {x: 0, y: 0},
   vy: 0,
   vx: 0, 
@@ -739,6 +741,8 @@ function init() {
 }
 
 function initEditor() {
+  mode = "editor"
+  ctx.imageSmoothingEnabled = false
   levelEditorLoop()
 }
 
@@ -778,6 +782,7 @@ function initPlatformer() {
   player.x = editor.playerSpawn.x * player.tileSize
   player.y = editor.playerSpawn.y * player.tileSize
   player.lastCheckpointSpawn = { x: 0, y: 0 }
+  player.collectedCoinList = []
   platformerLoop()
 }
 
@@ -799,6 +804,9 @@ function drawMap(tileSize = editor.tileSize) {
       const selectedTile = tileset[tileId]
       let showTile = true
       if (editor.tileset[tileId].mechanics && editor.tileset[tileId].mechanics.includes("hidden") && mode == 'play') {
+        showTile = false
+      }
+      if (player.collectedCoinList.includes(y * map.w + x) && mode == 'play') {
         showTile = false
       }
       if (selectedTile.type == 'adjacency' && showTile) {
@@ -895,6 +903,13 @@ function mechanics(tileId, tx, ty, x, y, w, h) {
   if (mechanics.includes("checkpoint")) {
     player.lastCheckpointSpawn = { x: tx, y: ty }
   }
+  if (mechanics.includes("coin")) {
+    if (checkPixelCollsion(tileId, tx, ty, x, y, w, h)) {
+      const idx = ty * editor.map.w + tx
+      player.collectedCoins++
+      player.collectedCoinList.push(idx)
+    }
+  }
 }
 
 function checkCollision(x, y, w, h) {
@@ -912,7 +927,7 @@ function checkCollision(x, y, w, h) {
       const oldX = player.x;
       const oldY = player.y
 
-      mechanics(tileId, px, py, x, y, w, h)
+      if (!player.collectedCoinList.includes(idx)) mechanics(tileId, px, py, x, y, w, h)
       
       if (player.x !== oldX || player.y !== oldY) return false
       if (tileId !== 0) {
@@ -929,6 +944,7 @@ function checkCollision(x, y, w, h) {
         if (tile && tile.mechanics && tile.mechanics.includes("noCollision")) {
           continue
         }
+        if (player.collectedCoinList.includes(idx)) continue
         return true
       }
     }

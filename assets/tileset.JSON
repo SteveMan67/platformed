@@ -101,11 +101,23 @@
       "id": 9,
       "name": "Bounce Pad",
       "file": "bounce-pad.png",
-      "category": "mechanics",
+      "category": "mechanics", 
       "type": "standalone",
       "triggerAdjacency": false,
       "mechanics": [
         "bouncePad"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Coin",
+      "file": "coin.png",
+      "category": "collectibles", 
+      "type": "standalone",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "coin",
+        "noCollision"
       ]
     }
   ]
