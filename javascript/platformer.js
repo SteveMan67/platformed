@@ -1048,7 +1048,7 @@ function updatePhysics() {
   const touchingLeft = checkCollision(player.x + offX - 2, player.y + offY + 2, player.hitboxW, player.hitboxH - 4, true)
   const touchingRight = checkCollision(player.x + offX + 2, player.y + offY + 2, player.hitboxW, player.hitboxH - 4, true)
 
-  if (!player.grounded && player.wallJump && isJumping) {
+  if (!player.grounded && player.wallJump && player.jumpBufferTimer > 0) {
     if (touchingLeft) {
       player.vy = -player.jump
       player.vx = player.speed * 1.5
