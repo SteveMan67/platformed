@@ -776,6 +776,7 @@ function getJumpSpeed(jumpLengthInTiles, jumpForce, yInertia, tilesize) {
 }
 
 function initPlatformer() {
+  lastTime = 0
   player.w = player.tileSize
   player.h = player.tileSize
   player.hitboxW = 0.8 * player.tileSize
@@ -971,8 +972,8 @@ function checkCollision(x, y, w, h, simulate = false) {
 
 let lastJumpInput = false;
 function updatePhysics(dt) {
-  if (player.coyoteTimer > 0) player.coyoteTimer--
-  if (player.jumpBufferTimer > 0) player.jumpBufferTimer--
+  if (player.coyoteTimer > 0) player.coyoteTimer -= dt
+  if (player.jumpBufferTimer > 0) player.jumpBufferTimer -= dt
 
   //determine whether jump was just pressed down
   let isJumping = false;
@@ -1104,8 +1105,8 @@ function updatePhysics(dt) {
   }
 }
 
-function drawPlayer() {
-  player.AnimationFrameCounter++ 
+function drawPlayer(dt) {
+  player.AnimationFrameCounter += dt
   if (player.AnimationFrameCounter > 5) {
     player.AnimationFrame = player.AnimationFrame == 0 ? 1 : 0
     player.AnimationFrameCounter = 0
@@ -1190,7 +1191,7 @@ function platformerLoop(timestamp) {
 
   drawMap(player.tileSize, player.cam)
 
-  drawPlayer()
+  drawPlayer(timeScale)
 
   if (mode == 'play') {
     requestAnimationFrame(platformerLoop)
