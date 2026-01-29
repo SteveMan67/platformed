@@ -748,6 +748,7 @@ function init() {
 }
 
 function initEditor() {
+  lastTime = 0
   mode = "editor"
   ctx.imageSmoothingEnabled = false
   levelEditorLoop()
@@ -1152,7 +1153,7 @@ function deltaTime(timestamp) {
   lastTime = timestamp
   return Math.min(seconds, 0.1)
 }
-lastTime = 0
+let lastTime = 0
 function platformerLoop(timestamp) {
   let dt = deltaTime(timestamp)
   let timeScale = dt * 60
