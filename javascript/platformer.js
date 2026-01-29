@@ -996,15 +996,6 @@ function updatePhysics(dt) {
     player.vy = player.tileSize * 0.9
   }
 
-  if (player.vx < 0) {
-    player.vx += player.xInertia * 0.45 * dt
-  } else if (player.vx > 0) {
-    player.vx -= player.xInertia * 0.45 * dt
-  }
-  if (Math.abs(player.vx) < player.stopThreshold) {
-    player.vx = 0
-  }
-
   if (player.jumpBufferTimer > 0 && player.coyoteTimer > 0) {
     player.vy = - player.jump
     player.jumpBufferTimer = 0
@@ -1012,7 +1003,9 @@ function updatePhysics(dt) {
     player.grounded = false
   }
   const jumpControl = player.decreaseAirControl && !player.grounded ? 1 : 1
+  let activeInput = false
   if (input.keys['a'] || input.keys['ArrowLeft']) {
+    activeInput = true
     if (player.vx > -player.speed) {
       player.vx -= player.xInertia * 1 * jumpControl * dt
     } else {
@@ -1020,11 +1013,23 @@ function updatePhysics(dt) {
     }
   }
   if (input.keys['d'] || input.keys['ArrowRight']) {
+    activeInput = true
     if (player.vx < player.speed) {
       player.vx += player.xInertia * 1 * jumpControl * dt
     } else {
       player.vx = player.speed
     }
+  }
+
+  if (!activeInput) {
+    if (player.vx < 0) {
+      player.vx += player.xInertia * 0.45 * dt
+    } else if (player.vx > 0) {
+      player.vx -= player.xInertia * 0.45 * dt
+    }
+    if (Math.abs(player.vx) < player.stopThreshold) [
+      player.vx = 0
+    ]
   }
 
   const offX = (player.w - player.hitboxW) / 2
