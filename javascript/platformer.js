@@ -91,6 +91,11 @@ const jumpHeightSlider = document.querySelector('#jump-height-input')
 const verticalInertiaSlider = document.querySelector('#vertical-inertia-input')
 const jumpWidthSlider = document.querySelector('#jump-width-input')
 const horizontalInertiaSlider = document.querySelector('#horizontal-inertia-input')
+const bouncePadHeightSlider = document.querySelector('#bounce-pad-height-input')
+
+bouncePadHeightSlider.addEventListener('input', () => {
+  player.bouncePadHeight = Number(bouncePadHeightSlider.value)
+})
 
 jumpHeightSlider.addEventListener('input', () => {
   player.jumpHeight = Number(jumpHeightSlider.value)
@@ -231,6 +236,7 @@ function importMap(e) {
   reader.onerror = () => console.error('failed to read file', reader.error)
   reader.onload = () => {
     const json = JSON.parse(reader.result)
+    console.log(json)
     player.jumpHeight = json.jumpHeight
     player.jumpWidth = json.jumpWidth
     player.yInertia = json.yInertia
@@ -787,10 +793,11 @@ function initPlatformer() {
   player.hitboxW = 0.8 * player.tileSize
   player.hitboxH = 0.8 * player.tileSize
   const ratio = player.tileSize / 64
-  player.jump = getJumpHeight(player.jumpHeight + 0.3, player.yInertia, player.tileSize) * ratio
   player.yInertia = player.yInertia * ratio
-  player.speed = getJumpSpeed(player.jumpWidth - 1, player.jump, player.yInertia, player.tileSize) * ratio
   player.xInertia = player.xInertia * ratio
+  console.log(player.jumpHeight + 0.3, player.yInertia, player.tileSize)
+  player.jump = getJumpHeight(player.jumpHeight + 0.3, player.yInertia, player.tileSize)
+  player.speed = getJumpSpeed(player.jumpWidth - 1, player.jump, player.yInertia, player.tileSize)
   player.stopThreshold = 0.4 * ratio
   player.x = editor.playerSpawn.x * player.tileSize
   player.y = editor.playerSpawn.y * player.tileSize
@@ -1033,12 +1040,14 @@ function updatePhysics(dt) {
   if (!activeInput) {
     if (player.vx < 0) {
       player.vx += player.xInertia * 0.45 * dt
+      if (player.vx > 0) player.vx = 0
     } else if (player.vx > 0) {
       player.vx -= player.xInertia * 0.45 * dt
+      if (player.vx < 0) player.vx = 0
     }
-    if (Math.abs(player.vx) < player.stopThreshold) [
+    if (Math.abs(player.vx) < player.stopThreshold) {
       player.vx = 0
-    ]
+  }
   }
 
   const offX = (player.w - player.hitboxW) / 2
@@ -1133,9 +1142,9 @@ function drawPlayer(dt) {
 
   } else if (!player.facingLeft && (input.keys["a"] || input.keys["ArrowLeft"])) {
     player.facingLeft = 1
-  } else if (player.facingLeft && (input.keys["d"] || input.keys["ArrowRight"])) [
+  } else if (player.facingLeft && (input.keys["d"] || input.keys["ArrowRight"])) {
     player.facingLeft = 0
-  ]
+  }
   if (player.grounded) {
     // has to be one of the first 6
       if ((input.keys["a"] || input.keys["ArrowLeft"]) && (input.keys["d"] || input.keys["ArrowRight"])) {
@@ -1207,7 +1216,7 @@ function platformerLoop(timestamp) {
       const progress = 1 - (Math.max(0, player.dieCameraTimer) / player.dieCameraTime)
       const ease = -(Math.cos(Math.PI * progress) - 1) / 2
       const mapW = editor.map.w * player.tileSize
-      const mapH = editor.map.w * player.tileSize
+      const mapH = editor.map.h * player.tileSize
 
       let targetX = getCameraCoords().x
       let targetY = getCameraCoords().y
@@ -1237,8 +1246,9 @@ function platformerLoop(timestamp) {
   ctx.fillRect(0, 0, canvas.width, canvas.height)
 
   drawMap(player.tileSize, player.cam)
-
-  drawPlayer(timeScale)
+  if (!player.died) {
+    drawPlayer(timeScale)
+  }
 
   if (mode == 'play') {
     requestAnimationFrame(platformerLoop)

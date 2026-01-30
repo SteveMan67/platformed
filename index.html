@@ -117,6 +117,13 @@
             </div>
           </div>
           <div class="menu-item">
+            <label for="bounce-pad-height">Bounce Pad Height</label>
+            <div class="range-wrapper">
+              <output id="bounce-pad-val">10</output>
+              <input type="range" name="bounce-pad-height" id="bounce-pad-height-input" min="0" max="20" step="1" value="10" oninput="document.getElementById('bounce-pad-val').innerHTML = this.value">
+            </div>
+          </div>
+          <div class="menu-item">
             <label for="walljump">Walljump</label>
             <select name="walljump" id="walljump-input" oninput="player.wallJump = Boolean(this.value); console.log(Boolean(this.value))">
               <option value="">Disabled</option>
