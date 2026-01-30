@@ -92,6 +92,11 @@ const verticalInertiaSlider = document.querySelector('#vertical-inertia-input')
 const jumpWidthSlider = document.querySelector('#jump-width-input')
 const horizontalInertiaSlider = document.querySelector('#horizontal-inertia-input')
 const bouncePadHeightSlider = document.querySelector('#bounce-pad-height-input')
+const zoomSlider = document.getElementById('zoom-level-input') 
+
+zoomSlider.addEventListener('click', () => {
+  player.tileSize = Math.floor((32 / 0.6) * zoomSlider.value)
+})
 
 bouncePadHeightSlider.addEventListener('input', () => {
   player.bouncePadHeight = Number(bouncePadHeightSlider.value)
@@ -238,9 +243,21 @@ function importMap(e) {
     const json = JSON.parse(reader.result)
     console.log(json)
     player.jumpHeight = json.jumpHeight
+    jumpHeightSlider.value = json.jumpHeight
     player.jumpWidth = json.jumpWidth
+    jumpWidthSlider.value = json.jumpWidth
     player.yInertia = json.yInertia
+    verticalInertiaSlider.value = json.yInertia
     player.xInertia = json.xInertia
+    horizontalInertiaSlider.value = json.xInertia
+    if (json.bouncePadHeight) {
+      bouncePadHeightSlider.value = json.bouncePadHeight
+      player.bouncePadHeight = json.bouncePadHeight
+    }
+    if (json.zoom) {
+      zoomSlider.value = (json.zoom / (32 / 0.6))
+      player.tileSize = json.zoom
+    }
     player.wallJump = json.wallJump
     const tileLayer = json.layers.find(l => l.type === "tilelayer")
     const rotationLayer = json.layers.find(l => l.type === "rotation")
@@ -338,6 +355,8 @@ function createMap(width, height, data) {
   json.jumpWidth = player.jumpWidth
   json.xInertia = player.xInertia
   json.wallJump = player.wallJump
+  json.bouncePadHeight = player.bouncePadHeight
+  json.zoom = player.tileSize
   json.layers = []
   const tileIdRLE = encodeRLE(data.map(id => id >> 4))
   let mapLayer = {
@@ -793,8 +812,7 @@ function initPlatformer() {
   player.hitboxW = 0.8 * player.tileSize
   player.hitboxH = 0.8 * player.tileSize
   const ratio = player.tileSize / 64
-  player.yInertia = player.yInertia * ratio
-  player.xInertia = player.xInertia * ratio
+  // !! changes on save/load and gets higher and higher if tilesize != 0 !!!!!!
   console.log(player.jumpHeight + 0.3, player.yInertia, player.tileSize)
   player.jump = getJumpHeight(player.jumpHeight + 0.3, player.yInertia, player.tileSize)
   player.speed = getJumpSpeed(player.jumpWidth - 1, player.jump, player.yInertia, player.tileSize)

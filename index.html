@@ -86,7 +86,15 @@
         </ul>
       </div>
       <div class="tab-content">
-        <div class="tab"></div>
+        <div class="tab">
+          <div class="menu-item">
+            <label for="zoom-level">Zoom Level</label>
+            <div class="range-wrapper">
+              <output id="zoom-level-val">1</output>
+              <input type="range" name="zoom-level" id="zoom-level-input" min="0.7" max="2" step="0.2" value="1" oninput="document.getElementById('zoom-level-val').innerHTML = this.value">
+            </div>
+          </div>
+        </div>
         <div class="tab">
           <div class="menu-item">
             <label for="jump-height">Jump Height</label>
