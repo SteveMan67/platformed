@@ -1,5 +1,6 @@
 {
-  "path": "assets/tiles/",
+  "path": "assets/8x8/",
+  "name": "16x16",
   "characterFile": "player.png",
   "tiles": [
     {

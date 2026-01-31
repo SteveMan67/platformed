@@ -133,9 +133,10 @@
           </div>
           <div class="menu-item">
             <label for="walljump">Walljump</label>
-            <select name="walljump" id="walljump-input" oninput="player.wallJump = Boolean(this.value); console.log(Boolean(this.value))">
+            <select name="walljump" id="walljump-input" oninput="player.wallJump = this.value; console.log(this.value)">
               <option value="">Disabled</option>
-              <option value="true" selected>Enabled</option>
+              <option value="up" selected>Jump Up Wall</option>
+              <option value="off" selected>Jump Off Wall</option>
             </select>
           </div>
         </div>

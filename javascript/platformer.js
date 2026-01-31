@@ -450,6 +450,7 @@ async function loadTileset(manifestPath) {
 let mode = "editor"
 
 const player = {
+  airControlControl: false,
   dieCameraTime: 30, // frames
   dieCameraTimer: 30,
   dieCameraStart: {},
@@ -482,7 +483,7 @@ const player = {
   facingLeft: 1,
   AnimationFrame: 0,
   AnimationFrameCounter: 0,
-  wallJump: true,
+  wallJump: "up",
   decreaseAirControl: true,
   autoJump: false,
 }
@@ -502,6 +503,7 @@ const editor = {
   height: 50,
   tileset: [],
   limitedPlacedTiles: [],
+  tilesetPath: "/assets/",
 }
 
 const input = {
@@ -764,7 +766,7 @@ function init() {
   canvas.addEventListener('mousedown', () => input.down = true)
   canvas.addEventListener('mouseup', () => input.down = false)
 
-  loadTileset('assets/tileset.JSON').then(({tileset, characterImage}) => {
+  loadTileset('assets/16x16.JSON').then(({tileset, characterImage}) => {
     editor.tileset = splitStripImages(tileset)
     loadPlayerSprites(characterImage)
     editor.map = {
@@ -1120,31 +1122,28 @@ function updatePhysics(dt) {
   }
 
   // walljump
-  if (!player.grounded && player.wallJump && player.jumpBufferTimer > 0 && player.wallCoyoteTimer > 0) {
-    if (player.lastWallSide == -1) { 
-      if (input.keys['d'] || input.keys['ArrowRight']) {
-        // jump off wall
+  if (!player.grounded && player.wallJump !== "none" && player.jumpBufferTimer > 0 && player.wallCoyoteTimer > 0) {
+    if (player.wallJump == "off") {
+      if (touchingRight && (input.keys["ArrowUp"] || input.keys["w"] || input.keys[" "])) {
+        player.vx = -player.speed * 2
+      } else if (touchingLeft && (input.keys["ArrowUp"] || input.keys["w"] || input.keys[" "])) {
         player.vx = player.speed * 2
-      } else {
-        // jump up wall
-        player.vx = player.speed * 1
       }
       player.vy = -player.jump
       player.jumpBufferTimer = 0
       player.lastWallSide = 0
       player.wallCoyoteTimer = 0
-    } else if (player.lastWallSide == 1) {
-      if (input.keys['a'] || input.keys['ArrowLeft']) {
-        player.vx = -player.speed * 2
-      } else {
-        player.vx = -player.speed * 1 
-      }
+      player.airControl = true
+    } else if (player.wallJump == "up") {
+      player.vx = touchingLeft ? player.speed * 1.2 : -player.speed * 1.2
       player.vy = -player.jump
       player.jumpBufferTimer = 0
       player.lastWallSide = 0
       player.wallCoyoteTimer = 0
     }
   }
+
+
 }
 
 function drawPlayer(dt) {
