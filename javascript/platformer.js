@@ -450,7 +450,6 @@ async function loadTileset(manifestPath) {
 let mode = "editor"
 
 const player = {
-  airControlControl: false,
   dieCameraTime: 30, // frames
   dieCameraTimer: 30,
   dieCameraStart: {},
@@ -473,7 +472,7 @@ const player = {
   grounded: false,
   coyoteTime: 5,
   coyoteTimer: 0,
-  wallCoyoteTime: 5,
+  wallCoyoteTime: 10,
   wallCoyoteTimer: 0,
   lastWallSide: 0,
   jumpBuffer: 10,
@@ -486,6 +485,8 @@ const player = {
   wallJump: "up",
   decreaseAirControl: true,
   autoJump: false,
+  controlTimer: 0,
+  controlMultiplier: 1,
 }
 
 const editor = {
@@ -503,7 +504,7 @@ const editor = {
   height: 50,
   tileset: [],
   limitedPlacedTiles: [],
-  tilesetPath: "/assets/",
+  tilesetPath: "/assets/8x8",
 }
 
 const input = {
@@ -1007,6 +1008,34 @@ function checkCollision(x, y, w, h, simulate = false) {
   return false
 }
 
+function key(key) {
+  if (key === "right") {
+    return !!(input.keys["d"] || input.keys["ArrowRight"] )
+  } else if (key === "left") {
+    return !!(input.keys["a"] || input.keys["ArrowLeft"])
+  } else if (key === "up") {
+    return !!(input.keys[" "] || input.keys["w"] || input.keys["ArrowUp"])
+  } else if (key === "down") {
+    return !!(input.keys['s'] || input.keys['ArrowDown'])
+  } else if (key === "any") {
+    return !!(input.keys["d"] || input.keys["ArrowRight"] || input.keys["a"] || input.keys["ArrowLeft"] || input.keys[" "] || input.keys["w"] || input.keys["ArrowUp"])
+  } else {
+    return false
+  }
+}
+
+function limitControl(time, multiplier) {
+  if (multiplier == 1) {
+    player.controlTimer = 0
+    player.controlMultiplier = 0
+  }
+
+  if (time > player.controlTimer) {
+    player.controlTimer = time
+    player.controlMultiplier = multiplier
+  }
+}
+
 let lastJumpInput = false;
 function updatePhysics(dt) {
   if (player.coyoteTimer > 0) player.coyoteTimer -= dt
@@ -1026,12 +1055,18 @@ function updatePhysics(dt) {
       isJumping = false;
   }
 
-  player.vy += ((0.7 * player.yInertia) + 0.5) * dt
+  if (player.controlTimer > 0) {
+    player.controlTimer -= dt
+  } else {
+    player.controlMultiplier = 1
+  }
 
+  player.vy += ((0.7 * player.yInertia) + 0.5) * dt
+  
   if (player.vy > player.tileSize * 0.9) {
     player.vy = player.tileSize * 0.9
   }
-
+  
   if (player.jumpBufferTimer > 0 && player.coyoteTimer > 0) {
     player.vy = - player.jump
     player.jumpBufferTimer = 0
@@ -1039,19 +1074,20 @@ function updatePhysics(dt) {
     player.grounded = false
   }
   const jumpControl = player.decreaseAirControl && !player.grounded ? 1 : 1
+  const currentControl = jumpControl * player.controlMultiplier
   let activeInput = false
-  if (input.keys['a'] || input.keys['ArrowLeft']) {
+  if (key("left")) {
     activeInput = true
     if (player.vx > -player.speed) {
-      player.vx -= player.xInertia * 1 * jumpControl * dt
+      player.vx -= player.xInertia * 1 * currentControl * dt
     } else {
       player.vx = -player.speed
     }
   }
-  if (input.keys['d'] || input.keys['ArrowRight']) {
+  if (key("right")) {
     activeInput = true
     if (player.vx < player.speed) {
-      player.vx += player.xInertia * 1 * jumpControl * dt
+      player.vx += player.xInertia * 1 * currentControl * dt
     } else {
       player.vx = player.speed
     }
@@ -1121,21 +1157,24 @@ function updatePhysics(dt) {
     player.wallCoyoteTimer -= dt
   }
 
+  if (player.grounded) limitControl(0, 1)
+
   // walljump
-  if (!player.grounded && player.wallJump !== "none" && player.jumpBufferTimer > 0 && player.wallCoyoteTimer > 0) {
+  if (!player.grounded && player.wallJump !== "none" && key("any") && player.jumpBufferTimer !== 0 &&  !player.wallCoyoteTimer == 0) {
     if (player.wallJump == "off") {
-      if (touchingRight && (input.keys["ArrowUp"] || input.keys["w"] || input.keys[" "])) {
-        player.vx = -player.speed * 2
-      } else if (touchingLeft && (input.keys["ArrowUp"] || input.keys["w"] || input.keys[" "])) {
-        player.vx = player.speed * 2
+      if (player.lastWallSide == 1 && key("up")) {
+        player.vx = -player.speed
+      } else if (player.lastWallSide == -1 && key("up")) {
+        player.vx = player.speed
       }
       player.vy = -player.jump
       player.jumpBufferTimer = 0
       player.lastWallSide = 0
       player.wallCoyoteTimer = 0
       player.airControl = true
+      limitControl(40, 0.0)
     } else if (player.wallJump == "up") {
-      player.vx = touchingLeft ? player.speed * 1.2 : -player.speed * 1.2
+      player.vx = player.lastWallSide == -1 ? player.speed * 1.2 : -player.speed * 1.2
       player.vy = -player.jump
       player.jumpBufferTimer = 0
       player.lastWallSide = 0
