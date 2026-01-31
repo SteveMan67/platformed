@@ -986,20 +986,16 @@ function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
     }
   }
   if (mechanics.includes("dissipate")) {
-    const dissipation = dissipations.find(f => f.tileIdx == tileIdx)
+    let dissipation = player.dissipations.find(f => f.tileIdx == tileIdx)
     if (dissipation) {
       if (dissipation.timer > dissipation.timeToDissipate) {
         dissipation.timer -= dt
-      } else {
-        // remove it from collisions and display
-        if (dissipation.timer == 0) {
-          dissipation.timer = dissipation.timeToReturn
-          // add it back
-        }
+      } else if (dissipation.timer <= 0) {
+        dissipation.timer = dissipation.timeToReturn
       }
     } else {
       // initialize the dissipation
-      const dissipation = {
+      dissipation = {
         timeToDissipate: editor.dissipateTime,
         timeToReturn: editor.dissipateTime + editor.dissipateDelay,
         timer: editor.dissipateTime + editor.dissipateDelay,
@@ -1042,8 +1038,18 @@ function checkCollision(dt, x, y, w, h, simulate = false) {
         if (tile && tile.mechanics && tile.mechanics.includes("noCollision")) {
           continue
         }
-        if (tile && tile.mechanics && tile.mechanics.include("pixelCollision")) {
+        if (tile && tile.mechanics && tile.mechanics.includes("pixelCollision")) {
           return checkPixelCollsion(tileId, px,py, x, y, w, h)
+        }
+        if (tile && tile.mechanics && tile.mechanics.includes("dissipate")) {
+          console.log(idx)
+          const dissipation = player.dissipations.find(d => d.tileIdx === idx)
+          if (dissipation) {
+            console.log(dissipation)
+          }
+          if (dissipation && dissipation.timer <= dissipation.timeToDissipate && dissipation.timer > 0) {
+            continue
+          }
         }
         if (player.collectedCoinList.includes(idx)) continue
         return true
@@ -1305,10 +1311,9 @@ function platformerLoop(timestamp) {
   let dt = deltaTime(timestamp)
   let timeScale = dt * 60
 
-  // handle dissipations
   player.dissipations.forEach(dissipation => {
     if (dissipation.timer > 0) {
-      dissipation -= timeScale
+      dissipation.timer -= timeScale
     }
   })
   if (!player.died) {
