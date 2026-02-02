@@ -1,0 +1,103 @@
+{
+  "path": "assets/large/",
+  "name": "16x16",
+  "characterFile": "player.png",
+  "tiles": [
+    {
+      "id": 0,
+      "name": "air",
+      "type": "empty",
+      "triggerAdjacency": false
+    },
+    {
+      "id": 1,
+      "name": "Ground",
+      "file": "ground.png",
+      "category": "blocks",
+      "triggerAdjacency": true,
+      "type": "adjacency"
+    },
+    {
+      "id": 2,
+      "name": "Spikes",
+      "file": "spikes.png",
+      "category": "hazards",
+      "type": "rotation",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "killOnTouch"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "checkpoint",
+      "file": "checkpoint.png",
+      "category": "mechanics",
+      "type": "standalone",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "checkpoint",
+        "noCollision"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "spawn",
+      "file": "spawn.png",
+      "category": "mechanics",
+      "type": "standalone",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "onePerLevel",
+        "spawn",
+        "hidden"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "end",
+      "file": "end.png",
+      "category": "mechanics",
+      "type": "standalone",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "onePerLevel",
+        "end"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "cactus",
+      "file": "cactus.png",
+      "category": "hazards",
+      "type": "rotation",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "killOnTouch"
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Bounce Pad",
+      "file": "bounce-pad.png",
+      "category": "mechanics", 
+      "type": "rotation",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "bouncePad"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Coin",
+      "file": "coin.png",
+      "category": "collectibles", 
+      "type": "standalone",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "coin",
+        "noCollision"
+      ]
+    }
+  ]
+}

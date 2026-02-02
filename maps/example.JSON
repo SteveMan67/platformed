@@ -1,0 +1,22 @@
+{
+  "width": 25,
+  "height": 25,
+  "layers": [
+    {
+      "type": "tilelayer",
+      "name": "level",
+      "isRLE": true,
+      "data": []
+    },
+    {
+      "type": "objectLayer",
+      "name": "entities",
+      "entites": [
+        {
+          "type": "player",
+          "position": [1, 1]
+        }
+      ]
+    }
+  ]
+}
