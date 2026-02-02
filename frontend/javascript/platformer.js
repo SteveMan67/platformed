@@ -46,7 +46,23 @@ function zoomMap(zoomDirectionIsIn) {
   editor.tileSize = newZoom
 }
 
-function changeSelectedTile(up) {
+function changeSelectedTile(tileId) {
+  console.log(tileId)
+  if (editor.selectedTile !== editor.lastSelectedTiles[1] && editor.selectedTile != 0) {
+    editor.lastSelectedTiles[1] = editor.selectedTile
+  }
+  if (tileId == "last") { 
+    editor.selectedTile = editor.lastSelectedTiles[0]
+    editor.lastSelectedTiles.unshift(editor.lastSelectedTiles[1])
+    editor.lastSelectedTiles.pop()
+  } else {
+    editor.lastSelectedTiles.shift()
+    editor.lastSelectedTiles.push(tileId)
+    editor.selectedTile = tileId
+  } 
+}
+
+function scrollCategoryTiles(up) {
   let currentSelectedTiles = document.querySelectorAll(".tile-select-container")
   currentSelectedTiles = Array.from(currentSelectedTiles).filter(f => f.style.display !== "none")
   if (currentSelectedTiles.length !== 0) {
@@ -70,7 +86,7 @@ function sortByCategory(category) {
       tileSelect.style.display = 'none'
     }
     if (lowestIndexBlock) {
-      editor.selectedTile = Number(lowestIndexBlock)
+      changeSelectedTile(Number(lowestIndexBlock))
     }
   })
   updateCanvasSize()
@@ -139,9 +155,9 @@ categories.forEach(category => {
 
 document.addEventListener('wheel', (e) => {
   if (e.wheelDelta > 0) {
-    changeSelectedTile(true)
+    scrollCategoryTiles(true)
   } else {
-    changeSelectedTile(false)
+    scrollCategoryTiles(false)
   }
 })
 
@@ -503,7 +519,7 @@ const editor = {
   playerSpawn: {x: 0, y: 0},
   tileSize: 32,
   selectedTile: 1,
-  lastSelectedTiles: [2, 1],
+  lastSelectedTiles: [2, 1], // [1] is the current selected tile
   map: null,
   width: 100,
   height: 50,
@@ -757,8 +773,7 @@ function addTileSelection() {
       div.addEventListener('mousedown', (e) => {
         e.preventDefault()
         editor.lastSelectedTiles.shift()
-        editor.selectedTile = Number(div.dataset.tile)
-        editor.lastSelectedTiles.push(editor.selectedTile)
+        changeSelectedTile(Number(div.dataset.tile))
       })
     }
   }
@@ -1451,10 +1466,7 @@ function levelEditorLoop(timestamp) {
 
   if (input.keys[" "]) {
     if (!spaceDown) {
-      const otherTile = editor.lastSelectedTiles[0]
-      editor.lastSelectedTiles.shift()
-      editor.lastSelectedTiles.push(otherTile)
-      editor.selectedTile = editor.lastSelectedTiles[1]
+      changeSelectedTile("last")
       spaceDown = true
     }
   } else {
