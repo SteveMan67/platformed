@@ -1372,10 +1372,11 @@ function handleEnemyCollision(enemy, dt) {
   if (py < ey) {
     // player stomped on enemy
     player.vy = -getJumpHeight(5, player.yInertia, player.tileSize)
+    return true
   } else {
     killPlayer()
   }
-  return true
+  return false
 }
 
 function updateEnemyPhysics(dt) {
@@ -1416,7 +1417,9 @@ function updateEnemyPhysics(dt) {
     if (enemy.y > editor.map.h * player.tileSize) {
       enemies.splice(i, 1)
     }
-    handleEnemyCollision(enemy)
+    if (handleEnemyCollision(enemy)) {
+      enemies.splice(i, 1)
+    }
   }
 }
 
