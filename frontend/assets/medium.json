@@ -131,6 +131,17 @@
       "mechanics": [
         "dissipate"
       ]
+    },
+    {
+      "id": 12,
+      "name": "Enemy",
+      "file": "enemy.png",
+      "category": "mobs",
+      "type": "enemy",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "noCollision"
+      ]
     }
   ]
 }
