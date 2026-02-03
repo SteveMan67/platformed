@@ -1354,6 +1354,30 @@ function aabbIntersect(ax, ay, aw, ah, bx, by, bw, bh) {
   return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by;
 }
 
+function handleEnemyCollision(enemy, dt) {
+  const offX = (player.w - player.hitboxW) / 2
+  const offY = (player.h - player.hitboxH) 
+  const px = player.x + offX
+  const py = player.y + offY
+  const pw = player.hitboxW
+  const ph = player.hitboxH
+
+  const ex = enemy.x
+  const ey = enemy.y
+  const ew = player.tileSize
+  const eh = player.tileSize
+
+  if (!aabbIntersect(px,py,pw,ph,ex,ey,ew,eh)) return false
+
+  if (py < ey) {
+    // player stomped on enemy
+    player.vy = -getJumpHeight(5, player.yInertia, player.tileSize)
+  } else {
+    killPlayer()
+  }
+  return true
+}
+
 function updateEnemyPhysics(dt) {
   const gravity = (0.7 * player.yInertia) + 0.5
   for (let i = enemies.length - 1; i >= 0; i--) {
@@ -1392,6 +1416,7 @@ function updateEnemyPhysics(dt) {
     if (enemy.y > editor.map.h * player.tileSize) {
       enemies.splice(i, 1)
     }
+    handleEnemyCollision(enemy)
   }
 }
 
