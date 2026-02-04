@@ -176,9 +176,11 @@ zoomOut.addEventListener('click', () => {
 play.addEventListener('click', () => {
   mode = mode === 'editor' ? 'play' : 'editor'
     if (mode == 'play') {
-      initPlatformer()
+        initPlatformer()
+        play.src = "./assets/icons/stop.svg"
     } else {
-      initEditor()
+        initEditor()
+        play.src = "./assets/icons/play.svg"
     }
 }) 
 
