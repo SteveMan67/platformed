@@ -29,8 +29,12 @@ const server = Bun.serve({
     }
 
     if (pathname == "/api/browse") {
-      const levels = await sql`select id, name, created_at, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels limit 50`
-      return new Response(JSON.stringify(levels), { headers: {"Content-Type": "application/json" } })
+      const match = url.search.match(/page=(\d+)/)
+      const page = match ? Number(match[1]) : 1
+      if (page) {
+        const levels = await sql`select id, name, created_at, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels limit 50 offset ${(page - 1) * 50}`
+        return new Response(JSON.stringify(levels), { headers: {"Content-Type": "application/json" } })
+      }
     }
 
     if (pathname == "/api/users") {
