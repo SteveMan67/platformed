@@ -17,6 +17,17 @@ function updateCanvasSize() {
   canvas.style.imageRendering = 'pixelated'
 }
 
+function toggleEditorUI(on) {
+    if (on) {
+        console.log("show editor ui")
+        grid.className = "grid"
+    }
+    else {
+        console.log("hide editor ui")
+        grid.className = "grid-uihidden"
+    }
+}
+
 function toggleErase() {
   if (editor.selectedTile == 0) {
     editor.selectedTile = editor.lastSelectedTiles[1]
@@ -94,6 +105,8 @@ function sortByCategory(category) {
 }
 
 // page event listeners
+const grid = document.querySelector(".grid")
+
 const eraserButton = document.querySelector('.eraser')
 const saveButton = document.querySelector('.save')
 const importButton = document.querySelector('.import')
@@ -817,6 +830,8 @@ function init() {
 
 
 function initEditor() {
+  toggleEditorUI(true)
+
   enemies.forEach(enemy => 
     enemies.pop()
   )
@@ -875,6 +890,8 @@ function scanLevelOnPlay() {
 }
 
 function initPlatformer() {
+  toggleEditorUI(false)
+
   lastTime = 0
   player.w = player.tileSize
   player.h = player.tileSize
