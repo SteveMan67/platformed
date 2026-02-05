@@ -189,9 +189,11 @@ zoomOut.addEventListener('click', () => {
 play.addEventListener('click', () => {
   mode = mode === 'editor' ? 'play' : 'editor'
     if (mode == 'play') {
-      initPlatformer()
+        initPlatformer()
+        play.src = "./assets/icons/stop_noborder.svg"
     } else {
-      initEditor()
+        initEditor()
+        play.src = "./assets/icons/play_nofill.svg"
     }
 }) 
 
@@ -1288,7 +1290,7 @@ function updatePhysics(dt) {
       player.lastWallSide = 0
       player.wallCoyoteTimer = 0
       player.airControl = true
-      limitControl(40, 0.0)
+      limitControl(20, 0.0)
     } else if (player.wallJump == "up") {
       player.vx = player.lastWallSide == -1 ? player.speed * 1.2 : -player.speed * 1.2
       player.vy = -player.jump
