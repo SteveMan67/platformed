@@ -17,6 +17,7 @@ function getCookies(reqest: Request) {
 
 const server = Bun.serve({
   port: 1010,
+  hostname: "0.0.0.0",
   async fetch(req) {
     const url = new URL(req.url)
     const pathname = url.pathname
@@ -79,11 +80,9 @@ const server = Bun.serve({
 
           // handle duplicate usernames 
           const duplicateUsernames = await sql`SELECT username FROM users WHERE username = ${username}`
-          console.log(duplicateUsernames)
           if (duplicateUsernames[0]) {
             return new Response("Username Already Exists", { status: 409 })
           }
-
           // insert user into users
           const hashedPassword = await Bun.password.hash(password)
           const userId = await sql`
@@ -95,7 +94,7 @@ const server = Bun.serve({
           const expiresAt = Date.now() + (60 * 60 * 24 * 14)
           const sessionId = await sql`
             INSERT INTO sessions(token_hash, expires_at, user_id) 
-            VALUES(${hashedCookie}, ${expiresAt}, ${userId})
+            VALUES(${hashedCookie}, ${expiresAt}, ${userId[0].id})
             RETURNING id
           `
           return new Response("Sucessful Register", { status: 200, headers: {
