@@ -20,14 +20,7 @@ body {
 }
 
 .grid-uihidden {
-    width: 100vw;
-    height: 100vh;
-    display: grid;
     grid-template-columns: 1fr 0px;
-    grid-template-rows: 80px 1fr;
-    grid-template-areas:
-        "topbar topbar"
-        "game sidebar";
 }
 
 .topbar {

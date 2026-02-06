@@ -1,3 +1,4 @@
+import { toggleEditorUI } from "./ui.js"
 const canvas = document.querySelector("canvas")
 const dpr = window.devicePixelRatio
 const ctx = canvas.getContext('2d')
@@ -15,15 +16,6 @@ function updateCanvasSize() {
   canvas.height = rect.height
   ctx.imageSmoothingEnabled = false
   canvas.style.imageRendering = 'pixelated'
-}
-
-function toggleEditorUI(on) {
-    if (on) {
-        grid.className = "grid"
-    }
-    else {
-        grid.className = "grid-uihidden"
-    }
 }
 
 function toggleErase() {
@@ -102,8 +94,6 @@ function sortByCategory(category) {
 }
 
 // page event listeners
-const grid = document.querySelector(".grid")
-
 const eraserButton = document.querySelector('.eraser')
 const saveButton = document.querySelector('.save')
 const importButton = document.querySelector('.import')
@@ -118,7 +108,7 @@ const verticalInertiaSlider = document.querySelector('#vertical-inertia-input')
 const jumpWidthSlider = document.querySelector('#jump-width-input')
 const horizontalInertiaSlider = document.querySelector('#horizontal-inertia-input')
 const bouncePadHeightSlider = document.querySelector('#bounce-pad-height-input')
-const zoomSlider = document.getElementById('zoom-level-input') 
+const zoomSlider = document.getElementById('zoom-level-input')
 
 zoomSlider.addEventListener('click', () => {
   player.tileSize = Math.floor((32 / 0.6) * zoomSlider.value)
