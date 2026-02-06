@@ -1185,8 +1185,8 @@ function updatePhysics(dt) {
   }
   const jumpControl = player.decreaseAirControl && !player.grounded ? 1 : 1
   const currentControl = jumpControl * player.controlMultiplier
-  let activeInput = false
-  if (key("left") && !key("right")) {
+    let activeInput = false
+    if ((key("left") && !key("right")) || (key("left") && !player.grounded)) {
     activeInput = true
     if (player.vx > -player.speed) {
       player.vx -= player.xInertia * 1 * currentControl * dt
@@ -1194,7 +1194,7 @@ function updatePhysics(dt) {
       player.vx = -player.speed
     }
   }
-  if (key("right") && !key("left")) {
+    if (key("right") && !key("left") || (key("right") && !player.grounded)) {
     activeInput = true
     if (player.vx < player.speed) {
       player.vx += player.xInertia * 1 * currentControl * dt
