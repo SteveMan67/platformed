@@ -288,6 +288,7 @@ function importMap(e) {
     }
     rawTileLayer = rawTileLayer.map(id => id << 4)
     rawTileLayer = calculateAdjacencies(rawTileLayer, json.width, json.height)
+    console.log(rawTileLayer)
     for (let i = 0; i < rawTileLayer.length; i++) {
       if (editor.tileset[rawTileLayer[i] >> 4].type == "rotation") {
         rawTileLayer[i] += rawRotationLayer[i]
@@ -299,7 +300,7 @@ function importMap(e) {
     }
     editor.width = json.width
     editor.height = json.height
-    tiles = new Uint16Array(rawTileLayer)
+    const tiles = new Uint16Array(rawTileLayer)
     const map = {
       tiles, 
       w: json.width,
