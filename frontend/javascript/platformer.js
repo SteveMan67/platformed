@@ -1,241 +1,7 @@
-import { toggleEditorUI } from "./ui.js"
-const canvas = document.querySelector("canvas")
-const dpr = window.devicePixelRatio
-const ctx = canvas.getContext('2d')
-const rect = canvas.getBoundingClientRect()
-canvas.width = rect.width
-canvas.height = rect.height
-
-ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-ctx.imageSmoothingEnabled = false
-canvas.style.imageRendering = 'pixelated'
-
-function updateCanvasSize() {
-  const rect = canvas.getBoundingClientRect()
-  canvas.width = rect.width
-  canvas.height = rect.height
-  ctx.imageSmoothingEnabled = false
-  canvas.style.imageRendering = 'pixelated'
-}
-
-function toggleErase() {
-  if (editor.selectedTile == 0) {
-    editor.selectedTile = editor.lastSelectedTiles[1]
-  } else {
-    editor.selectedTile = 0
-  }
-}
-
-function zoomMap(zoomDirectionIsIn) {
-  const currentZoom = editor.tileSize
-  let newZoom = editor.tileSize
-  const zooms = [16, 25, 32, 40, 60, 80, 100]
-  const currentZoomIndex = zooms.indexOf(currentZoom)
-  if (zoomDirectionIsIn) {
-    if (currentZoomIndex !== 0) {
-      newZoom = zooms[currentZoomIndex - 1]
-    } else {
-      newZoom = currentZoom
-    }
-  } else {
-    if (currentZoomIndex < zooms.length - 1) {
-      newZoom = zooms[currentZoomIndex + 1]
-    } else {
-      newZoom = currentZoom
-    }
-  }
-  editor.tileSize = newZoom
-}
-
-function changeSelectedTile(tileId) {
-  if (editor.selectedTile !== editor.lastSelectedTiles[1] && editor.selectedTile != 0) {
-    editor.lastSelectedTiles[1] = editor.selectedTile
-  }
-  if (tileId == "last") { 
-    editor.selectedTile = editor.lastSelectedTiles[0]
-    editor.lastSelectedTiles.unshift(editor.lastSelectedTiles[1])
-    editor.lastSelectedTiles.pop()
-  } else {
-    editor.lastSelectedTiles.shift()
-    editor.lastSelectedTiles.push(tileId)
-    editor.selectedTile = tileId
-  } 
-}
-
-function scrollCategoryTiles(up) {
-  let currentSelectedTiles = document.querySelectorAll(".tile-select-container")
-  currentSelectedTiles = Array.from(currentSelectedTiles).filter(f => f.style.display !== "none")
-  if (currentSelectedTiles.length !== 0) {
-    // moving up works!
-    editor.selectedTile = !up ? Number(currentSelectedTiles[(currentSelectedTiles.indexOf(currentSelectedTiles.find(f => f.dataset.tile == String(editor.selectedTile))) + 1) % currentSelectedTiles.length].dataset.tile) : Number(currentSelectedTiles[(currentSelectedTiles.indexOf(currentSelectedTiles.find(f => f.dataset.tile == String(editor.selectedTile))) - 1 + currentSelectedTiles.length) % currentSelectedTiles.length].dataset.tile)
-  }
-}
-
-function sortByCategory(category) {
-  let tileCount = 0
-  const tileSelects = document.querySelectorAll('.tile-select-container')
-  let lowestIndexBlock
-  tileSelects.forEach(tileSelect => {
-    if (tileSelect.dataset.category == category) {
-      if (!lowestIndexBlock || tileSelect.dataset.tile < lowestIndexBlock) {
-        lowestIndexBlock = tileSelect.dataset.tile
-      }
-      tileSelect.style.display = 'block'
-      tileCount++
-    } else {
-      tileSelect.style.display = 'none'
-    }
-    if (lowestIndexBlock) {
-      changeSelectedTile(Number(lowestIndexBlock))
-    }
-  })
-  updateCanvasSize()
-  return tileCount
-}
-
-// page event listeners
-const eraserButton = document.querySelector('.eraser')
-const saveButton = document.querySelector('.save')
-const importButton = document.querySelector('.import')
-const tileSelection = document.querySelector('.tile-selection')
-const zoomIn = document.querySelector('.plus')
-const zoomOut = document.querySelector('.minus')
-const categories = document.querySelectorAll('.category')
-const play = document.querySelector(".play")
-
-const jumpHeightSlider = document.querySelector('#jump-height-input')
-const verticalInertiaSlider = document.querySelector('#vertical-inertia-input')
-const jumpWidthSlider = document.querySelector('#jump-width-input')
-const horizontalInertiaSlider = document.querySelector('#horizontal-inertia-input')
-const bouncePadHeightSlider = document.querySelector('#bounce-pad-height-input')
-const zoomSlider = document.getElementById('zoom-level-input')
-
-zoomSlider.addEventListener('click', () => {
-  player.tileSize = Math.floor((32 / 0.6) * zoomSlider.value)
-})
-
-bouncePadHeightSlider.addEventListener('input', () => {
-  player.bouncePadHeight = Number(bouncePadHeightSlider.value)
-})
-
-jumpHeightSlider.addEventListener('input', () => {
-  player.jumpHeight = Number(jumpHeightSlider.value)
-})
-
-verticalInertiaSlider.addEventListener('input', () => {
-  player.yInertia = Number(verticalInertiaSlider.value)
-})
-
-jumpWidthSlider.addEventListener('input', () => {
-  player.jumpWidth = Number(jumpWidthSlider.value)
-})
-
-horizontalInertiaSlider.addEventListener('input', () => {
-  player.xInertia = Number(horizontalInertiaSlider.value)
-})
-
-categories.forEach(category => {
-  category.addEventListener('click', () => {
-    categories.forEach(cat => {
-      cat.classList.remove('active')
-    })
-    let tileCount = sortByCategory(category.dataset.category)
-    if (tileCount !== 0) category.classList.add('active')
-  })
-  window.addEventListener('keypress', (e) => {
-    if (e.key == String(((Array.from(categories).indexOf(category)) * -1) + categories.length)) {
-      categories.forEach(cat => {
-        cat.classList.remove('active')
-      })
-      let tileCount = sortByCategory(category.dataset.category)
-      if (tileCount !== 0) category.classList.add('active')
-    }
-  })
-})
-
-document.addEventListener('wheel', (e) => {
-  if (e.wheelDelta > 0) {
-    scrollCategoryTiles(true)
-  } else {
-    scrollCategoryTiles(false)
-  }
-})
-
-window.addEventListener('resize', () => {
-  updateCanvasSize()
-})
-
-zoomIn.addEventListener('click', () => {
-  zoomMap(false)
-})
-
-zoomOut.addEventListener('click', () => {
-  zoomMap(true)
-})
-
-play.addEventListener('click', () => {
-  mode = mode === 'editor' ? 'play' : 'editor'
-    if (mode == 'play') {
-        initPlatformer()
-        play.src = "./assets/icons/stop_noborder.svg"
-    } else {
-        initEditor()
-        play.src = "./assets/icons/play_nofill.svg"
-    }
-}) 
-
-importButton.addEventListener('click', () => {
-  let input = document.createElement('input')
-  input.type = 'file'
-  input.id = 'mapFileInput'
-  input.accept = '.json,application/json'
-  input.style.display = 'none'
-  input.addEventListener('change', (e) => {
-    importMap(e)
-  })
-  input.value = ''
-  input.click()
-})
-
-saveButton.addEventListener('click', () => {
-  const json = createMap(editor.map.w, editor.map.h, Array.from(editor.map.tiles))
-  const text = JSON.stringify(json, null, 2)
-  const blob = new Blob([text], {type: 'application/json'})
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'map.json'
-  document.body.appendChild(a)
-  a.click()
-  a.remove()
-  URL.revokeObjectURL(url)
-})
-eraserButton.addEventListener('click', () => {
-  toggleErase()
-})
-document.addEventListener('keypress', (e) => {
-  if (e.key == 'e') {
-    toggleErase()
-  } else if (e.key == 'p') {
-    mode = mode === 'editor' ? 'play' : 'editor'
-    if (mode == 'play') {
-      initPlatformer()
-    } else {
-      initEditor()
-    }
-  } else if (e.key == 'o') {
-    let input = document.createElement('input')
-    input.type = 'file'
-    input.id = 'mapFileInput'
-    input.accept = '.json,application/json'
-    input.style.display = 'none'
-    input.addEventListener('change', (e) => {
-      importMap(e)
-    })
-    input.value = ''
-    input.click()
-  }
-})
+import { toggleEditorUI, updateCanvasSize, sortByCategory, addTileSelection } from "./ui.js"
+import { canvas, ctx, drawMap } from "./renderer.js"
+import { deltaTime, endLevel, input, key, state } from "./site.js"
+const { player, editor } = state
 
 function decodeRLE(rle) {
   const out = []
@@ -367,7 +133,7 @@ function encodeRLE(list) {
   return rle
 }
 
-function createMap(width, height, data) {
+export function createMap(width, height, data) {
   const json = {}
   json.width = width
   json.height = height
@@ -414,7 +180,7 @@ function getTileId(num) {
   return num & 15
 }
 
-function loadPlayerSprites(playerImg) {
+export function loadPlayerSprites(playerImg) {
   if (!playerImg) return 
   const h = playerImg.naturalHeight
   const w = playerImg.naturalWidth
@@ -433,7 +199,7 @@ function loadPlayerSprites(playerImg) {
   player.sprites = sprites
 }
 
-async function loadTileset(manifestPath) {
+export async function loadTileset(manifestPath) {
   return fetch(manifestPath)
   .then(response => response.json())
   .then(manifest => {
@@ -469,77 +235,7 @@ async function loadTileset(manifestPath) {
 }
 
 
-let mode = "editor"
-
-const enemies = []
-
-const player = {
-  dieCameraTime: 30, // frames
-  dieCameraTimer: 30,
-  dieCameraStart: {},
-  died: false,
-  collectedCoins: 0,
-  collectedCoinList: [],
-  cam: {x: 0, y: 0},
-  vy: 0,
-  vx: 0, 
-  jumpHeight: 2.5,
-  yInertia: 1,
-  jumpWidth: 7,
-  xInertia: 1.5,
-  bouncePadHeight: 8,
-  x: 0, 
-  y: 0,
-  w: 30,
-  h: 30,
-  stopThreshold: 0.4,
-  grounded: false,
-  coyoteTime: 5,
-  coyoteTimer: 0,
-  wallCoyoteTime: 10,
-  wallCoyoteTimer: 0,
-  lastWallSide: 0,
-  jumpBuffer: 10,
-  jumpBufferTimer: 0,
-  tileSize: 64,
-  lastCheckpointSpawn: {x: 0, y: 0},
-  facingLeft: 1,
-  AnimationFrame: 0,
-  AnimationFrameCounter: 0,
-  wallJump: "up",
-  decreaseAirControl: true,
-  autoJump: false,
-  controlTimer: 0,
-  controlMultiplier: 1,
-  dissipations: [] // each item has a timeToDissapate, timeToReturn, timer, and tileIdx
-}
-
-const editor = {
-  cam: {
-    x: 0,
-    y: 0
-  },
-  currentRotation: 0,
-  playerSpawn: {x: 0, y: 0},
-  tileSize: 32,
-  selectedTile: 1,
-  lastSelectedTiles: [2, 1], // [1] is the current selected tile
-  map: null,
-  width: 100,
-  height: 50,
-  tileset: [],
-  limitedPlacedTiles: [],
-  tilesetPath: "./assets/medium.json",
-  dissipateTime: 2 * 60,
-  dissipateDelay: 2 * 60,
-}
-
-const input = {
-  x: 0,
-  y: 0,
-  down: false,
-  keys: {}
-}
+export const enemies = []
 
 function isStrip(img) {
   if (img) {
@@ -550,7 +246,7 @@ function isStrip(img) {
   }
 }
 
-function splitStripImages(tileset) {
+export function splitStripImages(tileset) {
   // split strip images 
   const newTileset = []
   tileset.forEach(tile => {
@@ -629,7 +325,7 @@ function calculateAdjacencies(tiles, w, h) {
   return out
 }
 
-function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles) {
+export function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles) {
   // calculate the adjacency for a given tile when it's placed
   // bug: walls other than the top and bottom don't work
   let variant = 0
@@ -682,7 +378,7 @@ function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles) {
 
 }
 
-function calcAdjacentAdjacency(centerTileIdx) {
+export function calcAdjacentAdjacency(centerTileIdx) {
   const tiles = editor.map.tiles
   const centerVal = calculateAdjacency(centerTileIdx, editor.selectedTile)
   tiles[centerTileIdx] = centerVal
@@ -738,52 +434,6 @@ function updateLevelSize(width, height) {
   editor.map.h = height
 }
 
-function addTileSelection() {
-  const categoryBlocks = document.querySelector('.category-blocks')
-  categoryBlocks.innerHTML = ''
-  for (let i = 1; i < editor.tileset.length; i++) {
-    if (editor.tileset[i]) {
-      let div = document.createElement('div')
-      div.classList.add('tile-select-container')
-      div.dataset.tile = i
-      div.dataset.category = editor.tileset[i].category
-      categoryBlocks.appendChild(div)
-      let img = document.createElement('img')
-      img.classList.add('tile-select')
-      let src
-      if (editor.tileset[i].type == 'rotation' || editor.tileset[i].type == 'adjacency') {
-        const c = editor.tileset[i].images[0]
-        if (c instanceof HTMLCanvasElement) {
-          if (c.toBlob) {
-            c.toBlob(blob => {
-              const url = URL.createObjectURL(blob)
-              img.src = url
-              img.onload = () => URL.revokeObjectURL(url)
-            })
-          } else {
-            img.src = c.toDataURL()
-          }
-        } else if (c instanceof HTMLImageElement) {
-          img.src = c.src
-        }
-      } else {
-        if (editor.tileset[i].image instanceof HTMLImageElement) {
-          img.src = editor.tileset[i].image.src
-        } else {
-          img.src = ''
-        }
-      }
-      div.appendChild(img)
-      div.addEventListener('mousedown', (e) => {
-        e.preventDefault()
-        editor.lastSelectedTiles.shift()
-        changeSelectedTile(Number(div.dataset.tile))
-      })
-    }
-  }
-  sortByCategory("")
-}
-
 function updateTileset(path) {
   editor.tilesetPath = path
   loadTileset(editor.tilesetPath).then(({tileset, characterImage}) => {
@@ -791,43 +441,6 @@ function updateTileset(path) {
     loadPlayerSprites(characterImage)
     addTileSelection()
   })
-}
-
-function init() {
-  window.addEventListener('keydown', e => input.keys[e.key] = true)
-  window.addEventListener('keyup', e => input.keys[e.key] = false)
-
-  canvas.addEventListener('mousemove', e => {
-    const rect = canvas.getBoundingClientRect()
-    input.x = e.clientX - rect.left
-    input.y = e.clientY - rect.top
-  })
-  canvas.addEventListener('mousedown', () => input.down = true)
-  canvas.addEventListener('mouseup', () => input.down = false)
-
-  loadTileset(editor.tilesetPath).then(({tileset, characterImage}) => {
-    editor.tileset = splitStripImages(tileset)
-    loadPlayerSprites(characterImage)
-    editor.map = {
-      w: 100, h: 50, tiles: new Uint16Array(5000)
-    }
-    addTileSelection()
-    updateCanvasSize()
-    levelEditorLoop()
-  })
-}
-
-
-function initEditor() {
-  toggleEditorUI(true)
-
-  enemies.forEach(enemy => 
-    enemies.pop()
-  )
-  lastTime = 0
-  mode = "editor"
-  ctx.imageSmoothingEnabled = false
-  levelEditorLoop()
 }
 
 function getJumpHeight(heightInTiles, yInertia, tileSize) {
@@ -877,10 +490,8 @@ function scanLevelOnPlay() {
   }
 }
 
-function initPlatformer() {
+export function initPlatformer() {
   toggleEditorUI(false)
-
-  lastTime = 0
   player.w = player.tileSize
   player.h = player.tileSize
   player.hitboxW = 0.8 * player.tileSize
@@ -898,45 +509,6 @@ function initPlatformer() {
   platformerLoop()
 }
 
-function drawMap(tileSize = editor.tileSize, cam = editor.cam) {
-  const { map, tileset} = editor
-  
-  const startX = Math.floor(cam.x / tileSize)
-  const endX = startX + (canvas.width / tileSize) + 1
-  const startY = Math.floor(cam.y / tileSize)
-  const endY = startY + (canvas.width / tileSize) + 1
-  
-  for (let y = startY; y < endY; y++) {
-    for (let x = startX; x < endX; x++) {
-      if (x < 0 || x >= map.w || y < 0 || y >= map.h) continue
-      const raw = map.tiles[y * map.w + x]
-      const tileId = raw >> 4
-      const scrX = Math.floor((x * tileSize) - cam.x)
-      const scrY = Math.floor((y * tileSize) - cam.y)
-      const selectedTile = tileset[tileId]
-      let showTile = true
-      if (editor.tileset[tileId] && editor.tileset[tileId].mechanics && editor.tileset[tileId].mechanics.includes("hidden") && mode == 'play') {
-        showTile = false
-      }
-      if (player.collectedCoinList.includes(y * map.w + x) && mode === 'play') {
-        showTile = false
-      }
-      if (selectedTile.type == 'enemy' && mode == 'play') {
-        showTile = false
-      }
-      if (selectedTile.type == 'adjacency' && showTile) {
-        ctx.drawImage(selectedTile.images[raw & 15], scrX, scrY, tileSize, tileSize)
-      } else if (selectedTile.type == "rotation" && showTile) {
-        ctx.drawImage(selectedTile.images[raw & 15], scrX, scrY, tileSize, tileSize)
-      } else if (selectedTile.type == 'standalone' && showTile) {
-        ctx.drawImage(selectedTile.image, scrX, scrY, tileSize, tileSize)
-      } else if (selectedTile.type == 'enemy' && showTile) {
-        ctx.drawImage(selectedTile.image, scrX, scrY, tileSize, tileSize)
-      }
-    }
-  } 
-}
-
 function killPlayer() {
   player.vy = 0
   player.vx = 0
@@ -950,11 +522,6 @@ function killPlayer() {
     player.x = editor.playerSpawn.x * player.tileSize
     player.y = editor.playerSpawn.y * player.tileSize
   }
-}
-
-function endLevel() {
-  mode = "editor"
-  setTimeout(initEditor, 1)
 }
 
 const tileMaskCache = new Map()
@@ -1107,22 +674,6 @@ function checkCollision(dt, x, y, w, h, simulate = false) {
     }
   }
   return false
-}
-
-function key(key) {
-  if (key === "right") {
-    return !!(input.keys["d"] || input.keys["ArrowRight"] )
-  } else if (key === "left") {
-    return !!(input.keys["a"] || input.keys["ArrowLeft"])
-  } else if (key === "up") {
-    return !!(input.keys[" "] || input.keys["w"] || input.keys["ArrowUp"])
-  } else if (key === "down") {
-    return !!(input.keys['s'] || input.keys['ArrowDown'])
-  } else if (key === "any") {
-    return !!(input.keys["d"] || input.keys["ArrowRight"] || input.keys["a"] || input.keys["ArrowLeft"] || input.keys[" "] || input.keys["w"] || input.keys["ArrowUp"])
-  } else {
-    return false
-  }
 }
 
 function limitControl(time, multiplier) {
@@ -1428,16 +979,7 @@ function drawEnemies(dt) {
   })
 }
 
-function deltaTime(timestamp) {
-  if (!timestamp) timestamp = performance.now()
-  if (lastTime === 0) lastTime = timestamp
-  const seconds = (timestamp - lastTime) / 1000
-  lastTime = timestamp
-  return Math.min(seconds, 0.1)
-}
-let lastTime = 0
-function platformerLoop(timestamp) {
-  let dt = deltaTime(timestamp)
+export function platformerLoop(dt) {
   let timeScale = dt * 60
 
   player.dissipations.forEach(dissipation => {
@@ -1493,139 +1035,11 @@ function platformerLoop(timestamp) {
     drawPlayer(timeScale)
   }
   drawEnemies(timeScale)
-
-  if (mode == 'play') {
-    requestAnimationFrame(platformerLoop)
-  }
 }
 
-let mouseDown = false
-let rDown = false
-let spaceDown = false
-let lastIdx
 let once = true
-
-function levelEditorLoop(timestamp) {
-  let dt = deltaTime(timestamp)
-  let timeScale = dt * 60
-  const { map, cam, tileSize, tileset} = editor
-
-  const speed = 10
-  if ((input.keys['w'] || input.keys["ArrowUp"]) && cam.y >= 0) cam.y -= speed * timeScale
-  if ((input.keys['s'] || input.keys["ArrowDown"]) && cam.y <= (map.h * tileSize) - canvas.height) cam.y += speed * timeScale
-  if ((input.keys['a'] || input.keys["ArrowLeft"]) && cam.x >= 0) cam.x -= speed * timeScale
-  if ((input.keys['d'] || input.keys["ArrowRight"]) && cam.x <= (map.w * tileSize) - canvas.width) cam.x += speed * timeScale
-  const worldX = input.x + cam.x
-  const worldY = input.y + cam.y
-  const tx = Math.floor(worldX / tileSize)
-  const ty = Math.floor(worldY / tileSize)
-
-  if (input.down) {
-    const idx = ty * map.w + tx
-    if (!mouseDown) {
-      if (tx >= 0 && tx < map.w && ty >= 0 && ty < map.h) {
-        // set a limit on tiles with a mechanic of "onePerLevel"
-        let tileLimitPlaced = false
-        if (editor.limitedPlacedTiles.includes(editor.selectedTile)) {
-          tileLimitPlaced = true
-        }
-        if (editor.tileset[editor.selectedTile].mechanics) {
-          if (editor.tileset[editor.selectedTile].mechanics.includes("onePerLevel") && !editor.limitedPlacedTiles.includes(editor.selectedTile)) {
-            editor.limitedPlacedTiles.push(editor.selectedTile)
-          }
-          if (tileset[editor.selectedTile].mechanics.includes("spawn")) {
-            editor.playerSpawn = { x: tx, y: ty}
-          }
-          if (tileset[editor.selectedTile].mechanics.includes("end")) {
-            editor.end = { x: tx, y: ty }
-          }
-        }
-        if (tileset[editor.selectedTile].type == "adjacency" && !tileLimitPlaced) {
-          calcAdjacentAdjacency(idx, editor.selectedTile)
-        } else if (tileset[editor.selectedTile].type == 'rotation' && !tileLimitPlaced) {
-          editor.map.tiles[idx] = (editor.selectedTile * 16) + editor.currentRotation
-        } else if (tileset[editor.selectedTile].type == 'empty' ) {
-          editor.limitedPlacedTiles = editor.limitedPlacedTiles.filter(f => f !== editor.map.tiles[idx] >> 4)
-          calcAdjacentAdjacency(idx, editor.selectedTile)
-        } else if (!tileLimitPlaced) {
-          calcAdjacentAdjacency(idx, editor.selectedTile)
-        }
-
-      }
-    }
-    if (lastIdx !== idx) {
-      mouseDown = false
-    }
-  } else {
-    mouseDown = false
-  }
-
-  if (input.keys['r']) {
-    const idx = ty * map.w + tx
-    if (!rDown) {
-      if (tx >= 0 && tx < map.w && ty >= 0 && ty < map.h) {
-        if (tileset[editor.map.tiles[idx] >> 4].type == 'rotation') {
-          const currentRotation = editor.map.tiles[idx] & 15
-          const newRotation = (currentRotation + 1) % 4
-          editor.map.tiles[idx] = (editor.map.tiles[idx] >> 4 << 4) + newRotation 
-          editor.currentRotation = newRotation
-        } else if (editor.map.tiles[idx] >> 4 == 0) {
-          const newRotation = (editor.currentRotation + 1) % 4
-          editor.currentRotation = newRotation
-        }
-      }
-      rDown = true
-    }
-  } else {
-    rDown = false
-  }
-
-  if (input.keys[" "]) {
-    if (!spaceDown) {
-      changeSelectedTile("last")
-      spaceDown = true
-    }
-  } else {
-    spaceDown = false
-  }
-  
-  ctx.fillStyle = '#C29A62'
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-  drawMap()
-
-  const cursorScrX = (tx * tileSize) - cam.x
-  const cursorScrY = (ty * tileSize) - cam.y
-  let img
-  const selectedTileOfTileset = tileset[editor.selectedTile]
-  if(selectedTileOfTileset.type == "adjacency") {
-    img = selectedTileOfTileset.images[calculateAdjacency(ty * map.w + tx, editor.selectedTile) & 15]
-  } else if (selectedTileOfTileset.type == "rotation") {
-    img = selectedTileOfTileset.images[editor.currentRotation]
-  } else {
-    img = selectedTileOfTileset.image
-  }
-
-  if (img) {
-    ctx.save()
-    ctx.imageSmoothingEnabled = false
-    canvas.style.imageRendering = 'pixelated'
-    ctx.globalAlpha = 0.5
-    ctx.drawImage(img, cursorScrX, cursorScrY, tileSize, tileSize)
-    ctx.restore()
-  } else {
-    ctx.strokeStyle = 'black'
-    ctx.strokeRect(cursorScrX, cursorScrY, tileSize, tileSize)
-  }
-  ctx.globalAlpha = 1
-
-  if (mode == 'editor') {
-    requestAnimationFrame(levelEditorLoop)
-  }
-}
 
 function logCurrentMapAsJSON() {
   console.log(createMap(editor.map.w, editor.map.h, Array.from(editor.map.tiles)))
 }
 
-init()
