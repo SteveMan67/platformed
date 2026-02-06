@@ -19,11 +19,9 @@ function updateCanvasSize() {
 
 function toggleEditorUI(on) {
     if (on) {
-        console.log("show editor ui")
         grid.className = "grid"
     }
     else {
-        console.log("hide editor ui")
         grid.className = "grid-uihidden"
     }
 }
@@ -58,7 +56,6 @@ function zoomMap(zoomDirectionIsIn) {
 }
 
 function changeSelectedTile(tileId) {
-  console.log(tileId)
   if (editor.selectedTile !== editor.lastSelectedTiles[1] && editor.selectedTile != 0) {
     editor.lastSelectedTiles[1] = editor.selectedTile
   }
@@ -272,7 +269,6 @@ function importMap(e) {
   reader.onerror = () => console.error('failed to read file', reader.error)
   reader.onload = () => {
     const json = JSON.parse(reader.result)
-    console.log(json)
     player.jumpHeight = json.jumpHeight
     jumpHeightSlider.value = json.jumpHeight
     player.jumpWidth = json.jumpWidth
@@ -872,7 +868,6 @@ function scanLevelOnPlay() {
     const raw = tiles[i]
     const tileId = raw >> 4
     if (tileId != 0 && editor.tileset[tileId] && editor.tileset[tileId].type == "enemy") {
-      console.log(raw)
       const ty = Math.floor(i / editor.map.w)
       const tx = i % editor.map.w
       const worldY = ty * player.tileSize
@@ -901,7 +896,6 @@ function initPlatformer() {
   player.hitboxH = 0.8 * player.tileSize
   const ratio = player.tileSize / 64
   // !! changes on save/load and gets higher and higher if tilesize != 0 !!!!!!
-  console.log(player.jumpHeight + 0.3, player.yInertia, player.tileSize)
   player.jump = getJumpHeight(player.jumpHeight + 0.3, player.yInertia, player.tileSize)
   player.speed = getJumpSpeed(player.jumpWidth - 1, player.jump, player.yInertia, player.tileSize)
   player.stopThreshold = 0.4 * ratio
@@ -1033,7 +1027,6 @@ function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
     if (checkPixelCollsion(tileId, tx, ty, x, y, w, h)) {
       const idx = ty * editor.map.w + tx
       const bounceTile = editor.map.tiles[idx]
-      console.log(idx, bounceTile, bounceTile & 15)
       if ((bounceTile & 15) == 0) {
         player.vy = -getJumpHeight(player.bouncePadHeight, player.yInertia, player.tileSize)
       } else if ((bounceTile & 15) == 1){
@@ -1112,7 +1105,6 @@ function checkCollision(dt, x, y, w, h, simulate = false) {
           return checkPixelCollsion(tileId, px,py, x, y, w, h)
         }
         if (tile && tile.mechanics && tile.mechanics.includes("dissipate")) {
-          console.log(idx)
           const dissipation = player.dissipations.find(d => d.tileIdx === idx)
           if (dissipation && dissipation.timer <= dissipation.timeToDissipate && dissipation.timer > 0) {
             continue
