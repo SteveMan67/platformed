@@ -1,0 +1,77 @@
+body {
+  background-color: #c29a62;
+  font-family: "Fredoka", sans-serif;
+  font-weight: 500;
+  margin: 0;
+  scrollbar-width: none;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.grid {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-rows: 80px 1fr;
+}
+
+nav {
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+}
+
+nav h1 {
+  font-weight: 500;
+  font-size: 35px;
+}
+
+.login-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-self: center;
+}
+
+.login h1 {
+  font-weight: 400;
+  font-size: 40px;
+  justify-self: center;
+}
+
+.login form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login label {
+  font-size: 20px;
+  padding: 7px;
+}
+
+.login input {
+  margin: 7px;
+  background-color: #c29a62;
+  border: 3px solid black;
+  border-radius: 17px;
+  width: min(400px, 95vw);
+  height: 25px;
+  font-size: 20px;
+  font-weight: 400;
+  font-family: "Fredoka", sans-serif;
+  padding-left: 10px;
+}
+
+.login input:-webkit-autofill {
+  background-color: #c29a62 !important;
+}
+
+.login input[type="submit"] {
+  width: 100px;
+  background-color: black;
+  color: #c29a62;
+  font-family: "Fredoka", sans-serif;
+  font-size: 20px;
+  height: 33px;
+  border: none;
+}
