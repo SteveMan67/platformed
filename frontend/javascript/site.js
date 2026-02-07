@@ -14,6 +14,7 @@ export let mode = "editor"
 export function endLevel() {
   mode = "editor"
   setTimeout(initEditor, 1)
+  playSound("./assets/audio/victory.wav")
 }
 
 
@@ -92,12 +93,12 @@ export function init() {
   })
 }
 
-export function playSound(fileLocation) {
+export function playSound(fileLocation, randomness = 0) {
     let sfx = document.createElement("audio")
     let source = document.createElement("source")
     source.src = fileLocation
     sfx.appendChild(source)
-    sfx.playbackRate = getRandomArbitrary(0.90, 1.1)
+    sfx.playbackRate = getRandomArbitrary(1 - randomness, 1 + randomness)
     sfx.play()
     sfx.addEventListener("ended", killSound(sfx))
 }
