@@ -3,74 +3,10 @@ import { initPlatformer, loadPlayerSprites, loadTileset, platformerLoop, splitSt
 import { levelEditorLoop } from "./editor.js";
 import { addTileSelection, toggleEditorUI } from "./ui.js";
 import { canvas } from "./renderer.js";
+import { state } from "./state.js"
 
+const { editor } = state
 export let mode = "editor"
-
-export const state = {
-  player: {
-    dieCameraTime: 30, // frames
-    dieCameraTimer: 30,
-    dieCameraStart: {},
-    died: false,
-    collectedCoins: 0,
-    collectedCoinList: [],
-    cam: {x: 0, y: 0},
-    vy: 0,
-    vx: 0, 
-    jumpHeight: 2.5,
-    yInertia: 1,
-    jumpWidth: 7,
-    xInertia: 1.5,
-    bouncePadHeight: 8,
-    x: 0, 
-    y: 0,
-    w: 30,
-    h: 30,
-    stopThreshold: 0.4,
-    grounded: false,
-    coyoteTime: 5,
-    coyoteTimer: 0,
-    wallCoyoteTime: 10,
-    wallCoyoteTimer: 0,
-    lastWallSide: 0,
-    jumpBuffer: 10,
-    jumpBufferTimer: 0,
-    tileSize: 64,
-    lastCheckpointSpawn: {x: 0, y: 0},
-    facingLeft: 1,
-    AnimationFrame: 0,
-    AnimationFrameCounter: 0,
-    wallJump: "up",
-    decreaseAirControl: true,
-    autoJump: false,
-    controlTimer: 0,
-    controlMultiplier: 1,
-    dissipations: [] // each item has a timeToDissapate, timeToReturn, timer, and tileIdx
-  },
-  editor: {
-    cam: {
-      x: 0,
-      y: 0
-    },
-    currentRotation: 0,
-    playerSpawn: {x: 0, y: 0},
-    tileSize: 32,
-    selectedTile: 1,
-    lastSelectedTiles: [2, 1], // [1] is the current selected tile
-    map: {
-      w: 100,
-      h: 50,
-      tiles: new Uint16Array(100 * 50)
-    },
-    width: 100,
-    height: 50,
-    tileset: [],
-    limitedPlacedTiles: [],
-    tilesetPath: "./assets/medium.json",
-    dissipateTime: 2 * 60,
-    dissipateDelay: 2 * 60,
-  },
-}
 
 export function endLevel() {
   mode = "editor"
@@ -84,36 +20,35 @@ export const input = {
   down: false,
   keys: {}
 }
+
 export function setMode(desiredMode) {
-  mode = desiredMode
-  if (mode === "platformer") {
+  if (desiredMode === "play") {
     toggleEditorUI(false)
     initPlatformer()
   } else {
     toggleEditorUI(true)
     initEditor()
   }
+  mode = desiredMode
 }
 
-let timestamp = 0
 let lastTime = 0
 
-function engineLoop() {
+function engineLoop(timestamp) {
   const dt = deltaTime(timestamp)
   if (mode === "play") {
     platformerLoop(dt)
   } else {
     levelEditorLoop(dt)
   }
-  requestAnimationFrame(engineLoop, timestamp)
-}
+  requestAnimationFrame(engineLoop)
+} 
 
-engineLoop()
-
-export function deltaTime(timestamp) {
+function deltaTime(timestamp) {
   if (!timestamp) timestamp = performance.now()
   if (lastTime === 0) lastTime = timestamp
-  const seconds = (timestamp - lastTime) / 1000
+  let seconds = (timestamp - lastTime) / 1000
+  if (!isFinite(seconds) || seconds < 0) seconds = 0
   lastTime = timestamp
   return Math.min(seconds, 0.1)
 }

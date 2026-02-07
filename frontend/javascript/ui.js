@@ -1,10 +1,9 @@
 import { createMap } from "./platformer.js"
-import { mode, state } from "./site.js"
-import { ctx } from "./renderer.js"
-import { canvas } from "./renderer.js"
+import { mode, setMode } from "./site.js"
+import { state } from "./state.js"
+import { ctx, canvas, updateTileset } from "./renderer.js"
 import { toggleErase, changeSelectedTile, zoomMap, scrollCategoryTiles } from "./editor.js"
-
-const { player, editor } = state
+const { editor, player } = state
 
 export function toggleEditorUI(on) {
   const grid = document.querySelector(".grid")
@@ -14,7 +13,6 @@ export function toggleEditorUI(on) {
     grid.classList.add("grid-uihidden")
   }
   updateCanvasSize()
-  console.log(player.vx)
 }
 
 export function updateCanvasSize() {
@@ -63,6 +61,16 @@ const jumpWidthSlider = document.querySelector('#jump-width-input')
 const horizontalInertiaSlider = document.querySelector('#horizontal-inertia-input')
 const bouncePadHeightSlider = document.querySelector('#bounce-pad-height-input')
 const zoomSlider = document.getElementById('zoom-level-input')
+const walljumpInput = document.getElementById('walljump-input') 
+const tilesetInput = document.getElementById('tileset-input')
+
+tilesetInput.addEventListener("input", () => {
+  updateTileset(tilesetInput.value)
+})
+
+walljumpInput.addEventListener('input', () => {
+  player.wallJump = walljumpInput.value
+})
 
 zoomSlider.addEventListener('click', () => {
   player.tileSize = Math.floor((32 / 0.6) * zoomSlider.value)
@@ -171,12 +179,9 @@ document.addEventListener('keypress', (e) => {
   if (e.key == 'e') {
     toggleErase()
   } else if (e.key == 'p') {
-    mode = mode === 'editor' ? 'play' : 'editor'
-    if (mode == 'play') {
-      initPlatformer()
-    } else {
-      initEditor()
-    }
+    const desiredMode = mode == 'editor' ? 'play' : 'editor'
+    console.log(desiredMode)
+    setMode(desiredMode)
   } else if (e.key == 'o') {
     let input = document.createElement('input')
     input.type = 'file'

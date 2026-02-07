@@ -1,4 +1,7 @@
-import { mode, state } from "./site.js";
+import { loadTileset, splitStripImages, loadPlayerSprites } from "./platformer.js";
+import { input, mode } from "./site.js";
+import { state } from "./state.js";
+import { addTileSelection } from "./ui.js";
 const { player, editor } = state
 
 export function drawMap(tileSize = editor.tileSize, cam = editor.cam) {
@@ -23,16 +26,16 @@ export function drawMap(tileSize = editor.tileSize, cam = editor.cam) {
       if (player.collectedCoinList.includes(y * editor.map.w + x) && mode === 'play') {
         showTile = false;
       }
-      if (selectedTile.type == 'enemy' && mode == 'play') {
+      if (selectedTile && selectedTile.type == 'enemy' && mode == 'play') {
         showTile = false;
       }
-      if (selectedTile.type == 'adjacency' && showTile) {
+      if (selectedTile && selectedTile.type == 'adjacency' && showTile) {
         ctx.drawImage(selectedTile.images[raw & 15], scrX, scrY, tileSize, tileSize);
-      } else if (selectedTile.type == "rotation" && showTile) {
+      } else if (selectedTile && selectedTile.type == "rotation" && showTile) {
         ctx.drawImage(selectedTile.images[raw & 15], scrX, scrY, tileSize, tileSize);
-      } else if (selectedTile.type == 'standalone' && showTile) {
+      } else if (selectedTile && selectedTile.type == 'standalone' && showTile) {
         ctx.drawImage(selectedTile.image, scrX, scrY, tileSize, tileSize);
-      } else if (selectedTile.type == 'enemy' && showTile) {
+      } else if (selectedTile && selectedTile.type == 'enemy' && showTile) {
         ctx.drawImage(selectedTile.image, scrX, scrY, tileSize, tileSize);
       }
     }
@@ -48,4 +51,51 @@ canvas.height = rect.height
 ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 ctx.imageSmoothingEnabled = false
 canvas.style.imageRendering = 'pixelated'
+
+
+export function drawPlayer(dt) {
+  player.AnimationFrameCounter += dt
+  if (player.AnimationFrameCounter > 5) {
+    player.AnimationFrame = player.AnimationFrame == 0 ? 1 : 0
+    player.AnimationFrameCounter = 0
+  }
+  if (!player.sprites) return
+  let selectedFrame = 0
+  if ((input.keys["a"] || input.keys["ArrowLeft"]) && (input.keys["d"] || input.keys["ArrowRight"])) {
+    // pressing both keys, don't rapidly switch between frames
+  } else if (!player.facingLeft && (input.keys["a"] || input.keys["ArrowLeft"])) {
+    player.facingLeft = 1
+  } else if (player.facingLeft && (input.keys["d"] || input.keys["ArrowRight"])) {
+    player.facingLeft = 0
+  }
+  if (player.grounded) {
+    // has to be one of the first 6
+    if ((input.keys["a"] || input.keys["ArrowLeft"]) && (input.keys["d"] || input.keys["ArrowRight"])) {
+      // pressing both keys, don't rapidly switch between frames
+    } else if (input.keys["a"] || input.keys["d"] || input.keys["ArrowRight"] || input.keys["ArrowLeft"]) {
+      // we're moving, calculate the animation frame of the movement
+      selectedFrame = (player.AnimationFrame << 1) + player.facingLeft + 2
+    } else {
+      // on the ground and not moving
+      selectedFrame = player.facingLeft
+    }
+  } else {
+    if (player.vy < 0) {
+      // jumping
+      selectedFrame = 6 + player.facingLeft
+    } else {
+      selectedFrame = 8 + player.facingLeft
+    }
+  }
+  ctx.imageSmoothingEnabled = false
+  ctx.drawImage(player.sprites[selectedFrame], Math.floor(player.x - player.cam.x), Math.floor(player.y - player.cam.y), player.w, player.h)
+}
+export function updateTileset(path) {
+  editor.tilesetPath = path
+  loadTileset(editor.tilesetPath).then(({ tileset, characterImage }) => {
+    editor.tileset = splitStripImages(tileset)
+    loadPlayerSprites(characterImage)
+    addTileSelection()
+  })
+}
 

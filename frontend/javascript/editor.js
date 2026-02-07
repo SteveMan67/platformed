@@ -1,7 +1,7 @@
 import { calcAdjacentAdjacency, calculateAdjacency, enemies } from "./platformer.js"
-import { input } from "./site.js"
 import { canvas, ctx, drawMap } from "./renderer.js"
-import { mode, state } from "./site.js"
+import { mode, input, key } from "./site.js"
+import { state } from "./state.js"
 const { editor } = state
 
 export function zoomMap(zoomDirectionIsIn) {
@@ -56,11 +56,8 @@ export function scrollCategoryTiles(up) {
     editor.selectedTile = !up ? Number(currentSelectedTiles[(currentSelectedTiles.indexOf(currentSelectedTiles.find(f => f.dataset.tile == String(editor.selectedTile))) + 1) % currentSelectedTiles.length].dataset.tile) : Number(currentSelectedTiles[(currentSelectedTiles.indexOf(currentSelectedTiles.find(f => f.dataset.tile == String(editor.selectedTile))) - 1 + currentSelectedTiles.length) % currentSelectedTiles.length].dataset.tile)
   }
 }export function initEditor() {
-  enemies.forEach(enemy => enemies.pop()
-  )
-  mode = "editor"
+  enemies.forEach(enemy => enemies.pop())
   ctx.imageSmoothingEnabled = false
-  levelEditorLoop()
 }
 
 export let mouseDown = false;
@@ -71,12 +68,11 @@ export let lastIdx;
 export function levelEditorLoop(dt) {
   let timeScale = dt * 60
   const { map, cam, tileSize, tileset } = editor
-
   const speed = 10
-  if ((input.keys['w'] || input.keys["ArrowUp"]) && cam.y >= 0) cam.y -= speed * timeScale
-  if ((input.keys['s'] || input.keys["ArrowDown"]) && cam.y <= (map.h * tileSize) - canvas.height) cam.y += speed * timeScale
-  if ((input.keys['a'] || input.keys["ArrowLeft"]) && cam.x >= 0) cam.x -= speed * timeScale
-  if ((input.keys['d'] || input.keys["ArrowRight"]) && cam.x <= (map.w * tileSize) - canvas.width) cam.x += speed * timeScale
+  if (key("up") && cam.y >= 0) cam.y -= speed * timeScale
+  if (key("down") && cam.y <= (map.h * tileSize) - canvas.height) cam.y += speed * timeScale
+  if (key("left") && cam.x >= 0) cam.x -= speed * timeScale
+  if (key("right") && cam.x <= (map.w * tileSize) - canvas.width) cam.x += speed * timeScale
   const worldX = input.x + cam.x
   const worldY = input.y + cam.y
   const tx = Math.floor(worldX / tileSize)
@@ -160,11 +156,11 @@ export function levelEditorLoop(dt) {
   const cursorScrY = (ty * tileSize) - cam.y
   let img
   const selectedTileOfTileset = tileset[editor.selectedTile]
-  if (selectedTileOfTileset.type == "adjacency") {
+  if (selectedTileOfTileset && selectedTileOfTileset.type == "adjacency") {
     img = selectedTileOfTileset.images[calculateAdjacency(ty * map.w + tx, editor.selectedTile) & 15]
-  } else if (selectedTileOfTileset.type == "rotation") {
+  } else if (selectedTileOfTileset && selectedTileOfTileset.type == "rotation") {
     img = selectedTileOfTileset.images[editor.currentRotation]
-  } else {
+  } else if (selectedTileOfTileset) {
     img = selectedTileOfTileset.image
   }
 
@@ -180,10 +176,6 @@ export function levelEditorLoop(dt) {
     ctx.strokeRect(cursorScrX, cursorScrY, tileSize, tileSize)
   }
   ctx.globalAlpha = 1
-
-  if (mode == 'editor') {
-    requestAnimationFrame(levelEditorLoop)
-  }
 }
 
 

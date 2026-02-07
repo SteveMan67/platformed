@@ -1,7 +1,9 @@
-import { toggleEditorUI, updateCanvasSize, sortByCategory, addTileSelection } from "./ui.js"
-import { canvas, ctx, drawMap } from "./renderer.js"
-import { deltaTime, endLevel, input, key, state } from "./site.js"
+import { toggleEditorUI, updateCanvasSize, sortByCategory } from "./ui.js"
+import { canvas, ctx, drawMap, drawPlayer, updateTileset } from "./renderer.js"
+import { endLevel, key } from "./site.js"
+import { state } from "./state.js"
 const { player, editor } = state
+
 
 function decodeRLE(rle) {
   const out = []
@@ -434,15 +436,6 @@ function updateLevelSize(width, height) {
   editor.map.h = height
 }
 
-function updateTileset(path) {
-  editor.tilesetPath = path
-  loadTileset(editor.tilesetPath).then(({tileset, characterImage}) => {
-    editor.tileset = splitStripImages(tileset)
-    loadPlayerSprites(characterImage)
-    addTileSelection()
-  })
-}
-
 function getJumpHeight(heightInTiles, yInertia, tileSize) {
   const gravity = (0.7 * yInertia) + 0.5
   const heightInPixels = heightInTiles * tileSize
@@ -491,13 +484,15 @@ function scanLevelOnPlay() {
 }
 
 export function initPlatformer() {
+  console.log(player)
   toggleEditorUI(false)
+  player.x = editor.playerSpawn.x
+  player.y = editor.playerSpawn.y
   player.w = player.tileSize
   player.h = player.tileSize
   player.hitboxW = 0.8 * player.tileSize
   player.hitboxH = 0.8 * player.tileSize
   const ratio = player.tileSize / 64
-  // !! changes on save/load and gets higher and higher if tilesize != 0 !!!!!!
   player.jump = getJumpHeight(player.jumpHeight + 0.3, player.yInertia, player.tileSize)
   player.speed = getJumpSpeed(player.jumpWidth - 1, player.jump, player.yInertia, player.tileSize)
   player.stopThreshold = 0.4 * ratio
@@ -506,7 +501,6 @@ export function initPlatformer() {
   player.lastCheckpointSpawn = { x: 0, y: 0 }
   player.collectedCoinList = []
   scanLevelOnPlay()
-  platformerLoop()
 }
 
 function killPlayer() {
@@ -835,46 +829,6 @@ function updatePhysics(dt) {
   }
 
 
-}
-
-function drawPlayer(dt) {
-  player.AnimationFrameCounter += dt
-  if (player.AnimationFrameCounter > 5) {
-    player.AnimationFrame = player.AnimationFrame == 0 ? 1 : 0
-    player.AnimationFrameCounter = 0
-  }
-  if (!player.sprites) return
-  let selectedFrame = 0
-  if ((input.keys["a"] || input.keys["ArrowLeft"]) && (input.keys["d"] || input.keys["ArrowRight"])) {
-    // pressing both keys, don't rapidly switch between frames
-
-  } else if (!player.facingLeft && (input.keys["a"] || input.keys["ArrowLeft"])) {
-    player.facingLeft = 1
-  } else if (player.facingLeft && (input.keys["d"] || input.keys["ArrowRight"])) {
-    player.facingLeft = 0
-  }
-  if (player.grounded) {
-    // has to be one of the first 6
-      if ((input.keys["a"] || input.keys["ArrowLeft"]) && (input.keys["d"] || input.keys["ArrowRight"])) {
-      // pressing both keys, don't rapidly switch between frames
-
-      } else if (input.keys["a"] || input.keys["d"] || input.keys["ArrowRight"] || input.keys["ArrowLeft"]) {
-      // we're moving, calculate the animation frame of the movement
-      selectedFrame = (player.AnimationFrame << 1) + player.facingLeft + 2
-    } else {
-      // on the ground and not moving
-      selectedFrame = player.facingLeft
-    }
-  } else {
-    if (player.vy < 0) {
-      // jumping
-      selectedFrame = 6 + player.facingLeft
-    } else {
-      selectedFrame = 8 + player.facingLeft
-    }
-  }
-  ctx.imageSmoothingEnabled = false
-  ctx.drawImage(player.sprites[selectedFrame], Math.floor(player.x - player.cam.x), Math.floor(player.y - player.cam.y), player.w, player.h)
 }
 
 function getCameraCoords() {
