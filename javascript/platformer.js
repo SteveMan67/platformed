@@ -206,6 +206,9 @@ function killPlayer() {
     player.x = editor.playerSpawn.x * player.tileSize
     player.y = editor.playerSpawn.y * player.tileSize
   }
+
+  playSound("./assets/audio/death.wav")
+  playSound("./assets/audio/deathmusic.wav")
 }
 
 const tileMaskCache = new Map()
@@ -309,7 +312,7 @@ function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
       const idx = ty * editor.map.w + tx
       player.collectedCoins++
       player.collectedCoinList.push(idx)
-      playSound("./assets/audio/coin.wav")
+      playSound("./assets/audio/coin.wav", 0.25)
     }
   }
   if (mechanics.includes("dissipate")) {
@@ -431,7 +434,7 @@ function updatePhysics(dt) {
     player.coyoteTimer = 0
     player.grounded = false
 
-    playSound("./assets/audio/jump.wav")
+    playSound("./assets/audio/jump.wav", 0.1)
   }
   const jumpControl = player.decreaseAirControl && !player.grounded ? 1 : 1
   const currentControl = jumpControl * player.controlMultiplier
@@ -533,14 +536,14 @@ function updatePhysics(dt) {
       player.wallCoyoteTimer = 0
       player.airControl = true
       limitControl(20, 0.0)
-      playSound("./assets/audio/jump.wav")
+      playSound("./assets/audio/jump.wav", 0.1)
     } else if (player.wallJump == "up") {
       player.vx = player.lastWallSide == -1 ? player.speed * 1.2 : -player.speed * 1.2
       player.vy = -player.jump
       player.jumpBufferTimer = 0
       player.lastWallSide = 0
       player.wallCoyoteTimer = 0
-      playSound("./assets/audio/jump.wav")
+      playSound("./assets/audio/jump.wav", 0.1)
     }
   }
 
