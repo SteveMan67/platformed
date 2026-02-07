@@ -1,6 +1,6 @@
 import { toggleEditorUI, updateCanvasSize, sortByCategory } from "./ui.js"
 import { canvas, ctx, drawEnemies, drawMap, drawPlayer, getCameraCoords } from "./renderer.js"
-import { endLevel, key } from "./site.js"
+import { endLevel, key, playSound } from "./site.js"
 import { state } from "./state.js"
 import { createMap } from "./file-utils.js"
 const { player, editor } = state
@@ -298,7 +298,10 @@ function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
       }
     }
   }
-  if (mechanics.includes("checkpoint")) {
+    if (mechanics.includes("checkpoint")) {
+    if (player.lastCheckpointSpawn.x != tx && player.lastCheckpointSpawn.ty != ty) {
+      playSound("./assets/audio/checkpoint.wav")
+    }
     player.lastCheckpointSpawn = { x: tx, y: ty }
   }
   if (mechanics.includes("coin")) {
@@ -306,6 +309,7 @@ function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
       const idx = ty * editor.map.w + tx
       player.collectedCoins++
       player.collectedCoinList.push(idx)
+      playSound("./assets/audio/coin.wav")
     }
   }
   if (mechanics.includes("dissipate")) {
@@ -426,6 +430,8 @@ function updatePhysics(dt) {
     player.jumpBufferTimer = 0
     player.coyoteTimer = 0
     player.grounded = false
+
+    playSound("./assets/audio/jump.wav")
   }
   const jumpControl = player.decreaseAirControl && !player.grounded ? 1 : 1
   const currentControl = jumpControl * player.controlMultiplier
@@ -527,12 +533,14 @@ function updatePhysics(dt) {
       player.wallCoyoteTimer = 0
       player.airControl = true
       limitControl(20, 0.0)
+      playSound("./assets/audio/jump.wav")
     } else if (player.wallJump == "up") {
       player.vx = player.lastWallSide == -1 ? player.speed * 1.2 : -player.speed * 1.2
       player.vy = -player.jump
       player.jumpBufferTimer = 0
       player.lastWallSide = 0
       player.wallCoyoteTimer = 0
+      playSound("./assets/audio/jump.wav")
     }
   }
 

@@ -92,5 +92,23 @@ export function init() {
   })
 }
 
+export function playSound(fileLocation) {
+    let sfx = document.createElement("audio")
+    let source = document.createElement("source")
+    source.src = fileLocation
+    sfx.appendChild(source)
+    sfx.playbackRate = getRandomArbitrary(0.90, 1.1)
+    sfx.play()
+    sfx.addEventListener("ended", killSound(sfx))
+}
+
+function killSound(sfx) {
+    sfx.remove()
+}
+
+function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
 init();
 
