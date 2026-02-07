@@ -675,4 +675,3 @@ let once = true
 function logCurrentMapAsJSON() {
   console.log(createMap(editor.map.w, editor.map.h, Array.from(editor.map.tiles)))
 }
-

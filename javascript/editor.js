@@ -1,6 +1,6 @@
 import { calcAdjacentAdjacency, calculateAdjacency, enemies } from "./platformer.js"
 import { canvas, ctx, drawMap } from "./renderer.js"
-import { mode, input, key } from "./site.js"
+import { input, key } from "./site.js"
 import { state } from "./state.js"
 const { editor } = state
 

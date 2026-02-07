@@ -150,14 +150,7 @@ zoomOut.addEventListener('click', () => {
 })
 
 play.addEventListener('click', () => {
-  mode = mode === 'editor' ? 'play' : 'editor'
-    if (mode == 'play') {
-        initPlatformer()
-        play.src = "./assets/icons/stop_noborder.svg"
-    } else {
-        initEditor()
-        play.src = "./assets/icons/play_nofill.svg"
-    }
+  setMode(mode === 'play' ? 'editor' : 'play')
 }) 
 
 importButton.addEventListener('click', () => {
