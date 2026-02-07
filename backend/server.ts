@@ -25,6 +25,14 @@ function getCookies(reqest: Request) {
 
 const server = Bun.serve({
   port: 1010,
+  routes: {
+    "/login": async () => {
+      return new Response(await Bun.file("./frontend/login.html"))
+    },
+    "/editor": async () => {
+      return new Response(await Bun.file("./frontend/editor.html"))
+    }
+  },
   async fetch(req) {
     const url = new URL(req.url)
     const pathname = url.pathname
@@ -40,11 +48,9 @@ const server = Bun.serve({
     };
 
     if (req.method == "OPTIONS") {
-      console.log("recieved a OPTIONS request")
       return new Response(null, { status: 204, headers: CORS })
     }
 
-    console.log(pathname, req.method)
     // --- health ---
     if (pathname == "/api/ping") {
       return new Response("pong", { status: 200, headers: CORS})
@@ -52,7 +58,6 @@ const server = Bun.serve({
 
     // --- login ---
     if (pathname == "/api/login" && req.method == "POST") { 
-      console.log("received fetch")
       try {
         const {username, password} = await req.json()
         const deleteOldSessions = await sql`
@@ -66,7 +71,7 @@ const server = Bun.serve({
         }
         const rows = await sql`select id, password_hash from users where username = ${username} limit 1`
         const user = rows[0]
-        if (!user.id) return new Response("Username does not exist", withCors({status: 404}, CORS))
+        if (!user || !user.id) return new Response("Username does not exist", withCors({status: 404}, CORS))
   
         const valid = await Bun.password.verify(password, user.password_hash)
         if (!valid) {
@@ -83,10 +88,7 @@ const server = Bun.serve({
           returning id
         `
 
-        console.log(withCors({ status: 200, headers: {
-          "Set-Cookie": `session-id=${sessionId[0].id}, token=${uuid}; http-only; Path=/; SameSite=Lax; MaxAge=${60 * 60 * 24 * 14}`
-        }}, CORS))
-  
+
         return new Response("Login successful", withCors({ status: 200, headers: {
           "Set-Cookie": `session-id=${sessionId[0].id}, token=${uuid}; http-only; Path=/; SameSite=Lax; MaxAge=${60 * 60 * 24 * 14}`
         }}, CORS))
