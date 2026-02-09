@@ -60,6 +60,7 @@ export function sortByCategory(category) {
 }
 
 // page event listeners
+const menuButton = document.querySelector(".menu")
 const eraserButton = document.querySelector('.eraser')
 const saveButton = document.querySelector('.save')
 const importButton = document.querySelector('.import')
@@ -68,6 +69,7 @@ const zoomIn = document.querySelector('.plus')
 const zoomOut = document.querySelector('.minus')
 const categories = document.querySelectorAll('.category')
 const play = document.querySelector(".play")
+const menuOpen = menuButton.style.display != "none"
 
 const jumpHeightSlider = document.querySelector('#jump-height-input')
 const verticalInertiaSlider = document.querySelector('#vertical-inertia-input')
@@ -183,6 +185,7 @@ eraserButton.addEventListener('click', () => {
   toggleErase()
 })
 document.addEventListener('keypress', (e) => {
+  if (menuButton.style.display != "none") return
   if (e.key == 'e') {
     toggleErase()
   } else if (e.key == 'p') {

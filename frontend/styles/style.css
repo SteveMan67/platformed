@@ -320,6 +320,38 @@ input[type="radio"] {
   align-items: center;
 }
 
+.menu-item input[type="text"] {
+  color: black;
+  -webkit-text-fill-color: black; /* styles the placeholder */
+  background-color: transparent;
+  border: none;
+  font-size: 20px;
+  text-decoration: underline;
+  border-radius: 2px;
+  text-align: right;
+}
+
+.menu-item input[type="text"]:focus, .menu-item input[type="text"]:focus-visible {
+  outline: none;
+  border: none;
+  appearance: none;
+}
+
+.menu-item input[type="text"]::-webkit-input-placeholder,
+.menu-item input[type="text"]:-ms-input-placeholder,
+.menu-item input[type="text"]::placeholder {
+  color: black !important;
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.menu-item input[type="text"]:-webkit-autofill,
+.menu-item input[type="text"]:-webkit-autofill:focus,
+.menu-item input[type="text"]:-webkit-autofill:hover {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  box-shadow: 0 0 0 1000px transparent inset !important;
+  -webkit-text-fill-color: inherit !important;
+}
 .menu-item h3 {
   margin: 0;
   font-size: 25px;
@@ -434,3 +466,5 @@ span.keyboard-shortcut {
   padding: 5px;
   font-size: 18px;
 }
+
+
