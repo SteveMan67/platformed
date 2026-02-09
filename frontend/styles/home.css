@@ -1,0 +1,19 @@
+.topbar {
+    position: fixed;
+    width: 100%;
+    height: 80px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.topbar-option {
+    
+}
+
+.profile-pic {
+    height: 75%;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+}
