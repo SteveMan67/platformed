@@ -87,3 +87,18 @@ nav h1 {
   color: black;
   margin-right: 7px;
 }
+
+label.error-text {
+  color: white;
+  margin: 7px;
+  padding: 1px;
+  padding-left: 10px;
+  height: 25px;
+  border: 2px solid rgb(255, 0, 0);
+  border-radius: 17px;
+  background-color: rgba(255, 0, 0, 0.4)
+}
+
+label.error-text:empty {
+  display: none;
+}
