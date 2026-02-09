@@ -75,3 +75,15 @@ nav h1 {
   height: 33px;
   border: none;
 }
+
+.form-bottom {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-bottom a {
+  color: black;
+  margin-right: 7px;
+}

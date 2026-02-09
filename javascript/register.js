@@ -15,7 +15,7 @@ loginForm.addEventListener("submit", async (e) => {
     password: form.password.value
   }
 
-  const url = `${serverUrl}/api/login`
+  const url = `${serverUrl}/api/register`
   console.log(JSON.stringify(payload))
   const res = await fetch(url, {
     method: "POST",
