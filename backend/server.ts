@@ -25,13 +25,19 @@ function getCookies(reqest: Request) {
 }
 
 const server = Bun.serve({
-  port: 1010,
+  port: 1345,
   routes: {
-    "/login": async () => {
-      return new Response(await Bun.file("./frontend/login.html"))
+    "/login": async (req) => {
+      const token = req.cookies.get("token") || ""
+      const sessionId = req.cookies.get("session-id") || ""
+      if (sessionId && token && await authenticate({ sessionId: sessionId, token: token})) {
+        return new Response(Bun.file("../frontend/index.html"))
+      } else {
+        return new Response(Bun.file("../frontend/login.html"))
+      }
     },
     "/editor": async () => {
-      return new Response(await Bun.file("./frontend/editor.html"))
+      return new Response(Bun.file("../frontend/editor.html"))
     }
   },
   async fetch(req) {

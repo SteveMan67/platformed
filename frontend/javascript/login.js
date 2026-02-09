@@ -52,6 +52,7 @@ loginForm.addEventListener("submit", async (e) => {
     })
     
     if (res.ok) {
+      console.log("request ok")
       window.location.href = '/frontend/editor.html'
     } else {
       const text = await res.text()
