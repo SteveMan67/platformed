@@ -2,19 +2,24 @@ version: '3.8'
 
 services:
   app:
-    # Use a standard devcontainer base image
     image: mcr.microsoft.com/devcontainers/base:bookworm
     volumes:
-      # Mount the root of the repo to /workspace
-      - ..:/workspace:cached
+      # Mount the parent directory (repo root) to the standard Codespaces path
+      - ..:/workspaces/platformed:cached
     
-    # Overrides the default command so the container stays running
+    # Set the working directory to match the mount
+    working_dir: /workspaces/platformed
+    
+    # Keep the container running
     command: sleep infinity
-
-    # Set environment variable so your server.ts connects to the 'db' container
-    # instead of localhost, and uses the standard port 5432
+    
+    # Connect to the db service
     environment:
       - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
+    
+    # Ensure it's on the same network as the db
+    networks:
+      - dev-network
 
   db:
     image: postgres:15
@@ -25,6 +30,11 @@ services:
       POSTGRES_DB: postgres
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    networks:
+      - dev-network
 
 volumes:
   postgres-data:
+
+networks:
+  dev-network:
