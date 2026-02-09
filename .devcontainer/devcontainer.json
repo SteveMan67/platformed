@@ -1,18 +1,18 @@
 {
-  "name": "Bun & Postgres",
+  "name": "Platformed Dev",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
-  "workspaceFolder": "/workspace",
+  "workspaceFolder": "/workspaces/platformed",
 
-  // Install Bun using the official Dev Container Feature
+  // Install Bun
   "features": {
     "ghcr.io/devcontainers/features/bun:1": {}
   },
 
-  // Forward the app port (1010) and DB port (5432)
-  // 1010 matches the port in your backend/server.ts
+  // Forward the Bun server port (1010) and Postgres (5432)
   "forwardPorts": [1010, 5432],
 
+  // Configure VS Code
   "customizations": {
     "vscode": {
       "extensions": [
@@ -21,6 +21,12 @@
     }
   },
 
-  // Automatically install dependencies after the container is created
-  "postCreateCommand": "bun install"
+  // Fix common permission issues
+  "updateRemoteUserUID": true,
+
+  // Install dependencies automatically after creation
+  "postCreateCommand": "bun install",
+
+  // Stop the containers when you close the codespace to save resources
+  "shutdownAction": "stopCompose"
 }
