@@ -425,7 +425,9 @@ input[type="radio"] {
   box-sizing: border-box;
 }
 
-
+.level-name {
+    font-family: "Fredoka", sans-serif;
+}
 
 .tab {
   display: none;
