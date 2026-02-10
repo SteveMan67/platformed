@@ -59,7 +59,10 @@ const server = Bun.serve({
     },
     "/register": async () => {
       return new Response(Bun.file("./frontend/register.html"))
-    }
+    },
+    "/": async () => {
+      return new Response(Bun.file("./frontend/index.html"))
+    } 
   },
   async fetch(req) {
     const url = new URL(req.url)

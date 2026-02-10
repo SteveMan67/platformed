@@ -1,2 +1,0 @@
-INSERT INTO users (username, password_hash, uuid) 
-values("Timmy", "$argon2id$v=19$m=65536,t=2,p=1$vYTx4Eerq/5cu9Tsyrdj7TFMDunoWe0nBBntnV9Jqho$8ofulegeNgzTQzoPEz4BAAI8vuZyB4FjV0zLXrcC5aM", "d1daf355-db27-4321-89c4-ed49e0b4ff3b")
