@@ -14,13 +14,13 @@ body {
   display: grid;
   grid-template-columns: 1fr auto;
   grid-template-rows: 80px 1fr;
-  grid-template-areas: 
+  grid-template-areas:
     "topbar topbar"
     "game sidebar";
 }
 
 .grid-uihidden {
-    grid-template-columns: 1fr 0px;
+  grid-template-columns: 1fr 0px;
 }
 
 .grid-uihidden ::after {
@@ -84,7 +84,8 @@ body {
   box-sizing: border-box;
   transform: translateX(4px)
 }
-.category-blocks > * {
+
+.category-blocks>* {
   margin: 10px 0;
   height: 50px;
   width: 50px;
@@ -161,7 +162,7 @@ body {
   cursor: pointer;
 }
 
-div.eraser > img {
+div.eraser>img {
   width: 50px;
   height: 50px;
 }
@@ -169,7 +170,7 @@ div.eraser > img {
 .tile-selection img {
   width: 60px;
   height: 60px;
-  image-rendering: pixelated; 
+  image-rendering: pixelated;
   user-select: none;
   margin-bottom: 20px;
 }
@@ -177,11 +178,11 @@ div.eraser > img {
 .actions {
   display: flex;
   flex-direction: row;
-  align-items: center; 
+  align-items: center;
   object-fit: cover;
 }
 
-.actions > * {
+.actions>* {
   margin-right: 20px;
 }
 
@@ -204,7 +205,12 @@ i::before {
   text-decoration: none;
   font-size: 35px;
   font-weight: 500;
-  padding-left: 20px; 
+  padding-left: 20px;
+}
+
+.title a {
+  color: black;
+  text-decoration: none;
 }
 
 .game {
@@ -261,11 +267,11 @@ input[type="radio"] {
   display: none;
 }
 
-.menu-content input[type="radio"]:nth-of-type(1):checked ~ .tabs li:nth-of-type(1), 
-.menu-content input[type="radio"]:nth-of-type(2):checked ~ .tabs li:nth-of-type(2), 
-.menu-content input[type="radio"]:nth-of-type(3):checked ~ .tabs li:nth-of-type(3), 
-.menu-content input[type="radio"]:nth-of-type(4):checked ~ .tabs li:nth-of-type(4), 
-.menu-content input[type="radio"]:nth-of-type(5):checked ~ .tabs li:nth-of-type(5) {
+.menu-content input[type="radio"]:nth-of-type(1):checked~.tabs li:nth-of-type(1),
+.menu-content input[type="radio"]:nth-of-type(2):checked~.tabs li:nth-of-type(2),
+.menu-content input[type="radio"]:nth-of-type(3):checked~.tabs li:nth-of-type(3),
+.menu-content input[type="radio"]:nth-of-type(4):checked~.tabs li:nth-of-type(4),
+.menu-content input[type="radio"]:nth-of-type(5):checked~.tabs li:nth-of-type(5) {
   background-color: #C29A62;
   border: 3px solid black;
   border-bottom: none;
@@ -324,7 +330,8 @@ input[type="radio"] {
 
 .menu-item input[type="text"] {
   color: black;
-  -webkit-text-fill-color: black; /* styles the placeholder */
+  -webkit-text-fill-color: black;
+  /* styles the placeholder */
   background-color: transparent;
   border: none;
   font-size: 20px;
@@ -333,7 +340,8 @@ input[type="radio"] {
   text-align: right;
 }
 
-.menu-item input[type="text"]:focus, .menu-item input[type="text"]:focus-visible {
+.menu-item input[type="text"]:focus,
+.menu-item input[type="text"]:focus-visible {
   outline: none;
   border: none;
   appearance: none;
@@ -354,6 +362,7 @@ input[type="radio"] {
   box-shadow: 0 0 0 1000px transparent inset !important;
   -webkit-text-fill-color: inherit !important;
 }
+
 .menu-item h3 {
   margin: 0;
   font-size: 25px;
@@ -418,6 +427,7 @@ input[type="radio"] {
   box-sizing: border-box;
   margin-top: -7px;
 }
+
 .menu-item input[type="range"]::-moz-range-thumb {
   height: 16px;
   width: 16px;
@@ -428,18 +438,18 @@ input[type="radio"] {
 }
 
 .level-name {
-    font-family: "Fredoka", sans-serif;
+  font-family: "Fredoka", sans-serif;
 }
 
 .tab {
   display: none;
 }
 
-.menu-content input[type="radio"]:nth-of-type(1):checked ~ .tab-content .tab:nth-of-type(1), 
-.menu-content input[type="radio"]:nth-of-type(2):checked ~ .tab-content .tab:nth-of-type(2),
-.menu-content input[type="radio"]:nth-of-type(3):checked ~ .tab-content .tab:nth-of-type(3),
-.menu-content input[type="radio"]:nth-of-type(4):checked ~ .tab-content .tab:nth-of-type(4),
-.menu-content input[type="radio"]:nth-of-type(5):checked ~ .tab-content .tab:nth-of-type(5) {
+.menu-content input[type="radio"]:nth-of-type(1):checked~.tab-content .tab:nth-of-type(1),
+.menu-content input[type="radio"]:nth-of-type(2):checked~.tab-content .tab:nth-of-type(2),
+.menu-content input[type="radio"]:nth-of-type(3):checked~.tab-content .tab:nth-of-type(3),
+.menu-content input[type="radio"]:nth-of-type(4):checked~.tab-content .tab:nth-of-type(4),
+.menu-content input[type="radio"]:nth-of-type(5):checked~.tab-content .tab:nth-of-type(5) {
   display: block;
 }
 
@@ -470,5 +480,3 @@ span.keyboard-shortcut {
   padding: 5px;
   font-size: 18px;
 }
-
-

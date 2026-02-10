@@ -10,7 +10,31 @@
         "-Command",
         "& { $env:DATABASE_URL='postgres://postgres:PopptotheTop7!@localhost:5432/postgres'; bun run ./backend/server.ts }"
       ],
-      "group": { "kind": "build", "isDefault": true },
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Bun Server (Bash)",
+      "type": "shell",
+      "command": "/home/codespace/.bun/bin/bun run /backend/server.ts",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "shell": {
+          "executable": "/bin/bash",
+          "args": ["-lc"]
+        }
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
       "presentation": { "reveal": "always", "panel": "shared" },
       "problemMatcher": []
     }
