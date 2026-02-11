@@ -480,3 +480,30 @@ span.keyboard-shortcut {
   padding: 5px;
   font-size: 18px;
 }
+
+.description-border {
+  width: 100%;
+  min-height: 50px;
+  border: 3px solid black;
+  border-radius: 10px
+}
+
+div.menu-item div.description-border input[type="text"] {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 18px;
+  padding: 5px;
+  text-align: left;
+  text-decoration: none;
+}
+
+.menu-item input[type="submit"] {
+  background-color: black;
+  border: none;
+  padding: 5px 15px;
+  font-size: 20px;
+  color: #C29A62;
+  border-radius: 20px;
+  font-family: "Fredoka", sans-serif;
+  justify-self: right;
+}

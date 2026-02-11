@@ -20,7 +20,7 @@ function withCors(respInit: ResponseInit, CORS: any) {
   for (const [k, v] of Object.entries(CORS)) {
     headers.set(k, v)
   }
-  return {...respInit, headers}
+  return { ...respInit, headers }
 }
 
 const DATABASE_URL = process.env.DATABASE_URL ?? "postgres://postgres:postgres@localhost:4321/postgres"
@@ -29,15 +29,15 @@ const sql = postgres(DATABASE_URL)
 function getCookies(reqest: Request) {
   const cookieHeader = reqest.headers.get("Cookie") ?? ""
   const cookies: Record<string, string> = {}
-  cookieHeader.split(",").forEach(c => {
+  cookieHeader.split(";").forEach(c => {
     const [key, ...v] = c.split("=")
-    if(key) cookies[key.trim()] = v.join("=").trim()
+    if (key) cookies[key.trim()] = v.join("=").trim()
   })
   return cookies
 }
 
 const server = Bun.serve({
-  port: 9021,
+  port: 1010,
   routes: {
 
     // --- login page --
@@ -45,8 +45,8 @@ const server = Bun.serve({
       const token = req.cookies.get("token") || ""
       const sessionId = req.cookies.get("session-id") || ""
       console.log(sessionId || "not found")
-      console.log(await authenticate({ sessionId: sessionId, token: token}))
-      if (sessionId != "" && token != "" && await authenticate({ sessionId: sessionId, token: token})) {
+      console.log(await authenticate({ sessionId: sessionId, token: token }))
+      if (sessionId != "" && token != "" && await authenticate({ sessionId: sessionId, token: token })) {
         console.log("user already authenticated")
         return new Response(Bun.file("./frontend/index.html"))
       } else {
@@ -60,9 +60,13 @@ const server = Bun.serve({
     "/register": async () => {
       return new Response(Bun.file("./frontend/register.html"))
     },
+    "/level": async () => {
+      console.log("/level")
+      return new Response(Bun.file("./frontend/level.html"))
+    },
     "/": async () => {
       return new Response(Bun.file("./frontend/index.html"))
-    } 
+    }
   },
   async fetch(req) {
     const url = new URL(req.url)
@@ -79,55 +83,61 @@ const server = Bun.serve({
     };
 
     if (req.method == "OPTIONS") {
-      return new Response(null, withCors({ status: 204}, CORS))
+      return new Response(null, withCors({ status: 204 }, CORS))
+    }
+
+    if (pathname == "/level" || pathname.startsWith("/level/")) {
+      return new Response(Bun.file("./frontend/level.html"))
     }
 
     // --- health ---
     if (pathname == "/api/ping") {
-      return new Response("pong", withCors({ status: 200}, CORS))
+      return new Response("pong", withCors({ status: 200 }, CORS))
     }
 
     // --- login ---
-    if (pathname == "/api/login" && req.method == "POST") { 
+    if (pathname == "/api/login" && req.method == "POST") {
       try {
-        const {username, password} = await req.json()
+        const { username, password } = await req.json()
         const deleteOldSessions = await sql`
           DELETE FROM sessions WHERE expires_at < NOW()
         `
         if (!username) {
-          return new Response("No username provided", withCors({ status: 400}, CORS))
+          return new Response("No username provided", withCors({ status: 400 }, CORS))
         }
         if (!password) {
-          return new Response("No password provided", withCors({ status: 400}, CORS))
+          return new Response("No password provided", withCors({ status: 400 }, CORS))
         }
         const rows = await sql`select id, password_hash from users where username = ${username} limit 1`
         const user = rows[0]
-        if (!user || !user.id) return new Response("Username does not exist", withCors({status: 404}, CORS))
-  
+        if (!user || !user.id) return new Response("Username does not exist", withCors({ status: 404 }, CORS))
+
         const valid = await Bun.password.verify(password, user.password_hash)
         if (!valid) {
-          return new Response("Invalid credentials", withCors({status: 401}, CORS))
+          return new Response("Invalid credentials", withCors({ status: 401 }, CORS))
         }
-  
+
         // add cookie to sessions and set the cookie in the response header
         const uuid = crypto.randomUUID()
         const hashedCookie = await Bun.password.hash(uuid)
 
         console.log(`token: ${uuid}`)
         console.log(`hashed token: ${hashedCookie}`)
-        
+        const expirationTime = Date.now() + (60 * 60 * 24 * 14 * 1000)
+        console.log(expirationTime)
         const sessionId = await sql`
           insert into sessions(token_hash, expires_at, user_id) 
-          values (${hashedCookie}, ${Date.now() + (60 * 60 * 24 * 14)}, ${user.id})
+          values (${hashedCookie}, ${expirationTime}, ${user.id})
           returning id
         `
         const headers = new Headers()
         headers.append("Set-Cookie", `session-id=${sessionId[0].id}; Path=/; SameSite=Lax; MaxAge=${60 * 60 * 24 * 14}`)
         headers.append("Set-Cookie", `token=${uuid}; Path=/; SameSite=Lax; MaxAge=${60 * 60 * 24 * 14}`)
 
-        return new Response("Login successful", withCors({ status: 200, headers: headers}, CORS))
+        return new Response("Login successful", withCors({ status: 200, headers: headers }, CORS))
 
-      } catch (e) {``
+      } catch (e) {
+        ``
         console.error(e)
         return new Response("Bad Request", withCors({ status: 400 }, CORS))
       }
@@ -137,7 +147,7 @@ const server = Bun.serve({
     // --- add new user ---
     if (pathname == "/api/register" && req.method == "POST") {
       try {
-        const {username, password, email } = await req.json()
+        const { username, password, email } = await req.json()
         if (username && password) {
           const uuid = crypto.randomUUID()
           const hashedCookie = await Bun.password.hash(uuid)
@@ -155,7 +165,7 @@ const server = Bun.serve({
             RETURNING id
           `
           // set their session cookie so they don't have to log in after registering
-          const expiresAt = Date.now() + (60 * 60 * 24 * 14)
+          const expiresAt = Date.now() + (60 * 60 * 24 * 14 * 1000)
           const sessionId = await sql`
             INSERT INTO sessions(token_hash, expires_at, user_id) 
             VALUES(${hashedCookie}, ${expiresAt}, ${userId[0].id})
@@ -167,7 +177,7 @@ const server = Bun.serve({
           headers.append("Set-Cookie", `session-id=${sessionId[0].id}; Path=/; SameSite=Lax; MaxAge=${60 * 60 * 24 * 14}`)
           headers.append("Set-Cookie", `token=${uuid}; Path=/; SameSite=Lax; MaxAge=${60 * 60 * 24 * 14}`)
 
-          return new Response("Sucessful Register", withCors({ status: 200, headers: headers}, CORS))
+          return new Response("Sucessful Register", withCors({ status: 200, headers: headers }, CORS))
         }
       } catch (e) {
         console.error(e)
@@ -182,11 +192,11 @@ const server = Bun.serve({
       if (levelId) {
         const level = await sql`select data, name, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels where id = ${levelId} limit 1`
         if (!level || level.length === 0) {
-          return new Response(JSON.stringify({ error: "Level not found"}), withCors({ status: 404, headers: {"Content-Type": "application/json"}}, CORS))
+          return new Response(JSON.stringify({ error: "Level not found" }), withCors({ status: 404, headers: { "Content-Type": "application/json" } }, CORS))
         }
-        return new Response(JSON.stringify(level), withCors({ headers: {"Content-Type": "application/json" }}, CORS))
+        return new Response(JSON.stringify(level), withCors({ headers: { "Content-Type": "application/json" } }, CORS))
       } else {
-        return new Response(JSON.stringify({ error: "Must specify a level id with the levelId parameter" }), withCors({ status: 404, headers: {"Content-Type": "application/json"}}, CORS))
+        return new Response(JSON.stringify({ error: "Must specify a level id with the levelId parameter" }), withCors({ status: 404, headers: { "Content-Type": "application/json" } }, CORS))
       }
     }
 
@@ -196,7 +206,7 @@ const server = Bun.serve({
       const page = match ? Number(match[1]) : 1
       if (page) {
         const levels = await sql`select id, name, created_at, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels limit 50 offset ${(page - 1) * 50}`
-        return new Response(JSON.stringify(levels), withCors({ headers: {"Content-Type": "application/json" } }, CORS))
+        return new Response(JSON.stringify(levels), withCors({ headers: { "Content-Type": "application/json" } }, CORS))
       }
     }
 
@@ -208,11 +218,14 @@ const server = Bun.serve({
       const sessionId = cookies["session-id"]
       const token = cookies["token"]
       if (!sessionId || !token) {
+        console.log(cookies)
+        console.log(`sessionId = ${sessionId} & token = ${token}`)
         return new Response("Unauthorized logic", withCors({ status: 401 }, CORS))
       }
       const sessionCookie: SessionCookie = { sessionId: sessionId, token: token }
-      
-      if (await authenticate(sessionCookie)) {
+      const authorized = await authenticate(sessionCookie)
+      console.log(authorized, sessionCookie)
+      if (authorized) {
         const user = await sql`
           SELECT user_id FROM sessions WHERE id = ${sessionId} 
         `
@@ -268,7 +281,7 @@ const server = Bun.serve({
     // ADD: modify level/level metadata
     // ADD fetch levels per user  
 
-      try {
+    try {
       const url = `./frontend${pathname}`
       const file = Bun.file(url)
 
@@ -284,7 +297,7 @@ const server = Bun.serve({
         case "html":
           mime = "text/html; charset=utf-8"
           break
-        case "png": 
+        case "png":
           mime = "image/png"
           break
         case "svg":
@@ -294,11 +307,8 @@ const server = Bun.serve({
           mime = "application/json; charset=utf-8"
           break
       }
-
-
-      return new Response(file, withCors({ status: 200, headers: { "Content-Type": mime }}, CORS))
+      return new Response(file, withCors({ status: 200, headers: { "Content-Type": mime } }, CORS))
     } catch {
-      
     }
     return new Response("Not Found", withCors({ status: 404 }, CORS))
   }

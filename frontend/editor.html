@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
   <title>Platformed - Editor</title>
 </head>
+
 <body>
   <div class="grid">
     <div class="topbar">
@@ -19,7 +21,8 @@
         <img class="save" src="./assets/icons/save.svg">
         <img class="import" src="./assets/icons/import.svg">
         <img class="play" src="./assets/icons/play_nofill.svg" alt="">
-        <img class="menu-button" src="./assets/icons/menu.svg" onclick="document.querySelector('.menu').style.display = 'flex'">
+        <img class="menu-button" src="./assets/icons/menu.svg"
+          onclick="document.querySelector('.menu').style.display = 'flex'">
       </div>
     </div>
     <div class="game">
@@ -74,7 +77,7 @@
       <input type="radio" name="tabs" id="tab3">
       <input type="radio" name="tabs" id="tab4">
       <input type="radio" name="tabs" id="tab5">
-      
+
       <div class="tabs">
         <ul>
           <li><label for="tab1">Level</label></li>
@@ -82,7 +85,8 @@
           <li><label for="tab3">Share</label></li>
           <li><label for="tab4">Options</label></li>
           <li><label for="tab5">Help</label></li>
-          <li><img src="./assets/icons/close.svg" class="close-button" onclick="document.querySelector('.menu').style.display = 'none'"></li>
+          <li><img src="./assets/icons/close.svg" class="close-button"
+              onclick="document.querySelector('.menu').style.display = 'none'"></li>
         </ul>
       </div>
       <div class="tab-content">
@@ -92,12 +96,13 @@
             <label for="zoom-level">Zoom Level</label>
             <div class="range-wrapper">
               <output id="zoom-level-val">1</output>
-              <input type="range" name="zoom-level" id="zoom-level-input" min="0.7" max="2" step="0.2" value="1" oninput="document.getElementById('zoom-level-val').innerHTML = this.value">
+              <input type="range" name="zoom-level" id="zoom-level-input" min="0.7" max="2" step="0.2" value="1"
+                oninput="document.getElementById('zoom-level-val').innerHTML = this.value">
             </div>
           </div>
           <div class="menu-item">
             <label for="tileset">Tileset</label>
-            <select name="tileset" id="tileset-input"a>
+            <select name="tileset" id="tileset-input" a>
               <option value="./assets/small.json">8x8 Blocky</option>
               <option value="./assets/medium.json" selected>16x16 blocky</option>
               <option value="./assets/large.json">32x32 Realistic</option>
@@ -110,35 +115,40 @@
             <label for="jump-height">Jump Height</label>
             <div class="range-wrapper">
               <output id="jump-height-val">2.5</output>
-              <input type="range" name="jump-height" id="jump-height-input" min="0" max="10" step="0.5" value="2.5" oninput="document.getElementById('jump-height-val').innerHTML = this.value">
+              <input type="range" name="jump-height" id="jump-height-input" min="0" max="10" step="0.5" value="2.5"
+                oninput="document.getElementById('jump-height-val').innerHTML = this.value">
             </div>
           </div>
           <div class="menu-item">
             <label for="vertical-inertia">Vertical Inertia</label>
             <div class="range-wrapper">
               <output id="vertical-inertia-val">1</output>
-              <input type="range" name="vertical-inertia" id="vertical-inertia-input" min="0.8" max="3" step="0.1" value="1" oninput="document.getElementById('vertical-inertia-val').innerHTML = this.value">
+              <input type="range" name="vertical-inertia" id="vertical-inertia-input" min="0.8" max="3" step="0.1"
+                value="1" oninput="document.getElementById('vertical-inertia-val').innerHTML = this.value">
             </div>
           </div>
           <div class="menu-item">
             <label for="jump-width">Jump Width</label>
             <div class="range-wrapper">
               <output id="jump-width-val">7</output>
-              <input type="range" name="jump-width" id="jump-width-input" min="3" max="10" step="0.5" value="7" oninput="document.getElementById('jump-width-val').innerHTML = this.value">
+              <input type="range" name="jump-width" id="jump-width-input" min="3" max="10" step="0.5" value="7"
+                oninput="document.getElementById('jump-width-val').innerHTML = this.value">
             </div>
           </div>
           <div class="menu-item">
             <label for="horizontal-inertia">Horizonal Inertia</label>
             <div class="range-wrapper">
               <output id="horizontal-inertia-val">1.5</output>
-              <input type="range" name="horizontal-inertia" id="horizontal-inertia-input" min="0.8" max="2" step="0.1" value="1.5" oninput="document.getElementById('horizontal-inertia-val').innerHTML = this.value">
+              <input type="range" name="horizontal-inertia" id="horizontal-inertia-input" min="0.8" max="2" step="0.1"
+                value="1.5" oninput="document.getElementById('horizontal-inertia-val').innerHTML = this.value">
             </div>
           </div>
           <div class="menu-item">
             <label for="bounce-pad-height">Bounce Pad Height</label>
             <div class="range-wrapper">
               <output id="bounce-pad-val">10</output>
-              <input type="range" name="bounce-pad-height" id="bounce-pad-height-input" min="0" max="20" step="1" value="10" oninput="document.getElementById('bounce-pad-val').innerHTML = this.value">
+              <input type="range" name="bounce-pad-height" id="bounce-pad-height-input" min="0" max="20" step="1"
+                value="10" oninput="document.getElementById('bounce-pad-val').innerHTML = this.value">
             </div>
           </div>
           <div class="menu-item">
@@ -154,12 +164,27 @@
         <div class="tab">
           <div class="menu-item">
             <label for="level-name">Level Name</label>
-            <input type="text" id="level-name" class="level-name" placeholder="Name..." autocomplete="off" autocorrect="off">
+            <input type="text" id="level-name" class="level-name" placeholder="Name..." autocomplete="off"
+              autocorrect="off">
           </div>
-          <div class="menu-item"></div>
-          <div class="menu-item"></div>
-          <div class="menu-item"></div>
-          <div class="menu-item"></div>
+          <div class="menu-item">
+            <label for="visibility">Visibility</label>
+            <select name="visibility" id="visibility">
+              <option value="public">Public</option>
+              <option value="private">Private</option>
+            </select>
+          </div>
+          <div class="menu-item">
+            <label for="">Description</label>
+          </div>
+          <div class="menu-item">
+            <div class="description-border">
+              <input type="text" name="description" id="description">
+            </div>
+          </div>
+          <div class="menu-item">
+            <input type="submit" id="level-upload" value="Upload Level">
+          </div>
         </div>
         <!-- Options -->
         <div class="tab"></div>
@@ -181,4 +206,5 @@
   </div>
   <script type="module" src="javascript/site.js"></script>
 </body>
+
 </html>
