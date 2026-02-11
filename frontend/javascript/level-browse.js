@@ -1,5 +1,5 @@
 const serverUrl = "http://localhost:1010"
-async function getLevels(page = 1) {
+async function getLevel(page = 1) {
   try {
     const levels = await fetch(`${serverUrl}/api/browse`)
     return levels.json()
@@ -10,8 +10,8 @@ async function getLevels(page = 1) {
 
 
 const levelsElement = document.querySelector(".levels")
-getLevels(1).then(levels => {
-
+getLevel(1).then(levels => {
+  levelsElement.innerHTML = ''
   levels.forEach(level => {
     const levelElement = document.createElement("a")
     levelElement.href = `/level/${level.id}`
@@ -23,8 +23,21 @@ getLevels(1).then(levels => {
       tagsHtml = ''
     }
 
+    let imageHtml
+    if (level.image_url == "") {
+      imageHtml = `
+        <div class="no-image">
+          <p>No Image Provided</p>
+        </div>
+      `
+    } else {
+      imageHtml = `<img src="${level.image_url}" alt="No Image Provided">`
+    }
+
     const body = `
-      <img src="${level.image_url}" alt="No Image Provided">
+      <div class="image">
+        ${imageHtml}
+      </div>
       <div class="name-and-rating">
         <h2 class="name">${level.name}</h2>
         <div class="approval-rating-wrapper">

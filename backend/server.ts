@@ -60,10 +60,6 @@ const server = Bun.serve({
     "/register": async () => {
       return new Response(Bun.file("./frontend/register.html"))
     },
-    "/level": async () => {
-      console.log("/level")
-      return new Response(Bun.file("./frontend/level.html"))
-    },
     "/": async () => {
       return new Response(Bun.file("./frontend/index.html"))
     }
@@ -87,6 +83,7 @@ const server = Bun.serve({
     }
 
     if (pathname == "/level" || pathname.startsWith("/level/")) {
+      console.log(pathname)
       return new Response(Bun.file("./frontend/level.html"))
     }
 
