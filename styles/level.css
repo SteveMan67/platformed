@@ -1,0 +1,43 @@
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.game {
+  aspect-ratio: 5 / 3;
+  width: min(90vw, 700px);
+  height: 500px;
+  border-radius: 20px;
+}
+
+.approval-percentage {
+  font-size: 20px;
+}
+
+.info p,
+.info h2 {
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
+.row {
+  width: min(90vw, 700px);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.plays-wrapper {
+  display: flex;
+  flex-direction: row;
+}
+
+.plays-wrapper>* {
+  font-size: 20px;
+  margin: 0;
+  margin-left: 10px;
+}

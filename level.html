@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/styles/style.css">
   <link rel="stylesheet" href="/styles/home.css">
+  <link rel="stylesheet" href="/styles/level.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
@@ -22,19 +23,32 @@
       </div>
     </div>
     <div class="content">
-      <div class="filters">
-        <div class="searchbar">
-          <input type="text" name="search" id="search" placeholder="Search...">
-          <img src="./assets/icons/search.svg" alt="">
+      <div class="content-wrapper">
+        <div class="game">
+          <canvas class="canvas"></canvas>
         </div>
-        <div class="filters"></div>
-      </div>
-      <div class="levels">
+        <div class="info">
+          <div class="row">
+            <h2 class="name"></h2>
+            <div class="approval-wrapper">
+              <p class="approval-percentage">100%</p>
+              <!-- thumbs up image -->
+              <!-- thumbs down image -->
+            </div>
+          </div>
+          <div class="row">
+            <p class="description"></p>
+            <div class="plays-wrapper">
+              <p>plays/finishes</p>
+              <p class="plays-finshes"><span class="plays"></span>/<span class="finishes"></span></p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-  </div>
-  <script src="./javascript/level-browse.js" defer></script>
+  <script src="/javascript/level.js" defer></script>
+  <script type="module" src="/javascript/site.js"></script>
 </body>
 
 </html>
