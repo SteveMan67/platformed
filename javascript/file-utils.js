@@ -101,6 +101,7 @@ export function loadMap(path) {
       return map
     })
 }
+
 export function encodeRLE(list) {
   const rle = []
   let runVal = list[0]
@@ -126,6 +127,7 @@ export function encodeRLE(list) {
   }
   return rle
 }
+
 export function createMap(width, height, data) {
   const json = {}
   json.width = width

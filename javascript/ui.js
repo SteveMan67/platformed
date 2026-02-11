@@ -1,9 +1,10 @@
 import { createMap } from "./file-utils.js"
 import { importMap } from "./file-utils.js"
-import { mode, setMode } from "./site.js"
+import { mode, setMode, input } from "./site.js"
 import { state } from "./state.js"
 import { ctx, canvas, updateTileset } from "./renderer.js"
 import { toggleErase, changeSelectedTile, zoomMap, scrollCategoryTiles } from "./editor.js"
+import { uploadLevel } from "./api.js"
 const { editor, player } = state
 
 export function toggleEditorUI(on) {
@@ -59,8 +60,23 @@ export function sortByCategory(category) {
   return tileCount
 }
 
+// level share stuff
+const levelName = document.getElementById("level-name")
+const visibility = document.getElementById("visibility")
+const description = document.getElementById("description")
+const levelUpload = document.getElementById("level-upload")
+
+levelUpload.addEventListener("click", async () => {
+  await uploadLevel([
+    ["name", levelName.value],
+    ["public", visibility.value == "public"],
+    ["description", description.value],
+    ["level", createMap(editor.map.w, editor.map.h, Array.from(editor.map.tiles))]
+  ])
+})
+
 // page event listeners
-const menuButton = document.querySelector(".menu")
+const menuElement = document.querySelector(".menu")
 const eraserButton = document.querySelector('.eraser')
 const saveButton = document.querySelector('.save')
 const importButton = document.querySelector('.import')
@@ -69,7 +85,7 @@ const zoomIn = document.querySelector('.plus')
 const zoomOut = document.querySelector('.minus')
 const categories = document.querySelectorAll('.category')
 const play = document.querySelector(".play")
-const menuOpen = menuButton.style.display != "none"
+const menuOpen = menuElement.style.display != "none"
 
 const jumpHeightSlider = document.querySelector('#jump-height-input')
 const verticalInertiaSlider = document.querySelector('#vertical-inertia-input')
@@ -168,6 +184,37 @@ importButton.addEventListener('click', () => {
   input.click()
 })
 
+export function setInputEventListeners() {
+  document.addEventListener("blur", () => {
+    for (const k of input.keys) {
+      input.keys[k] = false;
+    }
+  })
+
+  window.addEventListener('keydown', e => {
+    if (menuElement.style.display != '' && menuElement.style.display != "none") return
+    input.keys[e.key] = true 
+  })
+  window.addEventListener('keyup', e => {
+    if (menuElement.style.display != '' && menuElement.style.display != "none") return
+    input.keys[e.key] = false
+  })
+
+  canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect()
+    input.x = e.clientX - rect.left
+    input.y = e.clientY - rect.top
+  })
+  canvas.addEventListener('mousedown', () =>{
+    if (menuElement.style.display != '' && menuElement.style.display != "none") return
+    input.down = true
+  })
+  canvas.addEventListener('mouseup', () => {
+    if (menuElement.style.display != '' && menuElement.style.display != "none") return
+    input.down = false
+  })
+}
+
 saveButton.addEventListener('click', () => {
   const json = createMap(editor.map.w, editor.map.h, Array.from(editor.map.tiles))
   const text = JSON.stringify(json, null, 2)
@@ -185,7 +232,7 @@ eraserButton.addEventListener('click', () => {
   toggleErase()
 })
 document.addEventListener('keypress', (e) => {
-  if (menuButton.style.display != "none") return
+  if (menuElement.style.display || menuElement.style.display == "none") return
   if (e.key == 'e') {
     toggleErase()
   } else if (e.key == 'p') {

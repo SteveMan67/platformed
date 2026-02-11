@@ -4,7 +4,7 @@ import { splitStripImages } from "./file-utils.js";
 import { loadTileset } from "./file-utils.js";
 import { loadPlayerSprites } from "./file-utils.js";
 import { levelEditorLoop } from "./editor.js";
-import { addTileSelection, toggleEditorUI } from "./ui.js";
+import { addTileSelection, setInputEventListeners, toggleEditorUI } from "./ui.js";
 import { canvas } from "./renderer.js";
 import { state } from "./state.js"
 
@@ -74,16 +74,7 @@ export function key(key) {
 
 }
 export function init() {
-  window.addEventListener('keydown', e => input.keys[e.key] = true)
-  window.addEventListener('keyup', e => input.keys[e.key] = false)
-
-  canvas.addEventListener('mousemove', e => {
-    const rect = canvas.getBoundingClientRect()
-    input.x = e.clientX - rect.left
-    input.y = e.clientY - rect.top
-  })
-  canvas.addEventListener('mousedown', () => input.down = true)
-  canvas.addEventListener('mouseup', () => input.down = false)
+  setInputEventListeners()
 
   loadTileset(editor.tilesetPath).then(({ tileset, characterImage }) => {
     editor.tileset = splitStripImages(tileset)
