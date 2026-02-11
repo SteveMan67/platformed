@@ -1,5 +1,5 @@
 {
-  "path": "assets/medium/",
+  "path": "/assets/medium/",
   "name": "16x16",
   "characterFile": "player.png",
   "tiles": [
@@ -91,18 +91,16 @@
       "id": 8,
       "name": "crate",
       "file": "crate.png",
-      "category":"blocks",
+      "category": "blocks",
       "type": "standalone",
       "triggerAdjacency": false,
-      "mechanics": [
-
-      ]
+      "mechanics": []
     },
     {
       "id": 9,
       "name": "Bounce Pad",
       "file": "bounce-pad.png",
-      "category": "mechanics", 
+      "category": "mechanics",
       "type": "rotation",
       "triggerAdjacency": false,
       "mechanics": [
@@ -113,14 +111,14 @@
       "id": 10,
       "name": "Coin",
       "file": "coin.png",
-      "category": "collectibles", 
+      "category": "collectibles",
       "type": "standalone",
       "triggerAdjacency": false,
       "mechanics": [
         "coin",
         "noCollision"
       ]
-    }, 
+    },
     {
       "id": 11,
       "name": "Dissipation Block",

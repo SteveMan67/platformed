@@ -1,5 +1,5 @@
 {
-  "path": "assets/large/",
+  "path": "/assets/large/",
   "name": "16x16",
   "characterFile": "player.png",
   "tiles": [
@@ -80,7 +80,7 @@
       "id": 9,
       "name": "Bounce Pad",
       "file": "bounce-pad.png",
-      "category": "mechanics", 
+      "category": "mechanics",
       "type": "rotation",
       "triggerAdjacency": false,
       "mechanics": [
@@ -91,7 +91,7 @@
       "id": 10,
       "name": "Coin",
       "file": "coin.png",
-      "category": "collectibles", 
+      "category": "collectibles",
       "type": "standalone",
       "triggerAdjacency": false,
       "mechanics": [

@@ -60,186 +60,119 @@ export function sortByCategory(category) {
   return tileCount
 }
 
-// level share stuff
-const levelName = document.getElementById("level-name")
-const visibility = document.getElementById("visibility")
-const description = document.getElementById("description")
-const levelUpload = document.getElementById("level-upload")
-
-levelUpload.addEventListener("click", async () => {
-  await uploadLevel([
-    ["name", levelName.value],
-    ["public", visibility.value == "public"],
-    ["description", description.value],
-    ["level", createMap(editor.map.w, editor.map.h, Array.from(editor.map.tiles))]
-  ])
-})
-
-// page event listeners
-const menuElement = document.querySelector(".menu")
-const eraserButton = document.querySelector('.eraser')
-const saveButton = document.querySelector('.save')
-const importButton = document.querySelector('.import')
-const tileSelection = document.querySelector('.tile-selection')
-const zoomIn = document.querySelector('.plus')
-const zoomOut = document.querySelector('.minus')
-const categories = document.querySelectorAll('.category')
-const play = document.querySelector(".play")
-const menuOpen = menuElement.style.display != "none"
-
-const jumpHeightSlider = document.querySelector('#jump-height-input')
-const verticalInertiaSlider = document.querySelector('#vertical-inertia-input')
-const jumpWidthSlider = document.querySelector('#jump-width-input')
-const horizontalInertiaSlider = document.querySelector('#horizontal-inertia-input')
-const bouncePadHeightSlider = document.querySelector('#bounce-pad-height-input')
-const zoomSlider = document.getElementById('zoom-level-input')
-const walljumpInput = document.getElementById('walljump-input') 
-const tilesetInput = document.getElementById('tileset-input')
-
-tilesetInput.addEventListener("input", () => {
-  updateTileset(tilesetInput.value)
-})
-
-walljumpInput.addEventListener('input', () => {
-  player.wallJump = walljumpInput.value
-})
-
-zoomSlider.addEventListener('click', () => {
-  player.tileSize = Math.floor((32 / 0.6) * zoomSlider.value)
-})
-
-bouncePadHeightSlider.addEventListener('input', () => {
-  player.bouncePadHeight = Number(bouncePadHeightSlider.value)
-})
-
-jumpHeightSlider.addEventListener('input', () => {
-  player.jumpHeight = Number(jumpHeightSlider.value)
-})
-
-verticalInertiaSlider.addEventListener('input', () => {
-  player.yInertia = Number(verticalInertiaSlider.value)
-})
-
-jumpWidthSlider.addEventListener('input', () => {
-  player.jumpWidth = Number(jumpWidthSlider.value)
-})
-
-horizontalInertiaSlider.addEventListener('input', () => {
-  player.xInertia = Number(horizontalInertiaSlider.value)
-})
-
-categories.forEach(category => {
-  category.addEventListener('click', () => {
-    categories.forEach(cat => {
-      cat.classList.remove('active')
-    })
-    let tileCount = sortByCategory(category.dataset.category)
-    if (tileCount !== 0) category.classList.add('active')
+export function addEventListeners() {
+  // level share stuff
+  const levelName = document.getElementById("level-name")
+  const visibility = document.getElementById("visibility")
+  const description = document.getElementById("description")
+  const levelUpload = document.getElementById("level-upload")
+  
+  levelUpload.addEventListener("click", async () => {
+    await uploadLevel([
+      ["name", levelName.value],
+      ["public", visibility.value == "public"],
+      ["description", description.value],
+      ["level", createMap(editor.map.w, editor.map.h, Array.from(editor.map.tiles))]
+    ])
   })
-  window.addEventListener('keypress', (e) => {
-    if (e.key == String(((Array.from(categories).indexOf(category)) * -1) + categories.length)) {
+  
+  // page event listeners
+  const menuElement = document.querySelector(".menu")
+  const eraserButton = document.querySelector('.eraser')
+  const saveButton = document.querySelector('.save')
+  const importButton = document.querySelector('.import')
+  const tileSelection = document.querySelector('.tile-selection')
+  const zoomIn = document.querySelector('.plus')
+  const zoomOut = document.querySelector('.minus')
+  const categories = document.querySelectorAll('.category')
+  const play = document.querySelector(".play")
+  const menuOpen = menuElement.style.display != "none"
+  
+  const jumpHeightSlider = document.querySelector('#jump-height-input')
+  const verticalInertiaSlider = document.querySelector('#vertical-inertia-input')
+  const jumpWidthSlider = document.querySelector('#jump-width-input')
+  const horizontalInertiaSlider = document.querySelector('#horizontal-inertia-input')
+  const bouncePadHeightSlider = document.querySelector('#bounce-pad-height-input')
+  const zoomSlider = document.getElementById('zoom-level-input')
+  const walljumpInput = document.getElementById('walljump-input') 
+  const tilesetInput = document.getElementById('tileset-input')
+  
+  tilesetInput.addEventListener("input", () => {
+    updateTileset(tilesetInput.value)
+  })
+  
+  walljumpInput.addEventListener('input', () => {
+    player.wallJump = walljumpInput.value
+  })
+  
+  zoomSlider.addEventListener('click', () => {
+    player.tileSize = Math.floor((32 / 0.6) * zoomSlider.value)
+  })
+  
+  bouncePadHeightSlider.addEventListener('input', () => {
+    player.bouncePadHeight = Number(bouncePadHeightSlider.value)
+  })
+  
+  jumpHeightSlider.addEventListener('input', () => {
+    player.jumpHeight = Number(jumpHeightSlider.value)
+  })
+  
+  verticalInertiaSlider.addEventListener('input', () => {
+    player.yInertia = Number(verticalInertiaSlider.value)
+  })
+  
+  jumpWidthSlider.addEventListener('input', () => {
+    player.jumpWidth = Number(jumpWidthSlider.value)
+  })
+  
+  horizontalInertiaSlider.addEventListener('input', () => {
+    player.xInertia = Number(horizontalInertiaSlider.value)
+  })
+  
+  categories.forEach(category => {
+    category.addEventListener('click', () => {
       categories.forEach(cat => {
         cat.classList.remove('active')
       })
       let tileCount = sortByCategory(category.dataset.category)
       if (tileCount !== 0) category.classList.add('active')
+    })
+    window.addEventListener('keypress', (e) => {
+      if (e.key == String(((Array.from(categories).indexOf(category)) * -1) + categories.length)) {
+        categories.forEach(cat => {
+          cat.classList.remove('active')
+        })
+        let tileCount = sortByCategory(category.dataset.category)
+        if (tileCount !== 0) category.classList.add('active')
+      }
+    })
+  })
+  
+  document.addEventListener('wheel', (e) => {
+    if (e.wheelDelta > 0) {
+      scrollCategoryTiles(true)
+    } else {
+      scrollCategoryTiles(false)
     }
   })
-})
-
-document.addEventListener('wheel', (e) => {
-  if (e.wheelDelta > 0) {
-    scrollCategoryTiles(true)
-  } else {
-    scrollCategoryTiles(false)
-  }
-})
-
-window.addEventListener('resize', () => {
-  updateCanvasSize()
-})
-
-zoomIn.addEventListener('click', () => {
-  zoomMap(false)
-})
-
-zoomOut.addEventListener('click', () => {
-  zoomMap(true)
-})
-
-play.addEventListener('click', () => {
-  setMode(mode === 'play' ? 'editor' : 'play')
-}) 
-
-importButton.addEventListener('click', () => {
-  let input = document.createElement('input')
-  input.type = 'file'
-  input.id = 'mapFileInput'
-  input.accept = '.json,application/json'
-  input.style.display = 'none'
-  input.addEventListener('change', (e) => {
-    importMap(e)
+  
+  window.addEventListener('resize', () => {
+    updateCanvasSize()
   })
-  input.value = ''
-  input.click()
-})
-
-export function setInputEventListeners() {
-  document.addEventListener("blur", () => {
-    for (const k of input.keys) {
-      input.keys[k] = false;
-    }
+  
+  zoomIn.addEventListener('click', () => {
+    zoomMap(false)
   })
-
-  window.addEventListener('keydown', e => {
-    if (menuElement.style.display != '' && menuElement.style.display != "none") return
-    input.keys[e.key] = true 
+  
+  zoomOut.addEventListener('click', () => {
+    zoomMap(true)
   })
-  window.addEventListener('keyup', e => {
-    if (menuElement.style.display != '' && menuElement.style.display != "none") return
-    input.keys[e.key] = false
-  })
-
-  canvas.addEventListener('mousemove', e => {
-    const rect = canvas.getBoundingClientRect()
-    input.x = e.clientX - rect.left
-    input.y = e.clientY - rect.top
-  })
-  canvas.addEventListener('mousedown', () =>{
-    if (menuElement.style.display != '' && menuElement.style.display != "none") return
-    input.down = true
-  })
-  canvas.addEventListener('mouseup', () => {
-    if (menuElement.style.display != '' && menuElement.style.display != "none") return
-    input.down = false
-  })
-}
-
-saveButton.addEventListener('click', () => {
-  const json = createMap(editor.map.w, editor.map.h, Array.from(editor.map.tiles))
-  const text = JSON.stringify(json, null, 2)
-  const blob = new Blob([text], {type: 'application/json'})
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'map.json'
-  document.body.appendChild(a)
-  a.click()
-  a.remove()
-  URL.revokeObjectURL(url)
-})
-eraserButton.addEventListener('click', () => {
-  toggleErase()
-})
-document.addEventListener('keypress', (e) => {
-  if (menuElement.style.display || menuElement.style.display == "none") return
-  if (e.key == 'e') {
-    toggleErase()
-  } else if (e.key == 'p') {
-    const desiredMode = mode == 'editor' ? 'play' : 'editor'
-    console.log(desiredMode)
-    setMode(desiredMode)
-  } else if (e.key == 'o') {
+  
+  play.addEventListener('click', () => {
+    setMode(mode === 'play' ? 'editor' : 'play')
+  }) 
+  
+  importButton.addEventListener('click', () => {
     let input = document.createElement('input')
     input.type = 'file'
     input.id = 'mapFileInput'
@@ -250,8 +183,80 @@ document.addEventListener('keypress', (e) => {
     })
     input.value = ''
     input.click()
-  }
-})
+  })
+
+  saveButton.addEventListener('click', () => {
+    const json = createMap(editor.map.w, editor.map.h, Array.from(editor.map.tiles))
+    const text = JSON.stringify(json, null, 2)
+    const blob = new Blob([text], {type: 'application/json'})
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'map.json'
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
+  })
+  eraserButton.addEventListener('click', () => {
+    toggleErase()
+  })
+  document.addEventListener('keypress', (e) => {
+    if (menuElement.style.display || menuElement.style.display == "none") return
+    if (e.key == 'e') {
+      toggleErase()
+    } else if (e.key == 'p') {
+      const desiredMode = mode == 'editor' ? 'play' : 'editor'
+      console.log(desiredMode)
+      setMode(desiredMode)
+    } else if (e.key == 'o') {
+      let input = document.createElement('input')
+      input.type = 'file'
+      input.id = 'mapFileInput'
+      input.accept = '.json,application/json'
+      input.style.display = 'none'
+      input.addEventListener('change', (e) => {
+        importMap(e)
+      })
+      input.value = ''
+      input.click()
+    }
+  })
+}
+
+
+export function setInputEventListeners() {
+  const menuElement = document.querySelector(".menu")
+  document.addEventListener("blur", () => {
+    for (const k of input.keys) {
+      input.keys[k] = false;
+    }
+  })
+
+  window.addEventListener('keydown', e => {
+    if (menuElement && menuElement.style.display != '' && menuElement.style.display != "none") return
+    input.keys[e.key] = true 
+  })
+  window.addEventListener('keyup', e => {
+    if (menuElement && menuElement.style.display != '' && menuElement.style.display != "none") return
+    input.keys[e.key] = false
+  })
+
+  canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect()
+    input.x = e.clientX - rect.left
+    input.y = e.clientY - rect.top
+  })
+  canvas.addEventListener('mousedown', () =>{
+    if (menuElement && menuElement.style.display != '' && menuElement.style.display != "none") return
+    input.down = true
+  })
+  canvas.addEventListener('mouseup', () => {
+    if (menuElement && menuElement.style.display != '' && menuElement.style.display != "none") return
+    input.down = false
+  })
+}
+
 
 export function addTileSelection() {
   const categoryBlocks = document.querySelector('.category-blocks')

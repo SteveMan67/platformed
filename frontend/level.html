@@ -49,6 +49,11 @@
   </div>
   <script src="/javascript/level.js" defer></script>
   <script type="module" src="/javascript/site.js"></script>
+  <script type="module">
+    import { init, setMode } from '/javascript/site.js'
+    setMode('play')
+    init()
+  </script>
 </body>
 
 </html>

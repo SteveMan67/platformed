@@ -245,7 +245,7 @@ const server = Bun.serve({
       }
     }
 
-    // ADD: delete level
+    // --- delete level ---
     if (pathname == "/api/delete" && req.method == "DELETE") {
       const raw = await req.json()
       const levelId = raw.levelId
@@ -275,6 +275,18 @@ const server = Bun.serve({
         return new Response("Level Deleted Sucessfully", withCors({ status: 200 }, CORS))
       }
     }
+
+    if (pathname == "/api/play") {
+      const raw = await req.json()
+      const levelId = raw.levelId
+
+      if (raw.finished) {
+        const incrementCounter = await sql`
+          UPDATE levels SET finished_plays = finished_plays + 1 where id = ${levelId} LIMIT 1
+        `
+      }
+    }
+
     // ADD: modify level/level metadata
     // ADD fetch levels per user  
 

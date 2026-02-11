@@ -5,18 +5,18 @@ import { loadTileset } from "./file-utils.js";
 import { loadPlayerSprites } from "./file-utils.js";
 import { levelEditorLoop } from "./editor.js";
 import { addTileSelection, setInputEventListeners, toggleEditorUI } from "./ui.js";
-import { canvas } from "./renderer.js";
 import { state } from "./state.js"
 
 const { editor } = state
 export let mode = "editor"
+
+const inEditor = !window.location.pathname.startsWith("/level")
 
 export function endLevel() {
   mode = "editor"
   setTimeout(initEditor, 1)
   playSound("./assets/audio/victory.wav")
 }
-
 
 export const input = {
   x: 0,
@@ -26,7 +26,7 @@ export const input = {
 }
 
 export function setMode(desiredMode) {
-  if (desiredMode === "play") {
+  if (desiredMode === "play" || inEditor) {
     toggleEditorUI(false)
     initPlatformer()
   } else {
@@ -74,12 +74,15 @@ export function key(key) {
 
 }
 export function init() {
+
   setInputEventListeners()
 
   loadTileset(editor.tilesetPath).then(({ tileset, characterImage }) => {
     editor.tileset = splitStripImages(tileset)
     loadPlayerSprites(characterImage)
-    addTileSelection()
+    if (inEditor) {
+      addTileSelection()
+    }
     engineLoop()
   })
 }
