@@ -135,5 +135,6 @@ export function updateCanvasSize() {
   canvas.height = rect.height
   ctx.imageSmoothingEnabled = false
   canvas.style.imageRendering = 'pixelated'
+  console.log("canvas resized")
 }
 

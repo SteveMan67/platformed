@@ -4,7 +4,7 @@ import { splitStripImages } from "./file-utils.js";
 import { loadTileset } from "./file-utils.js";
 import { loadPlayerSprites } from "./file-utils.js";
 import { levelEditorLoop } from "./editor.js";
-import { addTileSelection, setInputEventListeners, toggleEditorUI } from "./ui.js";
+import { addEventListeners, addTileSelection, setInputEventListeners, toggleEditorUI } from "./ui.js";
 import { state } from "./state.js"
 
 const { editor } = state
@@ -74,14 +74,14 @@ export function key(key) {
 
 }
 export function init() {
-
+  console.log("init from init")
   setInputEventListeners()
-
   loadTileset(editor.tilesetPath).then(({ tileset, characterImage }) => {
     editor.tileset = splitStripImages(tileset)
     loadPlayerSprites(characterImage)
     if (inEditor) {
       addTileSelection()
+      addEventListeners()
     }
     engineLoop()
   })
@@ -104,6 +104,3 @@ function killSound(sfx) {
 function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
 }
-
-init();
-
