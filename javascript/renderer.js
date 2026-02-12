@@ -1,8 +1,9 @@
+import { initEditor } from "./editor.js";
 import { splitStripImages } from "./file-utils.js";
 import { loadTileset } from "./file-utils.js";
 import { loadPlayerSprites } from "./file-utils.js";
 import { enemies } from "./platformer.js";
-import { input, mode } from "./site.js";
+import { inEditor, input, mode } from "./site.js";
 import { state } from "./state.js";
 import { addTileSelection } from "./ui.js";
 const { player, editor } = state
@@ -93,13 +94,14 @@ export function drawPlayer(dt) {
   ctx.imageSmoothingEnabled = false
   ctx.drawImage(player.sprites[selectedFrame], Math.floor(player.x - player.cam.x), Math.floor(player.y - player.cam.y), player.w, player.h)
 }
-export function updateTileset(path) {
+export async function updateTileset(path) {
   editor.tilesetPath = path
-  loadTileset(editor.tilesetPath).then(({ tileset, characterImage }) => {
-    editor.tileset = splitStripImages(tileset)
-    loadPlayerSprites(characterImage)
+  const { tileset, characterImage } = await loadTileset(editor.tilesetPath)
+  editor.tileset = splitStripImages(tileset)
+  loadPlayerSprites(characterImage)
+  if (inEditor) {
     addTileSelection()
-  })
+  }
 }
 export function getCameraCoords() {
   let x, y

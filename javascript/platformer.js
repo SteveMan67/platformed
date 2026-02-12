@@ -40,6 +40,7 @@ function getMechanics(idx) {
 
 export function calculateAdjacencies(tiles, w, h) {
   let out = []
+  console.log(editor.tileset)
   // calculate all the adjacencies in a given level
   for (let i = 0; i < w * h; i++) {
     const raw = tiles[i]
@@ -61,7 +62,7 @@ export function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles) {
   tileId = (typeof tileId == 'number') ? tileId : tiles[tileIdx] >> 4
   if (tileId == 0) return 0
 
-  if (editor.tileset[tileId].type == 'rotation') {
+  if (editor.tileset[tileId] && editor.tileset[tileId].type == 'rotation') {
     return tileId << 4
   }
 
@@ -70,7 +71,6 @@ export function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles) {
     return val ? val >> 4 : 0
   }
   
-
   const check = (idx) => {
     const nid = getNeighborId(idx)
     if (nid === 0) return false
@@ -175,7 +175,6 @@ function scanLevelOnPlay() {
 }
 
 export function initPlatformer() {
-  console.log(player)
   toggleEditorUI(false)
   player.x = editor.playerSpawn.x
   player.y = editor.playerSpawn.y
