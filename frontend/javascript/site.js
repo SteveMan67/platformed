@@ -74,7 +74,6 @@ export function key(key) {
 
 }
 export function init() {
-  console.log("init from init")
   setInputEventListeners()
   loadTileset(editor.tilesetPath).then(({ tileset, characterImage }) => {
     editor.tileset = splitStripImages(tileset)

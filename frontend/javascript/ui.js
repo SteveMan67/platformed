@@ -194,14 +194,11 @@ export function addEventListeners() {
     toggleErase()
   })
   document.addEventListener('keypress', (e) => {
-    console.log(e)
     if (menuElement && menuElement.style.display != '' && menuElement.style.display != "none") return
     if (e.key == 'e') {
       toggleErase()
-      console.log("called toggle erase")
     } else if (e.key == 'p') {
       const desiredMode = mode == 'editor' ? 'play' : 'editor'
-      console.log(desiredMode)
       setMode(desiredMode)
     } else if (e.key == 'o') {
       let input = document.createElement('input')

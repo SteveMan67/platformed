@@ -26,7 +26,6 @@ export function zoomMap(zoomDirectionIsIn) {
 }
 
 export function toggleErase() {
-  console.log(editor.selectedTile)
   if (editor.selectedTile == 0) {
     editor.selectedTile = editor.lastSelectedTiles[1]
   } else {
