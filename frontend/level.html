@@ -53,9 +53,11 @@
   <script type="module" src="/javascript/site.js"></script>
   <script type="module">
     import { init, setMode } from '/javascript/site.js'
+    import { loadMapFromData } from '/javascript/file-utils.js'
     setMode('play')
     window.addEventListener('level:loaded', (e) => {
-      importMap()
+      console.log(e.detail)
+      loadMapFromData(e.detail)
       init()
     })
   </script>
