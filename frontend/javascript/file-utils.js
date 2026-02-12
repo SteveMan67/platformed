@@ -16,7 +16,8 @@ export function importMap(e) {
   reader.readAsText(file);
 }
 
-export function loadMapFromData(json) {
+export async function loadMapFromData(json) {
+  console.log(json)
   player.jumpHeight = json.jumpHeight;
   player.jumpWidth = json.jumpWidth;
   player.yInertia = json.yInertia;
@@ -28,30 +29,35 @@ export function loadMapFromData(json) {
     player.tileSize = json.zoom;
   }
   if (json.tilesetPath) {
-    updateTileset(json.tilesetPath);
+    await updateTileset(json.tilesetPath)
+  } else {
+    await updateTileset(json.tilesetPath)
   }
   player.wallJump = json.wallJump;
   const tileLayer = json.layers.find(l => l.type === "tilelayer");
   const rotationLayer = json.layers.find(l => l.type === "rotation");
   const rawRotationLayer = decodeRLE(rotationLayer.data);
   let rawTileLayer = decodeRLE(tileLayer.data);
+  console.log(rawTileLayer)
   if (rawTileLayer.length !== json.width * json.height) {
-    console.warn('readData: data length not expected value', rawTileLayer.length, json.width * json.height);
+    console.warn('data length not expected value', rawTileLayer.length, json.width * json.height);
   }
   rawTileLayer = rawTileLayer.map(id => id << 4);
+  // need to set width and height before calculateAdjacencies otherwise it don't work
+  editor.width = json.width;
+  editor.height = json.height;
+  
   rawTileLayer = calculateAdjacencies(rawTileLayer, json.width, json.height);
-  console.log(rawTileLayer);
+
   for (let i = 0; i < rawTileLayer.length; i++) {
-    if (editor.tileset[rawTileLayer[i] >> 4].type == "rotation") {
+    if (editor.tileset[rawTileLayer[i] >> 4] && editor.tileset[rawTileLayer[i] >> 4].type == "rotation") {
       rawTileLayer[i] += rawRotationLayer[i];
     }
-    if (editor.tileset[rawTileLayer[i] >> 4].mechanics && editor.tileset[rawTileLayer[i] >> 4].mechanics.includes("spawn")) {
+    if (editor.tileset[rawTileLayer[i] >> 4] && editor.tileset[rawTileLayer[i] >> 4].mechanics && editor.tileset[rawTileLayer[i] >> 4].mechanics.includes("spawn")) {
       editor.playerSpawn.y = Math.floor(i / json.width);
       editor.playerSpawn.x = i % json.width;
     }
   }
-  editor.width = json.width;
-  editor.height = json.height;
   const tiles = new Uint16Array(rawTileLayer);
   const map = {
     tiles,

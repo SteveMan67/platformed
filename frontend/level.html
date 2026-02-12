@@ -49,18 +49,23 @@
       </div>
     </div>
   </div>
-  <script src="/javascript/level.js" defer></script>
+  <script type="module">
+
+  </script>
   <script type="module" src="/javascript/site.js"></script>
   <script type="module">
     import { init, setMode } from '/javascript/site.js'
     import { loadMapFromData } from '/javascript/file-utils.js'
     setMode('play')
-    window.addEventListener('level:loaded', (e) => {
-      console.log(e.detail)
-      loadMapFromData(e.detail)
+    window.addEventListener('level:loaded', async (e) => {
+      console.log("from level:loaded event listener")
+      const levelData = await e.detail
+      console.log(levelData.data)
       init()
+      loadMapFromData(levelData.data)
     })
   </script>
+  <script src="/javascript/level.js" defer></script>
 </body>
 
 </html>

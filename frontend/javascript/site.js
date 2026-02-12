@@ -10,7 +10,7 @@ import { state } from "./state.js"
 const { editor } = state
 export let mode = "editor"
 
-const inEditor = !window.location.pathname.startsWith("/level")
+export const inEditor = !window.location.pathname.startsWith("/level")
 
 export function endLevel() {
   mode = "editor"
