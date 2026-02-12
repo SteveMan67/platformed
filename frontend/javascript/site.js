@@ -82,6 +82,11 @@ export function init() {
       addTileSelection()
       addEventListeners()
     }
+    if (mode == "play") {
+      initPlatformer()
+    } else {
+      initEditor()
+    }
     engineLoop()
   })
 }

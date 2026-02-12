@@ -40,7 +40,6 @@ function getMechanics(idx) {
 
 export function calculateAdjacencies(tiles, w, h) {
   let out = []
-  console.log(editor.tileset)
   // calculate all the adjacencies in a given level
   for (let i = 0; i < w * h; i++) {
     const raw = tiles[i]

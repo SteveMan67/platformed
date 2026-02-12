@@ -3,7 +3,6 @@ async function getLevel(level = 1) {
   try {
     const raw = await fetch(`${serverUrl}/api/level?levelId=${level}`)
     const levels = raw.json()
-    console.log("dispatching event cus that sounds cool")
     window.dispatchEvent(new CustomEvent('level:loaded', { detail: levels }))
     return await levels
   } catch (e) {
@@ -21,7 +20,8 @@ const finishes = document.querySelector(".finishes")
 const levelNum = Number(window.location.href.match(/\/level\/(\d+)/)[1])
 
 getLevel(levelNum).then(level => {
-  if (!level) {
+  console.log(level)
+  if (!level || !levelNum || level.error) {
     window.location.href = "/"
   } else {
     levelName.innerHTML = level.name

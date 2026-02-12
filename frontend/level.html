@@ -58,11 +58,9 @@
     import { loadMapFromData } from '/javascript/file-utils.js'
     setMode('play')
     window.addEventListener('level:loaded', async (e) => {
-      console.log("from level:loaded event listener")
       const levelData = await e.detail
-      console.log(levelData.data)
+      await loadMapFromData(levelData.data)
       init()
-      loadMapFromData(levelData.data)
     })
   </script>
   <script src="/javascript/level.js" defer></script>

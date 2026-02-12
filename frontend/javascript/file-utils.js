@@ -4,20 +4,19 @@ import { state } from "./state.js"
 
 const { player, editor } = state
 
-export function importMap(e) {
+export async function importMap(e) {
   const file = e.target.files && e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onerror = () => console.error('failed to read file', reader.error);
-  reader.onload = () => {
+  reader.onload = async () => {
     const json = JSON.parse(reader.result);
-    loadMapFromData(json)
+    await loadMapFromData(json)
   };
   reader.readAsText(file);
 }
 
 export async function loadMapFromData(json) {
-  console.log(json)
   player.jumpHeight = json.jumpHeight;
   player.jumpWidth = json.jumpWidth;
   player.yInertia = json.yInertia;
@@ -41,7 +40,6 @@ export async function loadMapFromData(json) {
   const rotationLayer = json.layers.find(l => l.type === "rotation");
   const rawRotationLayer = decodeRLE(rotationLayer.data);
   let rawTileLayer = decodeRLE(tileLayer.data);
-  console.log(rawTileLayer)
   if (rawTileLayer.length !== json.width * json.height) {
     console.warn('data length not expected value', rawTileLayer.length, json.width * json.height);
   }
