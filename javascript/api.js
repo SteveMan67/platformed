@@ -1,4 +1,4 @@
-const serverURL = "http://localhost:1010"
+const serverURL = window.location.hostname
 
 export async function uploadLevel(dataList) {
   const payload = {}

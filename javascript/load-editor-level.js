@@ -1,7 +1,7 @@
 import { loadMapFromData } from './file-utils.js'
 import { init } from '/javascript/site.js'
 
-const serverUrl = "http://localhost:1010"
+const serverUrl = window.location.hostname
 
 // fetch the level if there is a level in the 
 

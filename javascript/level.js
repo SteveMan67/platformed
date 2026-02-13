@@ -1,4 +1,4 @@
-const serverUrl = "http://localhost:1010"
+const serverUrl = window.location.hostname
 async function getLevel(level = 1) {
   try {
     const raw = await fetch(`${serverUrl}/api/level?levelId=${level}`)

@@ -1,5 +1,5 @@
 const loginForm = document.getElementById('login-form')
-const serverUrl = "https://platformed.jmeow.net"
+const serverUrl = window.location.hostname
 
 try {
   fetch(`${serverUrl}/api/ping`, {method: "POST"}).then(res => console.log(res.body))
