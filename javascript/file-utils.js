@@ -30,7 +30,7 @@ export async function loadMapFromData(json) {
   if (json.tilesetPath) {
     await updateTileset(json.tilesetPath)
   } else {
-    await updateTileset(json.tilesetPath)
+    await updateTileset("/assets/medium.json")
   }
   if (json.spawn) {
     editor.playerSpawn = { x: json.spawn.x, y: json.spawn.y }
@@ -150,6 +150,7 @@ export function createMap(width, height, data) {
   json.wallJump = player.wallJump
   json.bouncePadHeight = player.bouncePadHeight
   json.zoom = player.tileSize
+  console.log(editor.tilesetPath)
   json.tilesetPath = editor.tilesetPath
   json.layers = []
   json.spawn = { x: editor.playerSpawn.x, y: editor.playerSpawn.y }
