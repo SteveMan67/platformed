@@ -33,7 +33,7 @@ getLevel(1).then(levels => {
     } else {
       imageHtml = `<img src="${level.image_url}" alt="No Image Provided">`
     }
-
+    
     const body = `
       <div class="image">
         ${imageHtml}
