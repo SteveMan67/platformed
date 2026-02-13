@@ -1,7 +1,7 @@
 const serverUrl = "http://localhost:1010"
-async function getLevel(user = 1) {
+async function getLevel(page = 1) {
   try {
-    const levels = await fetch(`${serverUrl}/api/browse`)
+    const levels = await fetch(`${serverUrl}/api/myLevels`)
     return levels.json()
   } catch (e) {
     console.error(e)
