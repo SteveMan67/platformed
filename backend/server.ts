@@ -72,6 +72,12 @@ const server = Bun.serve({
         return new Response(Bun.file("./frontend/login.html"))
       }
     },
+    "/myLevels/level": (req) => {
+      return new Response(Bun.file("./frontend/level-meta.html"))
+    },
+    "/level": () => {
+      return new Response(Bun.file("./frontend/level.html"))
+    },
     "/": async () => {
       return new Response(Bun.file("./frontend/index.html"))
     },
@@ -89,6 +95,10 @@ const server = Bun.serve({
       'Access-Control-Allow-Headers': 'Content-Type',
       'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS'
     };
+
+    if (pathname.startsWith("/editor")) {
+      return new Response(Bun.file("frontend/editor.html"))
+    }
 
     if (req.method == "OPTIONS") {
       return new Response(null, withCors({ status: 204 }, CORS))

@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/styles/style.css">
   <link rel="stylesheet" href="/styles/home.css">
+  <link rel="stylesheet" href="/styles/meta.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
@@ -22,17 +23,25 @@
       </div>
     </div>
     <div class="content">
-      <div class="filters">
-        <div class="searchbar">
-          <input type="text" name="search" id="search" placeholder="Search...">
-          <img src="./assets/icons/search.svg" alt="">
+      <div class="main-content">
+        <div class="back">
+          <!-- img back arrow -->
+          <p>Back to Level</p>
         </div>
-        <div class="filters"></div>
-      </div>
-      <div class="levels">
+        <input type="text" name="level-name" id="level-name">
+        <div class="visibility menu-item">
+          <label for="visibility"></label>
+          <select name="visibility" id="visibility">
+            <option value="public">Public</option>
+            <option value="private">Private</option>
+          </select>
+        </div>
+        <p class="menu-item">Description</p>
+        <div class="description menu-item">
+          <input type="text" name="description" id="description">
+        </div>
       </div>
     </div>
-  </div>
   </div>
   <script src="./javascript/level-browse.js" defer></script>
 </body>

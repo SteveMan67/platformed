@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles/style.css">
+  <link rel="stylesheet" href="/styles/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
@@ -18,10 +18,10 @@
       <div class="actions">
         <!-- <img src="/assets/icons/undo.svg">
         <img src="/assets/icons/redo.svg"> -->
-        <img class="save" src="./assets/icons/save.svg">
-        <img class="import" src="./assets/icons/import.svg">
-        <img class="play" src="./assets/icons/play_nofill.svg" alt="">
-        <img class="menu-button" src="./assets/icons/menu.svg"
+        <img class="save" src="/assets/icons/save.svg">
+        <img class="import" src="/assets/icons/import.svg">
+        <img class="play" src="/assets/icons/play_nofill.svg" alt="">
+        <img class="menu-button" src="/assets/icons/menu.svg"
           onclick="document.querySelector('.menu').style.display = 'flex'">
       </div>
     </div>
@@ -34,35 +34,35 @@
       </div>
       <div class="sidebar-two">
         <div class="zoom">
-          <img class="plus" src="./assets/icons/plus.svg">
-          <img class="minus" src="./assets/icons/minus.svg">
+          <img class="plus" src="/assets/icons/plus.svg">
+          <img class="minus" src="/assets/icons/minus.svg">
         </div>
         <div class="tile-selection">
           <div class="categories">
             <div class="category" data-category="mechanics">
-              <img src="./assets/icons/mechanics.svg">
+              <img src="/assets/icons/mechanics.svg">
 
             </div>
             <div class="category" data-category="fluids">
-              <img src="./assets/icons/fluids.svg">
+              <img src="/assets/icons/fluids.svg">
             </div>
             <div class="category" data-category="mobs">
-              <img src="./assets/icons/mobs.svg">
+              <img src="/assets/icons/mobs.svg">
             </div>
             <div class="category" data-category="hazards">
-              <img src="./assets/icons/hazards.svg">
+              <img src="/assets/icons/hazards.svg">
             </div>
             <div class="category" data-category="powerups">
-              <img src="./assets/icons/powerups.svg">
+              <img src="/assets/icons/powerups.svg">
             </div>
             <div class="category" data-category="collectibles">
-              <img src="./assets/icons/collectibles.svg">
+              <img src="/assets/icons/collectibles.svg">
             </div>
             <div class="category" data-category="blocks">
-              <img src="./assets/icons/blocks.svg">
+              <img src="/assets/icons/blocks.svg">
             </div>
             <div class="eraser">
-              <img src="./assets/icons/erase.svg" alt="">
+              <img src="/assets/icons/erase.svg" alt="">
             </div>
           </div>
         </div>
@@ -85,7 +85,7 @@
           <li><label for="tab3">Share</label></li>
           <li><label for="tab4">Options</label></li>
           <li><label for="tab5">Help</label></li>
-          <li><img src="./assets/icons/close.svg" class="close-button"
+          <li><img src="/assets/icons/close.svg" class="close-button"
               onclick="document.querySelector('.menu').style.display = 'none'"></li>
         </ul>
       </div>
@@ -204,11 +204,8 @@
       </div>
     </div>
   </div>
-  <script type="module" src="javascript/site.js"></script>
-  <script type="module">
-    import { init } from '/javascript/site.js'
-    init()
-  </script>
+  <script type="module" src="/javascript/site.js"></script>
+  <script type="module" src="/javascript/load-editor-level.js"></script>
 </body>
 
 </html>

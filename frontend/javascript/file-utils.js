@@ -17,6 +17,7 @@ export async function importMap(e) {
 }
 
 export async function loadMapFromData(json) {
+  console.log(json)
   player.jumpHeight = json.jumpHeight;
   player.jumpWidth = json.jumpWidth;
   player.yInertia = json.yInertia;
