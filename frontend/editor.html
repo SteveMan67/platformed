@@ -4,6 +4,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- preload modules -->
+  <link rel="modulepreload" href="/javascript/site.js">
+  <link rel="modulepreload" href="/javascript/load-editor-level.js">
+  <link rel="modulepreload" href="/javascript/editor.js">
+  <link rel="modulepreload" href="/javascript/renderer.js">
+  <link rel="modulepreload" href="/javascript/file-utils.js">
+  <link rel="modulepreload" href="/javascript/ui.js">
+  <link rel="modulepreload" href="/javascript/platformer.js">
+  <link rel="modulepreload" href="/javascript/state.js">
+  <link rel="modulepreload" href="/javascript/api.js">
+
+  <script type="module" src="/javascript/site.js" defer></script>
+  <script type="module" src="/javascript/load-editor-level.js" defer></script>
   <link rel="stylesheet" href="/styles/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -85,7 +99,7 @@
           <li><label for="tab3">Share</label></li>
           <li><label for="tab4">Options</label></li>
           <li><label for="tab5">Help</label></li>
-          <li><img src="/assets/icons/close.svg" class="close-button"
+          <li><img src="/assets/icons/close.svg" loading="lazy" class="close-button"
               onclick="document.querySelector('.menu').style.display = 'none'"></li>
         </ul>
       </div>
@@ -204,8 +218,6 @@
       </div>
     </div>
   </div>
-  <script type="module" src="/javascript/site.js"></script>
-  <script type="module" src="/javascript/load-editor-level.js"></script>
 </body>
 
 </html>
