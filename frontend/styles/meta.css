@@ -1,0 +1,81 @@
+.main-content {
+  display: flex;
+  flex-direction: column;
+  width: min(90vw, 700px)
+}
+
+.back img {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+.back-wrapper p {
+  font-size: 20px;
+}
+
+.back-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+input[type="text"] {
+  background-color: transparent;
+  text-decoration: underline;
+  -webkit-text-fill-color: black;
+  border: none;
+  font-size: 35px;
+  line-height: 1.2;
+  font-family: "Fredoka", sans-serif;
+  outline: none;
+}
+
+.main-content .menu-item {
+  margin: 10px 0;
+}
+
+p.menu-item {
+  font-size: 25px;
+}
+
+.description.menu-item {
+  width: 100%;
+  border: 3px solid black;
+  border-radius: 15px;
+}
+
+.menu-item.description textarea {
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: pre-wrap;
+  text-align: left;
+  padding: 5px;
+  font-size: 18px;
+  min-height: 100px;
+  line-height: 1.2;
+  background-color: transparent;
+  border: none;
+  border-radius: inherit;
+  font-family: "Fredoka", sans-serif;
+  outline: none;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+}
+
+button {
+  background-color: black;
+  color: #C29A62;
+  outline: none;
+  border: 3px solid black;
+  border-radius: 10px;
+  width: fit-content;
+  padding: 5px 15px;
+  font-size: 20px;
+}

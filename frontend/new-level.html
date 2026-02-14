@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="/styles/style.css">
   <link rel="stylesheet" href="/styles/home.css">
   <link rel="stylesheet" href="/styles/meta.css">
-  <script src="/javascript/level-meta.js" defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
@@ -26,9 +25,9 @@
     <div class="content">
       <div class="main-content">
         <div class="back menu-item">
-          <a id="back-to-level" href="" class="back-wrapper">
+          <a href="" class="back-wrapper">
             <img src="/assets/icons/arrow-left.svg" alt="">
-            <p>Back to Level</p>
+            <p>Back</p>
           </a>
         </div>
         <input class="menu-item" type="text" name="level-name" id="level-name" placeholder="Untitled Level">
@@ -43,10 +42,11 @@
         <div class="description menu-item">
           <textarea type="text" name="description" id="description"></textarea>
         </div>
-        <button id="update">Update</button>
+        <button id="Update">Create</button>
       </div>
     </div>
   </div>
+  <script src="./javascript/new-level.js" defer></script>
 </body>
 
 </html>

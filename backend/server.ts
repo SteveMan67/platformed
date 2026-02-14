@@ -85,8 +85,12 @@ const server = Bun.serve({
     "/myLevels/level": (req) => {
       return new Response(Bun.file("./frontend/level-meta.html"))
     },
-    "/level": () => {
-      return new Response(Bun.file("./frontend/level.html"))
+    "/meta": () => {
+      console.log("recieved /meta url")
+      return new Response(Bun.file("./frontend/level-meta.html"))
+    },
+    "/new": () => {
+      return new Response(Bun.file("./frontend/new-level.html"))
     },
     "/": async () => {
       return new Response(Bun.file("./frontend/index.html"))
@@ -108,6 +112,10 @@ const server = Bun.serve({
 
     if (pathname.startsWith("/editor")) {
       return new Response(Bun.file("frontend/editor.html"))
+    }
+
+    if (pathname.startsWith("/meta") && req.method == "GET") {
+      return new Response(Bun.file("frontend/level-meta.html"))
     }
 
     if (req.method == "OPTIONS") {
@@ -440,6 +448,7 @@ const server = Bun.serve({
       }
       return new Response(file, withCors({ status: 200, headers: { "Content-Type": mime } }, CORS))
     } catch {
+      return new Response("Not Found", withCors({ status: 404 }, CORS))
     }
     return new Response("Not Found", withCors({ status: 404 }, CORS))
   }

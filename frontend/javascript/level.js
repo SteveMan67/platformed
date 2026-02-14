@@ -1,3 +1,5 @@
+import { play } from "/javascript/api.js"
+
 const serverUrl = window.location.origin
 async function getLevel(level = 1) {
   try {
@@ -8,15 +10,6 @@ async function getLevel(level = 1) {
   } catch (e) {
     console.error(e)
   }
-}
-
-function play(levelId) {
-  const payload = { levelId: levelId}
-
-  fetch(`${serverUrl}/api/play`, {
-    method: "POST",
-    body: JSON.stringify(payload)
-  })
 }
 
 const levelName = document.querySelector(".name")
@@ -38,6 +31,6 @@ getLevel(levelNum).then(level => {
     description.innerHTML = level.description
     plays.innerHTML = level.total_plays
     finishes.innerHTML = level.finished_plays
-    play(levelNum)
+    play(levelNum, false)
   }
 })

@@ -6,6 +6,7 @@ import { loadPlayerSprites } from "./file-utils.js";
 import { levelEditorLoop } from "./editor.js";
 import { addEventListeners, addTileSelection, setInputEventListeners, toggleEditorUI } from "./ui.js";
 import { state } from "./state.js"
+import { play } from "./api.js";
 
 const { editor } = state
 export let mode = "editor"
@@ -13,9 +14,14 @@ export let mode = "editor"
 export const inEditor = !window.location.pathname.startsWith("/level")
 
 export function endLevel() {
-  mode = "editor"
-  setTimeout(initEditor, 1)
+  mode = inEditor ? "editor" : "play"
+  setTimeout(inEditor? initEditor : initPlatformer, 1)
   playSound("./assets/audio/victory.wav")
+
+  const levelNum = Number(window.location.href.match(/\/level\/(\d+)/)[1])
+  if (levelNum) {
+    play(levelNum, true)
+  }
 }
 
 export const input = {

@@ -1,3 +1,5 @@
+const serverUrl = window.location.origin
+
 const serverURL = window.location.origin
 
 export async function uploadLevel(dataList) {
@@ -15,4 +17,13 @@ export async function uploadLevel(dataList) {
     .then(response => {
       console.log(response)
     })
+}
+
+export function play(levelId, finished) {
+  const payload = { levelId: levelId, finished: finished }
+
+  fetch(`${serverUrl}/api/play`, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  })
 }
