@@ -1,5 +1,5 @@
 const serverUrl = window.location.origin
-async function getLevel(user = 1) {
+async function getLevel(page = 1) {
   try {
     const levels = await fetch(`${serverUrl}/api/browse`)
     return levels.json()
@@ -11,8 +11,10 @@ async function getLevel(user = 1) {
 
 const levelsElement = document.querySelector(".levels")
 getLevel(1).then(levels => {
+  levels = new Array(levels)
   levelsElement.innerHTML = ''
-  levels.forEach(level => {
+  console.log(levels)
+  levels[0].forEach(level => {
     const levelElement = document.createElement("a")
     levelElement.href = `/level/${level.id}`
     let tagsHtml = ''
@@ -33,7 +35,7 @@ getLevel(1).then(levels => {
     } else {
       imageHtml = `<img src="${level.image_url}" alt="No Image Provided">`
     }
-    
+
     const body = `
       <div class="image">
         ${imageHtml}

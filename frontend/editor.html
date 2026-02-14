@@ -117,9 +117,9 @@
           <div class="menu-item">
             <label for="tileset">Tileset</label>
             <select name="tileset" id="tileset-input" a>
-              <option value="./assets/small.json">8x8 Blocky</option>
-              <option value="./assets/medium.json" selected>16x16 blocky</option>
-              <option value="./assets/large.json">32x32 Realistic</option>
+              <option value="/assets/small.json">8x8 Blocky</option>
+              <option value="/assets/medium.json" selected>16x16 blocky</option>
+              <option value="/assets/large.json">32x32 Realistic</option>
             </select>
           </div>
         </div>
@@ -176,7 +176,7 @@
         </div>
         <!-- Share -->
         <div class="tab">
-          <div class="menu-item">
+          <!-- <div class="menu-item">
             <label for="level-name">Level Name</label>
             <input type="text" id="level-name" class="level-name" placeholder="Name..." autocomplete="off"
               autocorrect="off">
@@ -195,9 +195,12 @@
             <div class="description-border">
               <input type="text" name="description" id="description">
             </div>
+          </div> -->
+          <div class="menu-item align-items-left">
+            <!-- <input type="submit" id="level-upload" value="Upload Level"> -->
+            <input type="button" value="Save as JSON" id="save-as-json">
           </div>
           <div class="menu-item">
-            <input type="submit" id="level-upload" value="Upload Level">
           </div>
         </div>
         <!-- Options -->

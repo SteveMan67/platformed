@@ -1,8 +1,9 @@
+import { uploadLevel } from "./api.js";
 import { calculateAdjacencies } from "./platformer.js";
 import { updateTileset } from "./renderer.js";
 import { state } from "./state.js"
 
-const { player, editor } = state
+const { user, player, editor } = state
 
 export async function importMap(e) {
   const file = e.target.files && e.target.files[0];
@@ -17,7 +18,6 @@ export async function importMap(e) {
 }
 
 export async function loadMapFromData(json) {
-  console.log(json)
   player.jumpHeight = json.jumpHeight;
   player.jumpWidth = json.jumpWidth;
   player.yInertia = json.yInertia;
@@ -140,7 +140,7 @@ export function encodeRLE(list) {
   return rle
 }
 
-export function createMap(width, height, data) {
+export function createMap(width = editor.map.w, height = editor.map.h, data = Array.from(editor.map.tiles)) {
   const json = {}
   json.width = width
   json.height = height
@@ -151,7 +151,6 @@ export function createMap(width, height, data) {
   json.wallJump = player.wallJump
   json.bouncePadHeight = player.bouncePadHeight
   json.zoom = player.tileSize
-  console.log(editor.tilesetPath)
   json.tilesetPath = editor.tilesetPath
   json.layers = []
   json.spawn = { x: editor.playerSpawn.x, y: editor.playerSpawn.y }
@@ -284,3 +283,40 @@ export function splitStripImages(tileset) {
   return newTileset
 }
 
+export async function updateMap() {
+  if (!user) {
+    alert("Please log in to save levels (you can save as json and upload later if you wish to save progress)")
+    return
+  }
+  const levelNum = editor.level.id
+  editor.dirty = false
+  const serverUrl = window.location.origin
+
+  const isOwner = editor.level.id && editor.level.owner == user.id
+  console.log(editor.level, user.id)
+  console.log(`isOwner: ${isOwner}`)
+  if (isOwner) {
+    const payload = {}
+    payload.levelId = levelNum
+    payload.data = createMap()
+  
+    fetch(`${serverUrl}/api/edit`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json"},
+      credentials: "include",
+      body: JSON.stringify(payload),
+    }).then(res => {
+      console.log(res)
+    })
+  } else {
+    uploadLevel([
+      ["data", createMap()]
+    ])
+  }
+}
+
+export function loadOwnerData(json) {
+  if (json.id) editor.level.id = json.id
+  if (json.owner) editor.level.owner = json.owner
+  console.log(editor.level)
+}

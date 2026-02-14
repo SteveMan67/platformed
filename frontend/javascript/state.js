@@ -1,4 +1,7 @@
 export const state = {
+  user: {
+    id: null
+  },
   player: {
     dieCameraTime: 30, // frames
     dieCameraTimer: 30,
@@ -44,6 +47,7 @@ export const state = {
       x: 0,
       y: 0
     },
+    level: {id: null, owner: null},
     dirty: false,
     currentRotation: 0,
     playerSpawn: {x: 0, y: 0},

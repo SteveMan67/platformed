@@ -55,7 +55,7 @@
   <script type="module" src="/javascript/site.js"></script>
   <script type="module">
     import { init, setMode } from '/javascript/site.js'
-    import { loadMapFromData } from '/javascript/file-utils.js'
+    import { loadMapFromData, loadOwnerData } from '/javascript/file-utils.js'
     setMode('play')
     window.addEventListener('level:loaded', async (e) => {
       const levelData = await e.detail

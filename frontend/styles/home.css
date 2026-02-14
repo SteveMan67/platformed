@@ -134,6 +134,11 @@
     margin: 0;
 }
 
+.name.my-levels {
+    margin: auto;
+    margin-top: 5px;
+}
+
 .approval-rating-wrapper {
     display: flex;
     flex-direction: row;
@@ -147,7 +152,6 @@
 }
 
 .approval-rating-wrapper img {
-
     aspect-ratio: 1;
     width: 25px;
     display: flex;
@@ -167,4 +171,88 @@
 
 .page-title {
     font-weight: 500;
+}
+
+.quick-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: auto
+}
+
+.quick-action {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: auto 10px;
+}
+
+.quick-action img {
+    width: 26px;
+    height: 26px;
+}
+
+.quick-action p {
+    margin: 0;
+    margin-right: 10px;
+    font-size: 25px;
+}
+
+.quick-actions a {
+    color: black;
+    text-decoration: none;
+}
+
+.quick-actions button {
+    border: none;
+    background-color: transparent;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.overlay .confirm-delete {
+    background-color: #C29A62;
+    border: 3px solid black;
+    border-radius: 20px;
+    padding: 10px 20px;
+}
+
+.overlay .confirm-delete h2 {
+    font-weight: 500;
+    font-size: 35px;
+    justify-self: center;
+    margin: 20px auto 40px auto;
+}
+
+.overlay .confirm-delete .options {
+    display: flex;
+    justify-content: space-between;
+}
+
+.overlay .option {
+    border-radius: 10px;
+    margin: 0 20px 10px 20px;
+    border: 3px solid black;
+}
+
+.overlay #confirm-button {
+    color: #C29A62;
+    background-color: black;
+}
+
+.overlay #cancel-button p,
+.overlay #confirm-button p {
+    font-size: 30px;
+    margin: 0;
+    padding: 10px 50px;
 }

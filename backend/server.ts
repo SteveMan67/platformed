@@ -3,6 +3,16 @@ import { authenticate, type SessionCookie } from "./auth.ts"
 
 // CORS stuf
 
+async function readJson(req: Request) {
+  try {
+    const text = await req.text();
+    if (!text) return {};
+    return JSON.parse(text)
+  } catch (e) {
+    return new Response("Bad Request: invalid JSON", { status: 400 })
+  }
+}
+
 
 function withCors(respInit: ResponseInit, CORS: any) {
   const headers = new Headers()
@@ -204,12 +214,27 @@ const server = Bun.serve({
       }
     }
 
+    // --- return who is logged in --- 
+    if (pathname == "/api/me") {
+      const cookies = getCookies(req)
+      const sessionId = cookies["session-id"]
+      const token = cookies["token"]
+      if (sessionId && token) {
+        const sessionCookie: SessionCookie = { sessionId: sessionId, token: token }
+        const authorized = await authenticate(sessionCookie)
+        if (typeof authorized == 'number') {
+          return new Response(JSON.stringify({ user: authorized }), { status: 200, headers: { "Content-Type": "application/json" } })
+        }
+      }
+      return new Response("Authentication Failed", { status: 401 })
+    }
+
     // --- get a specific level ---
     if (pathname == "/api/level") {
       const match = url.search.match(/levelId=(\d+)/)
       const levelId = match ? Number(match[1]) : undefined
       if (levelId) {
-        const level = await sql`select data, name, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels where id = ${levelId} limit 1`
+        const level = await sql`select id, data, name, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels where id = ${levelId} limit 1`
         if (!level[0] || level.length === 0) {
           return new Response(JSON.stringify({ error: "Level not found" }), withCors({ status: 404, headers: { "Content-Type": "application/json" } }, CORS))
         }
@@ -224,7 +249,9 @@ const server = Bun.serve({
       const match = url.search.match(/page=(\d+)/)
       const page = match ? Number(match[1]) : 1
       if (page) {
-        const levels = await sql`select id, name, created_at, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels limit 50 offset ${(page - 1) * 50}`
+        const levels = await sql`select id, name, created_at, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels
+        WHERE public = true 
+        limit 50 offset ${(page - 1) * 50}`
         return new Response(JSON.stringify(levels), withCors({ headers: { "Content-Type": "application/json" } }, CORS))
       }
     }
@@ -232,7 +259,7 @@ const server = Bun.serve({
     // --- upload level --- 
     if (pathname == "/api/upload" && req.method == "POST") {
       const raw = await req.json()
-      const level = raw.level
+      const level = raw.data
       const cookies = getCookies(req)
       const sessionId = cookies["session-id"]
       const token = cookies["token"]
@@ -243,15 +270,14 @@ const server = Bun.serve({
       }
       const sessionCookie: SessionCookie = { sessionId: sessionId, token: token }
       const authorized = await authenticate(sessionCookie)
-      console.log(authorized, sessionCookie)
       if (authorized) {
         const user = await sql`
           SELECT user_id FROM sessions WHERE id = ${sessionId} 
         `
         const name = raw.name ? raw.name : "My New Level"
         const createdAt = Date.now()
-        const width = raw.level.width ? raw.level.width : 100
-        const height = raw.level.height ? raw.level.height : 50
+        const width = raw.data.width ? raw.data.width : 100
+        const height = raw.data.height ? raw.data.height : 50
         const owner = user[0].user_id
         const tags = raw.tags ? raw.tags : []
         const imageUrl = raw.image_url ? raw.image_url : ""
@@ -311,22 +337,25 @@ const server = Bun.serve({
 
     // --- Edit a Level
     if (pathname == "/api/edit" && req.method == "PATCH") {
-      const raw = await req.json()
+      const raw = await readJson(req)
+      console.log(raw)
       const levelId = raw.levelId
+      if (!levelId) {
+        return new Response("Must provide level id", { status: 400 })
+      }
 
       const allowedTags = new Set([
         "name", "data", "width", "height", "tags", "image_url", "description", "level_style"
       ])
 
-      let sqlInsert = ''
+      const updateData: Record<string, any> = {}
       for (const [k, v] of Object.entries(raw)) {
-        if (!allowedTags.has(k)) continue
-        sqlInsert += `${k} = ${v}`
-        if (sqlInsert != '') {
-          sqlInsert += ', '
+        if (allowedTags.has(k)) {
+          updateData[k] = v
         }
       }
 
+      console.log(updateData)
 
       const cookies = getCookies(req)
       const sessionId = cookies["session-id"]
@@ -339,10 +368,10 @@ const server = Bun.serve({
       if (typeof user == 'number') {
         const update = await sql`
           UPDATE levels
-          SET ${sqlInsert}
-          WHERE id = ${levelId} AND user_id = ${user}
-          LIMIT 1
+          SET ${sql(updateData)}
+          WHERE id = ${levelId} AND owner = ${user}
         `
+        return new Response("Updated Successfully", { status: 200 })
       } else {
         return new Response("Incorrect Authorization", withCors({ status: 200, headers: { "Content-Type": "application/json" } }, CORS))
       }
