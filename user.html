@@ -27,7 +27,20 @@
       </div>
     </div>
   </div>
-  <script src="./javascript/level-browse.js" defer></script>
+  <div class="overlay" onclick="this.style.display = 'none'">
+    <div class="confirm-delete">
+      <h2>Confirm Delete?</h2>
+      <div class="options">
+        <div id="cancel-button" class="option" onclick="document.querySelector('.menu').style.display = none">
+          <p>Cancel</p>
+        </div>
+        <div id="confirm-button" class="option" onclick="deleteLevel()">
+          <p>Delete</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="./javascript/my-levels.js" defer></script>
 </body>
 
 </html>

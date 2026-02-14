@@ -1,5 +1,4 @@
-import { createMap } from "./file-utils.js"
-import { importMap } from "./file-utils.js"
+import { importMap, updateMap, createMap } from "./file-utils.js"
 import { mode, setMode, input } from "./site.js"
 import { state } from "./state.js"
 import { canvas, updateCanvasSize, updateTileset } from "./renderer.js"
@@ -8,6 +7,7 @@ import { uploadLevel } from "./api.js"
 const { editor, player } = state
 
 export function toggleEditorUI(on) {
+  console.log(on)
   const grid = document.querySelector(".grid")
   if (on) {
     grid.classList.remove("grid-uihidden")
@@ -61,28 +61,6 @@ export function addEventListeners() {
     }
   })
 
-  document.addEventListener("click", (e) => {
-    const a = e.target.closest && e.target.closest("a[href]")
-    if (!a) return
-    if (state.editor.dirty && !confirm("Leave site? Changes you made might not be saved.")) {
-      e.preventDefault()
-    }
-  })
-  // level share stuff
-  const levelName = document.getElementById("level-name")
-  const visibility = document.getElementById("visibility")
-  const description = document.getElementById("description")
-  const levelUpload = document.getElementById("level-upload")
-  
-  levelUpload.addEventListener("click", async () => {
-    await uploadLevel([
-      ["name", levelName.value],
-      ["public", visibility.value == "public"],
-      ["description", description.value],
-      ["level", createMap(editor.map.w, editor.map.h, Array.from(editor.map.tiles))]
-    ])
-  })
-  
   // page event listeners
   const menuElement = document.querySelector(".menu")
   const eraserButton = document.querySelector('.eraser')
@@ -93,7 +71,7 @@ export function addEventListeners() {
   const zoomOut = document.querySelector('.minus')
   const categories = document.querySelectorAll('.category')
   const play = document.querySelector(".play")
-  const menuOpen = menuElement.style.display != "none"
+  const saveAsJson = document.getElementById("save-as-json")
   
   const jumpHeightSlider = document.querySelector('#jump-height-input')
   const verticalInertiaSlider = document.querySelector('#vertical-inertia-input')
@@ -192,7 +170,11 @@ export function addEventListeners() {
     input.click()
   })
 
-  saveButton.addEventListener('click', () => {
+  saveButton.addEventListener("click", () => {
+    updateMap()
+  })
+
+  saveAsJson.addEventListener('click', () => {
     const json = createMap(editor.map.w, editor.map.h, Array.from(editor.map.tiles))
     const text = JSON.stringify(json, null, 2)
     const blob = new Blob([text], {type: 'application/json'})
@@ -205,6 +187,7 @@ export function addEventListeners() {
     a.remove()
     URL.revokeObjectURL(url)
   })
+
   eraserButton.addEventListener('click', () => {
     toggleErase()
   })

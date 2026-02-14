@@ -1,20 +1,41 @@
-const serverUrl = window.location.host
-async function getLevel(page = 1) {
+const serverUrl = window.location.origin
+async function getLevel(user = 1) {
   try {
-    const levels = await fetch(`${serverUrl}/api/myLevels`)
+    const levels = await fetch(`${serverUrl}/api/browse`)
     return levels.json()
   } catch (e) {
     console.error(e)
   }
 }
 
+const overlay = document.querySelector(".overlay")
+let deletedLevelNumber
+
+function showDeleteOverlay(levelNumber) {
+  deletedLevelNumber = levelNumber
+  overlay.style.display = "flex"
+}
+
+function deleteLevel(levelId = deletedLevelNumber) {
+  const payload = {}
+  payload.levelId = levelId
+  console.log(payload)
+
+  fetch(`${serverUrl}/api/delete`, {
+    method: "DELETE",
+    credentials: "include",
+    body: JSON.stringify(payload)
+  })
+    .then(res => 
+      window.location.reload()
+    )
+}
+
 
 const levelsElement = document.querySelector(".levels")
 getLevel(1).then(levels => {
-  levels = new Array(...levels)
   levelsElement.innerHTML = ''
   levels.forEach(level => {
-    console.log(level)
     const levelElement = document.createElement("a")
     levelElement.href = `/level/${level.id}`
     let tagsHtml = ''
@@ -36,29 +57,46 @@ getLevel(1).then(levels => {
       imageHtml = `<img src="${level.image_url}" alt="No Image Provided">`
     }
 
+    const deleteButton = document.createElement("button")
+    deleteButton.classList.add("quick-action")
+    const p = document.createElement("p")
+    p.innerText = "delete"
+    deleteButton.appendChild(p)
+    const img = document.createElement("img")
+    img.src = `/assets/icons/delete.svg`
+    deleteButton.appendChild(img)
+
+    deleteButton.addEventListener("click", (e) => {
+      e.stopPropagation()
+      e.preventDefault()
+      showDeleteOverlay(level.id)
+    })
+    
     const body = `
       <div class="image">
         ${imageHtml}
       </div>
       <div class="name-and-rating">
-        <h2 class="name">${level.name}</h2>
-        <div class="approval-rating-wrapper">
-          <p class="approval-rating">${level.approval_percentage}%</p>
-          <img src="./assets/icons/thumbs-up.svg" alt="">
-        </div>
+        <h2 class="name my-levels">${level.name}</h2>
       </div>
-      <div class="tags-and-plays">
-        <div class="tags">
-          ${tagsHtml}
-        </div>
-        <div class="plays">
-          <p class="plays-finishes"><span class="plays">${level.total_plays}</span>/<span class="finishes">${level.finished_plays}</span>
-          </p>
-        </div>
+      <div class="quick-actions">
+        <a href="/editor/${level.id}" id="edit" class="quick-action">
+          <p>edit</p>
+          <img src="/assets/icons/edit.svg">
+        </a>
+        <p>|</p>
+        <a href="/level/${level.id}" id="view" class="quick-action">
+          <p>view</p>
+          <img src="/assets/icons/view.svg">
+        </a>
+        <p>|</p>
       </div>
+      
     `
     levelElement.classList.add("level")
     levelElement.innerHTML = body
     levelsElement.append(levelElement)
+    const quickActions = levelElement.querySelector(".quick-actions")
+    quickActions.appendChild(deleteButton)
   })
 })

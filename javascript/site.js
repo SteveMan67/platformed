@@ -26,7 +26,7 @@ export const input = {
 }
 
 export function setMode(desiredMode) {
-  if (desiredMode === "play" || inEditor) {
+  if (desiredMode === "play" && inEditor) {
     toggleEditorUI(false)
     initPlatformer()
   } else {

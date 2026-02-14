@@ -1,5 +1,5 @@
 const loginForm = document.getElementById('login-form')
-const serverUrl = window.location.host
+const serverUrl = window.location.origin
 
 try {
   fetch(`${serverUrl}/api/ping`, {method: "POST"}).then(res => console.log(res.body))

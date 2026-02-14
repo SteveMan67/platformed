@@ -13,7 +13,7 @@ export function drawMap(tileSize = editor.tileSize, cam = editor.cam) {
   const startX = Math.floor(cam.x / tileSize);
   const endX = startX + (canvas.width / tileSize) + 1;
   const startY = Math.floor(cam.y / tileSize);
-  const endY = startY + (canvas.width / tileSize) + 1;
+  const endY = startY + (canvas.height / tileSize) + 1;
 
   for (let y = startY; y < endY; y++) {
     for (let x = startX; x < endX; x++) {
