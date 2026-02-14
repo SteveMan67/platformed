@@ -10,6 +10,15 @@ async function getLevel(level = 1) {
   }
 }
 
+function play(levelId) {
+  const payload = { levelId: levelId}
+
+  fetch(`${serverUrl}/api/play`, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  })
+}
+
 const levelName = document.querySelector(".name")
 const approvalPercentage = document.querySelector(".approval-percentage")
 const description = document.querySelector(".description")
@@ -29,5 +38,6 @@ getLevel(levelNum).then(level => {
     description.innerHTML = level.description
     plays.innerHTML = level.total_plays
     finishes.innerHTML = level.finished_plays
+    play(levelNum)
   }
 })
