@@ -150,8 +150,13 @@
 }
 
 .name.my-levels {
+    width: auto;
     margin: auto;
     margin-top: 5px;
+}
+
+.name.my-levels::after {
+    background: none;
 }
 
 .approval-rating-wrapper {
