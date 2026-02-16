@@ -26,7 +26,7 @@ function deleteLevel(levelId = deletedLevelNumber) {
     credentials: "include",
     body: JSON.stringify(payload)
   })
-    .then(res => 
+    .then(res =>
       window.location.reload()
     )
 }
@@ -37,9 +37,9 @@ getLevel(1).then(levels => {
   levelsElement.innerHTML = ''
   levels.forEach(level => {
     const levelElement = document.createElement("a")
-    levelElement.href = `/level/${level.id}`
+    levelElement.href = `/editor/${level.id}`
     let tagsHtml = ''
-    for(let i = 0; i < level.tags.length || i < 2; i++) {
+    for (let i = 0; i < level.tags.length || i < 2; i++) {
       tagsHtml += `<p class="tag">${level.tags[i]}</p>`
     }
     if (!level.tags.length) {
@@ -57,21 +57,6 @@ getLevel(1).then(levels => {
       imageHtml = `<img src="${level.image_url}" alt="No Image Provided">`
     }
 
-    const deleteButton = document.createElement("button")
-    deleteButton.classList.add("quick-action")
-    const p = document.createElement("p")
-    p.innerText = "delete"
-    deleteButton.appendChild(p)
-    const img = document.createElement("img")
-    img.src = `/assets/icons/delete.svg`
-    deleteButton.appendChild(img)
-
-    deleteButton.addEventListener("click", (e) => {
-      e.stopPropagation()
-      e.preventDefault()
-      showDeleteOverlay(level.id)
-    })
-    
     const body = `
       <div class="image">
         ${imageHtml}
@@ -81,22 +66,36 @@ getLevel(1).then(levels => {
       </div>
       <div class="quick-actions">
         <a href="/editor/${level.id}" id="edit" class="quick-action">
-          <p>edit</p>
           <img src="/assets/icons/edit.svg">
         </a>
-        <p>|</p>
+        <div class="divider"></div>
         <a href="/level/${level.id}" id="view" class="quick-action">
-          <p>view</p>
           <img src="/assets/icons/view.svg">
         </a>
-        <p>|</p>
+        <div class="divider"></div>
+        <button data-level="${level.id}" class="quick-action">
+          <img src="/assets/icons/delete.svg">
+        </button>
+        <div class="divider"></div>
+        <a href="/meta/${level.id}" id="settings" class="quick-action">
+          <img src="/assets/icons/settings.svg">
+        </a>
       </div>
       
     `
+
+
     levelElement.classList.add("level")
     levelElement.innerHTML = body
     levelsElement.append(levelElement)
     const quickActions = levelElement.querySelector(".quick-actions")
-    quickActions.appendChild(deleteButton)
+
+    const button = document.querySelector(`button.quick-action[data-level="${level.id}"]`)
+    button.addEventListener("click", (e) => {
+      e.stopPropagation()
+      e.preventDefault()
+      deletedLevelNumber = level.id
+      overlay.style.display = "flex";
+    })
   })
 })
