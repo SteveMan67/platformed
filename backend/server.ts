@@ -242,7 +242,7 @@ const server = Bun.serve({
       const match = url.search.match(/levelId=(\d+)/)
       const levelId = match ? Number(match[1]) : undefined
       if (levelId) {
-        const level = await sql`select id, data, name, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels where id = ${levelId} limit 1`
+        const level = await sql`select id, public, data, name, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels where id = ${levelId} limit 1`
         if (!level[0] || level.length === 0) {
           return new Response(JSON.stringify({ error: "Level not found" }), withCors({ status: 404, headers: { "Content-Type": "application/json" } }, CORS))
         }
@@ -360,7 +360,7 @@ const server = Bun.serve({
       }
 
       const allowedTags = new Set([
-        "name", "data", "width", "height", "tags", "image_url", "description", "level_style"
+        "name", "data", "width", "height", "tags", "image_url", "description", "level_style", "public"
       ])
 
       const updateData: Record<string, any> = {}
