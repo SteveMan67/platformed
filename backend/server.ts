@@ -1,5 +1,5 @@
 import postgres from "postgres"
-import { authenticate, type SessionCookie } from "./auth.ts"
+import { authenticate, type authResponse, getCookies } from "./auth.ts"
 
 // CORS stuf
 
@@ -36,15 +36,6 @@ function withCors(respInit: ResponseInit, CORS: any) {
 const DATABASE_URL = process.env.DATABASE_URL ?? "postgres://postgres:postgres@localhost:4321/postgres"
 const sql = postgres(DATABASE_URL)
 
-function getCookies(reqest: Request) {
-  const cookieHeader = reqest.headers.get("Cookie") ?? ""
-  const cookies: Record<string, string> = {}
-  cookieHeader.split(";").forEach(c => {
-    const [key, ...v] = c.split("=")
-    if (key) cookies[key.trim()] = v.join("=").trim()
-  })
-  return cookies
-}
 
 const server = Bun.serve({
   port: 1010,
@@ -52,11 +43,7 @@ const server = Bun.serve({
 
     // --- login page --
     "/login": async (req) => {
-      const token = req.cookies.get("token") || ""
-      const sessionId = req.cookies.get("session-id") || ""
-      console.log(sessionId || "not found")
-      console.log(await authenticate({ sessionId: sessionId, token: token }))
-      if (sessionId != "" && token != "" && await authenticate({ sessionId: sessionId, token: token })) {
+      if ((await authenticate(req))?.signedIn) {
         console.log("user already authenticated")
         return new Response(Bun.file("./frontend/index.html"))
       } else {
@@ -71,23 +58,12 @@ const server = Bun.serve({
       return new Response(Bun.file("./frontend/register.html"))
     },
     "/myLevels": async (req) => {
-      const token = req.cookies.get("token") || ""
-      const sessionId = req.cookies.get("session-id") || ""
-      console.log(sessionId || "not found")
-      console.log(await authenticate({ sessionId: sessionId, token: token }))
-      if (sessionId != "" && token != "" && await authenticate({ sessionId: sessionId, token: token })) {
+      if ((await authenticate(req))?.signedIn) {
         console.log("user already authenticated")
         return new Response(Bun.file("./frontend/user.html"))
       } else {
         return new Response(Bun.file("./frontend/login.html"))
       }
-    },
-    "/myLevels/level": (req) => {
-      return new Response(Bun.file("./frontend/level-meta.html"))
-    },
-    "/meta": () => {
-      console.log("recieved /meta url")
-      return new Response(Bun.file("./frontend/level-meta.html"))
     },
     "/new": () => {
       return new Response(Bun.file("./frontend/new-level.html"))
@@ -224,15 +200,9 @@ const server = Bun.serve({
 
     // --- return who is logged in --- 
     if (pathname == "/api/me") {
-      const cookies = getCookies(req)
-      const sessionId = cookies["session-id"]
-      const token = cookies["token"]
-      if (sessionId && token) {
-        const sessionCookie: SessionCookie = { sessionId: sessionId, token: token }
-        const authorized = await authenticate(sessionCookie)
-        if (typeof authorized == 'number') {
-          return new Response(JSON.stringify({ user: authorized }), { status: 200, headers: { "Content-Type": "application/json" } })
-        }
+      const authentication = await authenticate(req)
+      if (authentication?.signedIn) {
+        return new Response(JSON.stringify({ user: authentication.user }), { status: 200, headers: { "Content-Type": "application/json" } })
       }
       return new Response("Authentication Failed", { status: 401 })
     }
@@ -268,25 +238,13 @@ const server = Bun.serve({
     if (pathname == "/api/upload" && req.method == "POST") {
       const raw = await req.json()
       const level = raw.data
-      const cookies = getCookies(req)
-      const sessionId = cookies["session-id"]
-      const token = cookies["token"]
-      if (!sessionId || !token) {
-        console.log(cookies)
-        console.log(`sessionId = ${sessionId} & token = ${token}`)
-        return new Response("Unauthorized logic", withCors({ status: 401 }, CORS))
-      }
-      const sessionCookie: SessionCookie = { sessionId: sessionId, token: token }
-      const authorized = await authenticate(sessionCookie)
-      if (authorized) {
-        const user = await sql`
-          SELECT user_id FROM sessions WHERE id = ${sessionId} 
-        `
+      const authentication = await authenticate(req)
+      if (authentication?.signedIn) {
         const name = raw.name ? raw.name : "My New Level"
         const createdAt = Date.now()
         const width = raw.data.width ? raw.data.width : 100
         const height = raw.data.height ? raw.data.height : 50
-        const owner = user[0].user_id
+        const owner = authentication.user
         const tags = raw.tags ? raw.tags : []
         const imageUrl = raw.image_url ? raw.image_url : ""
         const description = raw.description ? raw.description : ""
@@ -305,30 +263,23 @@ const server = Bun.serve({
     if (pathname == "/api/delete" && req.method == "DELETE") {
       const raw = await req.json()
       const levelId = raw.levelId
-      const cookies = getCookies(req)
-      const sessionId = cookies["session-id"]
-      const token = cookies["token"]
-      if (!sessionId || !token) {
-        return new Response("Unauthorized logic", withCors({ status: 401 }, CORS))
-      }
-      const sessionCookie: SessionCookie = { sessionId: sessionId, token: token }
-      if (await authenticate(sessionCookie)) {
-        const user = await sql`
-          SELECT user_id FROM sessions WHERE id = ${sessionId} 
-        `
+      const authentication = await authenticate(req)
+      if (authentication?.signedIn) {
         const levelOwner = await sql`
           SELECT owner FROM levels WHERE id = ${levelId}
         `
         if (!levelOwner.length) {
           return new Response("Level does not exist", withCors({ status: 404 }, CORS))
         }
-        if (levelOwner[0].owner != user[0].user_id) {
+        if (levelOwner[0].owner != authentication.user) {
           return new Response("Unauthorized", withCors({ status: 401 }, CORS))
         }
         const deleteLevel = await sql`
           DELETE FROM levels WHERE id = ${levelId}
         `
         return new Response("Level Deleted Sucessfully", withCors({ status: 200 }, CORS))
+      } else {
+        return new Response("Unauthorized logic", withCors({ status: 401 }, CORS))
       }
     }
 
@@ -370,21 +321,12 @@ const server = Bun.serve({
         }
       }
 
-      console.log(updateData)
-
-      const cookies = getCookies(req)
-      const sessionId = cookies["session-id"]
-      const token = cookies["token"]
-      if (!sessionId || !token) {
-        return new Response("Unable to Authenticate", withCors({ status: 401 }, CORS))
-      }
-      const sessionCookie: SessionCookie = { sessionId: sessionId, token: token }
-      const user = await authenticate(sessionCookie)
-      if (typeof user == 'number') {
+      const authentication = await authenticate(req)
+      if (authentication?.signedIn) {
         const update = await sql`
           UPDATE levels
           SET ${sql(updateData)}
-          WHERE id = ${levelId} AND owner = ${user}
+          WHERE id = ${levelId} AND owner = ${authentication.user}
         `
         return new Response("Updated Successfully", { status: 200 })
       } else {
@@ -394,23 +336,9 @@ const server = Bun.serve({
     // ADD fetch levels per user  
 
     if (pathname == "/api/myLevels" && req.method == "GET") {
-      const cookies = getCookies(req)
-      const sessionId = cookies["session-id"]
-      const token = cookies["token"]
-      if (!sessionId || !token) {
-        console.log(cookies)
-        console.log(`sessionId = ${sessionId} & token = ${token}`)
-        return new Response("Unauthorized logic", withCors({ status: 401 }, CORS))
-      }
-      const sessionCookie: SessionCookie = { sessionId: sessionId, token: token }
-      const authorized = await authenticate(sessionCookie)
-      console.log(authorized, sessionCookie)
-      if (authorized) {
-        const rows = await sql`
-          SELECT user_id FROM sessions WHERE id = ${sessionId}
-        `
-
-        const level = await sql`select id, name, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels where owner = ${authorized} limit 1`
+      const authentication = await authenticate(req)
+      if (authentication?.signedIn) {
+        const level = await sql`select id, name, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels where owner = ${authentication.user} limit 1`
         if (!level[0] || level.length === 0) {
           return new Response(JSON.stringify({ error: "Level not found" }), withCors({ status: 404, headers: { "Content-Type": "application/json" } }, CORS))
         }
