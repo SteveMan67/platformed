@@ -18,7 +18,7 @@ async function getLevel(level) {
 }
 
 fetch(`${serverUrl}/api/me`)
-.then(res => res.json())
+  .then(res => res.json())
   .then(res => {
     console.log(res.user)
     user.id = res.user
@@ -28,17 +28,23 @@ let levelNum
 
 try {
   levelNum = Number(window.location.href.match(/\/editor\/(\d+)(?:[\/?#]|$)/)[1])
+  console.log(window.location.href.match(/\/editor\/(\d+)(?:[\/?#]|$)/))
 } catch {
-  levelNum = 1
+  levelNum = null;
 }
 
-getLevel(levelNum).then(level => {
-  if (level && levelNum && level.error == null) {
-    const levelData = level.data
-    loadMapFromData(levelData)
-    loadOwnerData(level)
-  } else if (level && level.error) {
-    console.log(level.error)
-  }
+if (levelNum) {
+
+  getLevel(levelNum).then(level => {
+    if (level && levelNum && level.error == null) {
+      const levelData = level.data
+      loadMapFromData(levelData)
+      loadOwnerData(level)
+    } else if (level && level.error) {
+      console.log(level.error)
+    }
+    init()
+  })
+} else {
   init()
-})
+}
