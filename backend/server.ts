@@ -38,7 +38,7 @@ const sql = postgres(DATABASE_URL)
 
 
 const server = Bun.serve({
-  port: 9020,
+  port: 1010,
   routes: {
 
     // --- login page --
@@ -211,12 +211,16 @@ const server = Bun.serve({
     if (pathname == "/api/level") {
       const match = url.search.match(/levelId=(\d+)/)
       const levelId = match ? Number(match[1]) : undefined
+      const authentication = await authenticate(req)
       if (levelId) {
         const level = await sql`select id, public, data, name, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels where id = ${levelId} limit 1`
         if (!level[0] || level.length === 0) {
           return new Response(JSON.stringify({ error: "Level not found" }), withCors({ status: 404, headers: { "Content-Type": "application/json" } }, CORS))
         }
-        return new Response(JSON.stringify(level[0]), withCors({ headers: { "Content-Type": "application/json" } }, CORS))
+
+        const returnedJson = level[0]
+        returnedJson.owned = returnedJson.owner == authentication?.user || false
+        return new Response(JSON.stringify(returnedJson), withCors({ headers: { "Content-Type": "application/json" } }, CORS))
       } else {
         return new Response(JSON.stringify({ error: "Must specify a level id with the levelId parameter" }), withCors({ status: 404, headers: { "Content-Type": "application/json" } }, CORS))
       }
