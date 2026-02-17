@@ -105,3 +105,10 @@ label.error-text {
 label.error-text:empty {
   display: none;
 }
+
+.title {
+  font-size: 35px;
+  font-weight: 500  ;
+  color: black;
+  text-decoration: none;
+}
