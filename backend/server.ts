@@ -345,7 +345,7 @@ const server = Bun.serve({
         if (!level[0] || level.length === 0) {
           return new Response(JSON.stringify({ error: "Level not found" }), withCors({ status: 404, headers: { "Content-Type": "application/json" } }, CORS))
         }
-        return new Response(JSON.stringify(level[0]), withCors({ headers: { "Content-Type": "application/json" } }, CORS))
+        return new Response(JSON.stringify(level), withCors({ headers: { "Content-Type": "application/json" } }, CORS))
       } else {
         return new Response(JSON.stringify({ error: "Must specify a level id with the user parameter" }), withCors({ status: 404, headers: { "Content-Type": "application/json" } }, CORS))
       }
