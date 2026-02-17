@@ -32,9 +32,9 @@ async function uploadLevel() {
   })
 }
 
-updateButton.addEventListener("click", () => {
-  uploadLevel().then(level => {
-    console.log(level)
-    window.location.href = `/level/${level.id}`
+updateButton.addEventListener("click", async () => {
+  uploadLevel().then(res => res.json()).then(res => {
+    console.log(res)
+    window.location.href = `/editor/${res.levelId}`
   })
 })
