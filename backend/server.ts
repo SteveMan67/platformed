@@ -38,7 +38,7 @@ const sql = postgres(DATABASE_URL)
 
 
 const server = Bun.serve({
-  port: 1010,
+  port: 9020,
   routes: {
 
     // --- login page --
@@ -237,10 +237,12 @@ const server = Bun.serve({
         return new Response(JSON.stringify(levels), withCors({ headers: { "Content-Type": "application/json" } }, CORS))
       }
     }
-
-    if (pathname == "/api/search") {
+    console.log(pathname)
+    if (pathname.startsWith("/api/search")) {
+      console.log(pathname)
       const page: number = Number(url.searchParams.get("page")) || 1
       const search: string = url.searchParams.get("search") || ""
+      console.log(page, search)
       if (search) {
         const levels = await sql`
         select id, name, created_at, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels

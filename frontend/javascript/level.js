@@ -43,13 +43,17 @@ const description = document.querySelector(".description")
 const plays = document.querySelector(".plays")
 const finishes = document.querySelector(".finishes")
 
-
-const levelNum = Number(window.location.href.match(/\/level\/(\d+)/)[1])
+let levelNum
+try {
+  levelNum = Number(window.location.href.match(/\/level\/(\d+)/)[1])
+} catch {
+  levelNum = -1
+}
 
 getLevel(levelNum).then(level => {
   console.log(level)
   if (!level || !levelNum || level.error) {
-    window.location.href = "/"
+    // window.location.href = "/"
   } else {
     levelName.innerHTML = level.name
     approvalPercentage.innerHTML = `${level.approval_percentage}%`
@@ -67,6 +71,9 @@ window.addEventListener("resize", () => {
 
 const approvalButton = document.getElementById("thumbs-up")
 const disapprovalButton = document.getElementById("thumbs-down")
+const approvalWrapper = document.querySelector(".thumbs-up-wrapper")
+const disapprovalWrapper = document.querySelector(".thumbs-down-wrapper")
+console.log(approvalButton, disapprovalButton)
 
 async function rateLevel(ratedGood) {
   await fetch(`${serverUrl}/api/rate?levelId=${levelNum}&rating=${ratedGood}`, {
@@ -75,16 +82,16 @@ async function rateLevel(ratedGood) {
 }
 
 approvalButton.addEventListener("click", () => {
-  approvalButton.classList.add("clicked")
-  disapprovalButton.classList.remove("clicked")
+  approvalWrapper.classList.add("clicked")
+  disapprovalWrapper.classList.remove("clicked")
 
   rateLevel(true)
 })
 
 
 disapprovalButton.addEventListener("click", () => {
-  disapprovalButton.classList.add("clicked")
-  approvalButton.classList.remove("clicked")
+  disapprovalWrapper.classList.add("clicked")
+  approvalWrapper.classList.remove("clicked")
 
   rateLevel(false)
 })

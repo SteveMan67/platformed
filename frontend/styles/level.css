@@ -106,6 +106,7 @@ a.edit img {
   width: 36px;
   aspect-ratio: 1;
   margin-left: 10px;
+  position: relative;
 }
 
 .edit p {
@@ -114,4 +115,32 @@ a.edit img {
 
 .description {
   font-size: 20px;
+}
+
+.thumbs-up-wrapper,
+.thumbs-down-wrapper {
+  position: relative;
+  overflow: visible;
+}
+
+.thumbs-up-wrapper::before,
+.thumbs-down-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  transform: translate(-40%, -55%);
+  width: 0;
+  aspect-ratio: 1;
+  background: radial-gradient(rgba(0, 0, 0, 0.2) 25%, transparent 100%);
+  transition: width 150ms ease, background 150ms ease;
+
+}
+
+.thumbs-down-wrapper.clicked::before,
+.thumbs-up-wrapper.clicked::before {
+  width: 40px;
+  background: radial-gradient(rgba(0, 0, 0, 0.1) 25%, transparent 100%);
+  border: 2px solid rgba(0, 0, 0, 0.5);
 }
