@@ -388,7 +388,7 @@ const server = Bun.serve({
 
       const authentication = await authenticate(req)
       if (authentication?.signedIn) {
-        const rated = (await sql`select user_id from ratings where user_id = ${authentication.user} AND level_id = ${levelId}`)
+        const rated = (await sql`select id, thumbs_up from ratings where user_id = ${authentication.user} AND level_id = ${levelId}`)
         const isAlreadyRated = rated.length > 0
 
         if (isAlreadyRated) {
@@ -396,19 +396,35 @@ const server = Bun.serve({
             update ratings
             set thumbs_up = ${rating}
           `
+          if (rated[0].thumbs_up && !rating) {
+            const updateLevels = await sql`
+              update levels 
+              set approvals = approvals - 1
+              set disapprovals = disapprovals + 1
+              where id = ${rated[0].id}
+            `
+          } else if (!rated[0].thumbs_up && rating) {
+            const updateLevels = await sql`
+              update levels
+              set approvals = approvals + 1
+              set disapprovals = disapprovals - 1
+              where id = ${rated[0].id}
+            `
+          }
         } else {
           const insert = await sql`
             insert into ratings(thumbs_up, level_id, user_id)
             values (${rating}, ${levelId}, ${authentication.user})
           `
+
+          const updateLevels = await sql`
+            update levels 
+            set approvals = approvals + ${rating ? 1 : 0},
+            disapprovals = disapprovals + ${rating ? 0 : 1}
+            where id = ${levelId}
+          `
         }
 
-        const updateLevels = await sql`
-          update levels 
-          set approvals = approvals + ${rating ? 1 : 0},
-          disapprovals = disapprovals + ${rating ? 0 : 1}
-          where id = ${levelId}
-        `
         return new Response("Rated Sucessfully", { status: 200 })
       }
     }
