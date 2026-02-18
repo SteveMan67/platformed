@@ -90,12 +90,28 @@ canvas {
   text-decoration: none;
 }
 
-.edit img {
+a.edit img {
   width: 26px;
+  aspect-ratio: 1;
+  margin-left: 10px;
+}
+
+.settings img {
+  width: 36px;
+  aspect-ratio: 1;
+  margin-left: 10px;
+}
+
+.approval-wrapper img {
+  width: 36px;
   aspect-ratio: 1;
   margin-left: 10px;
 }
 
 .edit p {
   margin: 0;
+}
+
+.description {
+  font-size: 20px;
 }

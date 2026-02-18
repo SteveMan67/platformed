@@ -23,8 +23,17 @@ function addEditButton(owned, levelId) {
     <img src="/assets/icons/edit-light.svg">
   `
   const insertPlace = document.querySelector(".approval-wrapper")
-  console.log(insertPlace)
   insertPlace.appendChild(b)
+  if (owned) {
+    const metadataA = document.createElement("a")
+    metadataA.href = `/meta/${levelId}`
+    metadataA.classList.add("settings")
+
+    metadataA.innerHTML = `
+      <img src="/assets/icons/settings.svg">
+    `
+    insertPlace.appendChild(metadataA)
+  }
   console.log(b)
 }
 
@@ -54,4 +63,28 @@ getLevel(levelNum).then(level => {
 
 window.addEventListener("resize", () => {
   updateCanvasSize()
+})
+
+const approvalButton = document.getElementById("thumbs-up")
+const disapprovalButton = document.getElementById("thumbs-down")
+
+async function rateLevel(ratedGood) {
+  await fetch(`${serverUrl}/api/rate?levelId=${levelNum}&rating=${ratedGood}`, {
+    credentials: "include"
+  })
+}
+
+approvalButton.addEventListener("click", () => {
+  approvalButton.classList.add("clicked")
+  disapprovalButton.classList.remove("clicked")
+
+  rateLevel(true)
+})
+
+
+disapprovalButton.addEventListener("click", () => {
+  disapprovalButton.classList.add("clicked")
+  approvalButton.classList.remove("clicked")
+
+  rateLevel(false)
 })
