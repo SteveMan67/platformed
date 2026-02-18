@@ -237,18 +237,17 @@ const server = Bun.serve({
         return new Response(JSON.stringify(levels), withCors({ headers: { "Content-Type": "application/json" } }, CORS))
       }
     }
-    console.log(pathname)
     if (pathname.startsWith("/api/search")) {
-      console.log(pathname)
-      const page: number = Number(url.searchParams.get("page")) || 1
-      const search: string = url.searchParams.get("search") || ""
-      console.log(page, search)
+      const page = Number(url.searchParams.get("page")) || 1
+      const search = url.searchParams.get("search") || ""
+      console.log((page - 1) * 50)
       if (search) {
         const levels = await sql`
         select id, name, created_at, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels
-        WHERE public = true AND name LIKE '%${search}%'
-        limit 50 offset ${(page - 1) * 50}
+        WHERE public = true AND name ILIKE ${'%' + search + '%'}
+        limit 50 offset ${(Number(page - 1) * 50)}
         `
+        console.log(levels)
         return new Response(JSON.stringify(levels), {
           headers: {
             "Content-Type": "application/json"
