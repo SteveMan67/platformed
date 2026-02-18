@@ -53,7 +53,7 @@ try {
 getLevel(levelNum).then(level => {
   console.log(level)
   if (!level || !levelNum || level.error) {
-    // window.location.href = "/"
+    window.location.href = "/"
   } else {
     levelName.innerHTML = level.name
     approvalPercentage.innerHTML = `${level.approval_percentage}%`
