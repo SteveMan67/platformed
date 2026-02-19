@@ -240,7 +240,7 @@ const server = Bun.serve({
       const match = url.search.match(/page=(\d+)/)
       const page = match ? Number(match[1]) : 1
       if (page) {
-        const levels = await sql`select id, name, created_at, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels
+        const levels = await sql`select id, data, name, created_at, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels
         WHERE public = true 
         limit 50 offset ${(page - 1) * 50}`
         return new Response(JSON.stringify(levels), withCors({ headers: { "Content-Type": "application/json" } }, CORS))
@@ -252,7 +252,7 @@ const server = Bun.serve({
       console.log((page - 1) * 50)
       if (search) {
         const levels = await sql`
-        select id, name, created_at, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels
+        select id, data, name, created_at, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels
         WHERE public = true AND name ILIKE ${'%' + search + '%'}
         limit 50 offset ${(Number(page - 1) * 50)}
         `
@@ -352,7 +352,8 @@ const server = Bun.serve({
       for (const [k, v] of Object.entries(raw)) {
         if (allowedTags.has(k)) {
           if (k == "name" || k == "description") {
-            updateData[k] = cleanString(k as string)
+            console.log(cleanString(v as string))
+            updateData[k] = cleanString(v as string)
           } else {
             updateData[k] = v
           }
