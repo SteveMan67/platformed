@@ -70,11 +70,15 @@ getLevel(1).then(levels => {
 const search = document.getElementById("search")
 
 search.addEventListener("input", async (e) => {
-  const raw = await fetch(`${serverUrl}/api/search?search=${search.value}`)
-  console.log(search.value)
-  const levels = await raw.json()
-  console.log(levels)
-  addLevels(levels)
+  if (search.value == "") {
+    const raw = await fetch(`${serverUrl}/api/browse`)
+    const levels = await raw.json()
+    addLevels(levels)
+  } else {
+    const raw = await fetch(`${serverUrl}/api/search?search=${search.value}`)
+    const levels = await raw.json()
+    addLevels(levels)
+  }
 })
 
 const myLevelsbutton = document.getElementById("my-levels")
