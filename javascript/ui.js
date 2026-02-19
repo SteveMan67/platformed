@@ -7,7 +7,6 @@ import { killPlayer } from "./platformer.js"
 const { editor, player } = state
 
 export function toggleEditorUI(on) {
-  console.log(on)
   const grid = document.querySelector(".grid")
   if (on) {
     grid.classList.remove("grid-uihidden")

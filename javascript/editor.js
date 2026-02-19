@@ -74,15 +74,14 @@ export function placeTile(tx, ty) {
   const selected = editor.selectedTile
   const tile = editor.tileset[selected]
   if (tile.mechanics) {
-    console.log(tile.mechanics, editor.limitedPlacedTiles, selected)
-    if (tile.mechanics.includes("onePerLevel") && !editor.limitedPlacedTiles.includes(selected)) {
-      editor.limitedPlacedTiles.push(selected)
-    }
     if (tile.mechanics.includes("spawn") && !editor.limitedPlacedTiles.includes(selected)) {
       editor.playerSpawn = { x: tx, y: tx }
     }
     if (tile.mechanics.includes("end") && !editor.limitedPlacedTiles.includes(selected)) {
       editor.end = { x: tx, y: ty }
+    }
+    if (tile.mechanics.includes("onePerLevel") && !editor.limitedPlacedTiles.includes(selected)) {
+      editor.limitedPlacedTiles.push(selected)
     }
   }
 
