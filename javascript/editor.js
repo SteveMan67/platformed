@@ -37,7 +37,7 @@ export function changeSelectedTile(tileId) {
   if (editor.selectedTile !== editor.lastSelectedTiles[1] && editor.selectedTile != 0) {
     editor.lastSelectedTiles[1] = editor.selectedTile
   }
-  if (tileId == "last") { 
+  if (tileId == "last") {
     editor.selectedTile = editor.lastSelectedTiles[0]
     editor.lastSelectedTiles.unshift(editor.lastSelectedTiles[1])
     editor.lastSelectedTiles.pop()
@@ -45,7 +45,7 @@ export function changeSelectedTile(tileId) {
     editor.lastSelectedTiles.shift()
     editor.lastSelectedTiles.push(tileId)
     editor.selectedTile = tileId
-  } 
+  }
 }
 
 export function scrollCategoryTiles(up) {
@@ -55,7 +55,7 @@ export function scrollCategoryTiles(up) {
     // sorry
     editor.selectedTile = !up ? Number(currentSelectedTiles[(currentSelectedTiles.indexOf(currentSelectedTiles.find(f => f.dataset.tile == String(editor.selectedTile))) + 1) % currentSelectedTiles.length].dataset.tile) : Number(currentSelectedTiles[(currentSelectedTiles.indexOf(currentSelectedTiles.find(f => f.dataset.tile == String(editor.selectedTile))) - 1 + currentSelectedTiles.length) % currentSelectedTiles.length].dataset.tile)
   }
-}export function initEditor() {
+} export function initEditor() {
   enemies.forEach(enemy => enemies.pop())
   ctx.imageSmoothingEnabled = false
 }
@@ -64,6 +64,44 @@ export let mouseDown = false;
 export let rDown = false;
 export let spaceDown = false;
 export let lastIdx;
+
+export function placeTile(tx, ty) {
+  let tileLimitPlaced = false
+  if (editor.limitedPlacedTiles.includes(editor.selectedTile)) {
+    tileLimitPlaced = true
+  }
+  const idx = ty * editor.map.w + tx
+  const selected = editor.selectedTile
+  const tile = editor.tileset[selected]
+  if (tile.mechanics) {
+    console.log(tile.mechanics, editor.limitedPlacedTiles, selected)
+    if (tile.mechanics.includes("onePerLevel") && !editor.limitedPlacedTiles.includes(selected)) {
+      editor.limitedPlacedTiles.push(selected)
+    }
+    if (tile.mechanics.includes("spawn") && !editor.limitedPlacedTiles.includes(selected)) {
+      editor.playerSpawn = { x: tx, y: tx }
+    }
+    if (tile.mechanics.includes("end") && !editor.limitedPlacedTiles.includes(selected)) {
+      editor.end = { x: tx, y: ty }
+    }
+  }
+
+  if (editor.limitedPlacedTiles.includes(editor.map.tiles[idx] >> 4) && editor.map.tiles[idx] >> 4 !== selected) {
+    editor.limitedPlacedTiles = editor.limitedPlacedTiles.filter(f => f !== editor.map.tiles[idx] >> 4)
+  }
+
+  if (tile.type == "adjacency" && !tileLimitPlaced) {
+    calcAdjacentAdjacency(idx, editor.selectedTile)
+  } else if (tile.type == "rotation" && !tileLimitPlaced) {
+    editor.map.tiles[idx] = (editor.selectedTile * 16) + editor.currentRotation
+  } else if (tile.type == "empty") {
+    calcAdjacentAdjacency(idx, selected)
+  } else if (!tileLimitPlaced) {
+    calcAdjacentAdjacency(idx, selected)
+  }
+  lastIdx = idx
+  editor.dirty = true
+}
 
 export function levelEditorLoop(dt) {
   let timeScale = dt * 60
@@ -82,35 +120,11 @@ export function levelEditorLoop(dt) {
     const idx = ty * map.w + tx
     if (!mouseDown) {
       if (tx >= 0 && tx < map.w && ty >= 0 && ty < map.h) {
-        // set a limit on tiles with a mechanic of "onePerLevel"
-        let tileLimitPlaced = false
-        if (editor.limitedPlacedTiles.includes(editor.selectedTile)) {
-          tileLimitPlaced = true
-        }
-        if (editor.tileset[editor.selectedTile].mechanics) {
-          if (editor.tileset[editor.selectedTile].mechanics.includes("onePerLevel") && !editor.limitedPlacedTiles.includes(editor.selectedTile)) {
-            editor.limitedPlacedTiles.push(editor.selectedTile)
-          }
-          if (tileset[editor.selectedTile].mechanics.includes("spawn")) {
-            editor.playerSpawn = { x: tx, y: ty }
-          }
-          if (tileset[editor.selectedTile].mechanics.includes("end")) {
-            editor.end = { x: tx, y: ty }
-          }
-        }
-        if (tileset[editor.selectedTile].type == "adjacency" && !tileLimitPlaced) {
-          calcAdjacentAdjacency(idx, editor.selectedTile)
-        } else if (tileset[editor.selectedTile].type == 'rotation' && !tileLimitPlaced) {
-          editor.map.tiles[idx] = (editor.selectedTile * 16) + editor.currentRotation
-        } else if (tileset[editor.selectedTile].type == 'empty') {
-          editor.limitedPlacedTiles = editor.limitedPlacedTiles.filter(f => f !== editor.map.tiles[idx] >> 4)
-          calcAdjacentAdjacency(idx, editor.selectedTile)
-        } else if (!tileLimitPlaced) {
-          calcAdjacentAdjacency(idx, editor.selectedTile)
-        }
-        editor.dirty = true
+        placeTile(tx, ty)
       }
+      mouseDown = true
     }
+    // so the user can drag
     if (lastIdx !== idx) {
       mouseDown = false
     }
