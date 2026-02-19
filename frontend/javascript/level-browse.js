@@ -75,4 +75,19 @@ search.addEventListener("input", async (e) => {
   const levels = await raw.json()
   console.log(levels)
   addLevels(levels)
-}) 
+})
+
+const myLevelsbutton = document.getElementById("my-levels")
+
+fetch(`${serverUrl}/api/me`)
+  .then(res => res.json())
+  .then(user => {
+    if (user.user) {
+
+    }
+  })
+  .catch(e => {
+    console.log("caught error")
+    myLevelsbutton.innerText = "Sign In"
+    myLevelsbutton.href = "/login"
+  })

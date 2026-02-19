@@ -1,6 +1,15 @@
 import postgres from "postgres"
 import { authenticate, type authResponse, getCookies } from "./auth.ts"
 
+function cleanString(str: String) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27')
+    .replace(/\//g, '&#x@F;')
+}
 // CORS stuf
 
 async function readJson(req: Request) {
@@ -274,7 +283,7 @@ const server = Bun.serve({
         // console.log(name, level, owner, createdAt, width, height, tags, imageUrl, description, levelStyle)
         const insertInto = await sql`
           INSERT INTO levels (name, data, owner, created_at, width, height, tags, image_url, description, level_style)
-          VALUES (${name}, ${level}, ${Number(owner)}, ${createdAt}, ${width}, ${height}, ${tags}, ${imageUrl}, ${description}, ${levelStyle})
+          VALUES (${cleanString(name)}, ${level}, ${Number(owner)}, ${createdAt}, ${width}, ${height}, ${tags}, ${imageUrl}, ${cleanString(description)}, ${levelStyle})
           returning id
         `
         console.log({ levelId: insertInto[0].id })
@@ -342,7 +351,11 @@ const server = Bun.serve({
       const updateData: Record<string, any> = {}
       for (const [k, v] of Object.entries(raw)) {
         if (allowedTags.has(k)) {
-          updateData[k] = v
+          if (k == "name" || k == "description") {
+            updateData[k] = cleanString(k as string)
+          } else {
+            updateData[k] = v
+          }
         }
       }
 
