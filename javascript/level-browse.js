@@ -8,17 +8,13 @@ async function getLevel(page = 1) {
   }
 }
 
-
-const levelsElement = document.querySelector(".levels")
-getLevel(1).then(levels => {
-  levels = new Array(levels)
+function addLevels(levels) {
   levelsElement.innerHTML = ''
-  console.log(levels)
-  levels[0].forEach(level => {
+  levels.forEach(level => {
     const levelElement = document.createElement("a")
     levelElement.href = `/level/${level.id}`
     let tagsHtml = ''
-    for(let i = 0; i < level.tags.length || i < 2; i++) {
+    for (let i = 0; i < level.tags.length || i < 2; i++) {
       tagsHtml += `<p class="tag">${level.tags[i]}</p>`
     }
     if (!level.tags.length) {
@@ -61,4 +57,22 @@ getLevel(1).then(levels => {
     levelElement.innerHTML = body
     levelsElement.append(levelElement)
   })
+}
+
+const levelsElement = document.querySelector(".levels")
+getLevel(1).then(levels => {
+  levels = new Array(levels)
+  levelsElement.innerHTML = ''
+  console.log(levels)
+  addLevels(levels[0])
 })
+
+const search = document.getElementById("search")
+
+search.addEventListener("input", async (e) => {
+  const raw = await fetch(`${serverUrl}/api/search?search=${search.value}`)
+  console.log(search.value)
+  const levels = await raw.json()
+  console.log(levels)
+  addLevels(levels)
+}) 
