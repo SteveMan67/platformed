@@ -41,7 +41,7 @@ export const state = {
     controlTimer: 0,
     controlMultiplier: 1,
     dissipations: [],
-    gravity: 0.7
+    terminalVelocity = 
   },
   editor: {
     cam: {
