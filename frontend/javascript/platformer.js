@@ -83,7 +83,7 @@ export function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles) {
     variant += 1
   }
   // right
-  if (tileIdx + 1 < tiles.length) {
+  if (tileIdx + 1 < tiles.length && (tileIdx + 1) % editor.width !== 0) {
     if (check(tileIdx + 1)) variant += 2
   } else {
     variant += 2
@@ -95,7 +95,7 @@ export function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles) {
     variant += 4
   }
   // left
-  if (tileIdx - 1 >= 0) {
+  if (tileIdx - 1 >= 0 && tileIdx % editor.width !== 0) {
     if (check(tileIdx - 1)) variant += 8
   } else {
     variant += 8
