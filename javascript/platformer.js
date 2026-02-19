@@ -175,8 +175,10 @@ function scanLevelOnPlay() {
 
 export function initPlatformer() {
   toggleEditorUI(false)
-  player.x = editor.playerSpawn.x
-  player.y = editor.playerSpawn.y
+  player.x = editor.playerSpawn.x * player.tileSize
+  player.y = editor.playerSpawn.y * player.tileSize
+  console.log(player.x, player.x)
+  console.log(editor.playerSpawn)
   player.w = player.tileSize
   player.h = player.tileSize
   player.hitboxW = 0.8 * player.tileSize

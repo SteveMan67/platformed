@@ -75,7 +75,8 @@ export function placeTile(tx, ty) {
   const tile = editor.tileset[selected]
   if (tile.mechanics) {
     if (tile.mechanics.includes("spawn") && !editor.limitedPlacedTiles.includes(selected)) {
-      editor.playerSpawn = { x: tx, y: tx }
+      editor.playerSpawn = { x: tx, y: ty }
+      console.log(editor.playerSpawn)
     }
     if (tile.mechanics.includes("end") && !editor.limitedPlacedTiles.includes(selected)) {
       editor.end = { x: tx, y: ty }
