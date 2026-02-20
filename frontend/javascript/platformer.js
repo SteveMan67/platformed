@@ -37,9 +37,8 @@ function getMechanics(idx) {
   }
 }
 
-export function calculateAdjacencies(tiles, w, h) {
+export function calculateAdjacencies(tiles, w, h, tileset = editor.tileset) {
   let out = []
-  console.log(editor.tileset)
   // calculate all the adjacencies in a given level
   for (let i = 0; i < w * h; i++) {
     const raw = tiles[i]
@@ -48,12 +47,12 @@ export function calculateAdjacencies(tiles, w, h) {
       continue
     }
     const baseId = raw >> 4
-    out.push(calculateAdjacency(i, baseId, tiles))
+    out.push(calculateAdjacency(i, baseId, tiles, tileset, w, h))
   }
   return out
 }
 
-export function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles) {
+export function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles, tileset = editor.tileset, w = editor.width, h = editor.height) {
   // calculate the adjacency for a given tile when it's placed
   // bug: walls other than the top and bottom don't work
   let variant = 0
@@ -61,7 +60,7 @@ export function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles) {
   tileId = (typeof tileId == 'number') ? tileId : tiles[tileIdx] >> 4
   if (tileId == 0) return 0
 
-  if (editor.tileset[tileId] && editor.tileset[tileId].type == 'rotation') {
+  if (tileset[tileId] && tileset[tileId].type == 'rotation') {
     return tileId << 4
   }
 
@@ -73,29 +72,29 @@ export function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles) {
   const check = (idx) => {
     const nid = getNeighborId(idx)
     if (nid === 0) return false
-    const t = editor.tileset[nid]
+    const t = tileset[nid]
     return t && t.triggerAdjacency
   }
   // top
-  if (tileIdx - editor.width >= 0) {
-    if (check(tileIdx - editor.width)) variant += 1
+  if (tileIdx - w >= 0) {
+    if (check(tileIdx - w)) variant += 1
   } else {
     variant += 1
   }
   // right
-  if (tileIdx + 1 < tiles.length && (tileIdx + 1) % editor.width !== 0) {
+  if (tileIdx + 1 < tiles.length && (tileIdx + 1) % w !== 0) {
     if (check(tileIdx + 1)) variant += 2
   } else {
     variant += 2
   }
   // bottom
-  if (tileIdx + editor.width < tiles.length) {
-    if (check(tileIdx + editor.width)) variant += 4
+  if (tileIdx + w < tiles.length) {
+    if (check(tileIdx + w)) variant += 4
   } else {
     variant += 4
   }
   // left
-  if (tileIdx - 1 >= 0 && tileIdx % editor.width !== 0) {
+  if (tileIdx - 1 >= 0 && tileIdx % w !== 0) {
     if (check(tileIdx - 1)) variant += 8
   } else {
     variant += 8

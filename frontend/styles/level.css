@@ -27,6 +27,10 @@ body .game {
   z-index: 0;
 }
 
+.image {
+  overflow: hidden;
+}
+
 canvas {
   z-index: 0 !important;
 }
