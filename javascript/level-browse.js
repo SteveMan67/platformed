@@ -184,7 +184,6 @@ async function loadTileset() {
       img.onerror = resolve
     })
 
-    console.log(def)
     tileset[def.id] = { ...def, triggerAdjacency: def.triggerAdjacency, image: img, images: [] }
 
     if (def.type == "adjacency" || def.type == "rotation") {
@@ -220,9 +219,10 @@ async function renderLevelPreview(canvas, levelData, tileset = tileset) {
   ctx.fillRect(0, 0, canvas.width, canvas.height)
   const decoded = decodeRLE(levelData.data.layers[0].data)
   const shifted = decoded.map(t => t << 4)
-  console.log(shifted)
   const data = calculateAdjacencies(shifted, levelData.width, levelData.height, tileset)
-  console.log(data)
+
+  const rotationData = decodeRLE(levelData.data.layers[1] ? levelData.data.layers[1].data : [])
+  console.log(rotationData)
 
   const spawnId = tileset.find(f => f.mechanics && f.mechanics.includes("spawn")).id
   const spawnIdx = decoded.findIndex(f => f == spawnId)
@@ -237,10 +237,8 @@ async function renderLevelPreview(canvas, levelData, tileset = tileset) {
   }
 
 
-  console.log(spawnX, spawnY)
   let camX = Math.floor(spawnX - (canvas.width / 2))
   let camY = Math.floor(spawnY - (canvas.height / 2))
-  console.log(camX, camY)
 
   const maxCamX = (levelData.width * tilesize) - canvas.width
   const maxCamY = (levelData.width * tilesize) - canvas.height
@@ -253,12 +251,11 @@ async function renderLevelPreview(canvas, levelData, tileset = tileset) {
   const startRow = Math.floor(camY / tilesize)
   const endRow = Math.ceil((camY + canvas.height) / tilesize)
 
-  console.log(startCol, endCol)
-  console.log(startRow, endRow)
 
   for (let y = startRow; y < endRow; y++) {
     for (let x = startCol; x < endCol; x++) {
       const idx = y * levelData.width + x;
+      const rotated = data[idx] + rotationData[idx]
       const raw = data[idx]
 
       if (raw) {
@@ -269,7 +266,6 @@ async function renderLevelPreview(canvas, levelData, tileset = tileset) {
         if (tileDef) {
           const drawX = Math.floor((x * tilesize) - camX)
           const drawY = Math.floor((y * tilesize) - camY)
-          console.log(!!(tileDef.images && tileDef.images[variant]))
           const img = (tileDef.images && tileDef.images[variant]) ? tileDef.images[variant] : tileDef.image
           ctx.drawImage(img, drawX, drawY, tilesize, tilesize)
         }
