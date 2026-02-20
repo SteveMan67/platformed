@@ -77,6 +77,15 @@
       ]
     },
     {
+      "id": 8,
+      "name": "crate",
+      "file": "crate.png",
+      "category": "blocks",
+      "type": "standalone",
+      "triggerAdjacency": false,
+      "mechanics": []
+    },
+    {
       "id": 9,
       "name": "Bounce Pad",
       "file": "bounce-pad.png",
