@@ -59,7 +59,6 @@ const levelsElement = document.querySelector(".levels")
 getLevel(1).then(levels => {
   levels = new Array(levels)
   levelsElement.innerHTML = ''
-  console.log(levels)
   addLevels(levels[0])
 })
 
@@ -81,7 +80,6 @@ const myLevelsbutton = document.getElementById("my-levels")
 
 fetch(`${serverUrl}/api/me`)
   .catch(e => {
-    console.log("caught error")
     myLevelsbutton.innerText = "Sign In"
     myLevelsbutton.href = "/login"
   })
@@ -215,7 +213,6 @@ async function loadTileset(tilesetPath) {
 async function renderLevelPreview(canvas, levelData) {
   let tileset = await loadTileset(levelData.data.tilesetPath)
   tileset = Object.values(tileset)
-  console.log(tileset)
   if (!canvas || !levelData) return
 
   const tilesize = 25
