@@ -184,7 +184,8 @@ async function loadTileset() {
       img.onerror = resolve
     })
 
-    tileset[def.id] = { ...def, image: img, images: [] }
+    console.log(def)
+    tileset[def.id] = { ...def, triggerAdjacency: def.triggerAdjacency, image: img, images: [] }
 
     if (def.type == "adjacency" || def.type == "rotation") {
       const w = img.naturalHeight
@@ -209,43 +210,51 @@ async function loadTileset() {
 }
 
 async function renderLevelPreview(canvas, levelData, tileset = tileset) {
-  console.log(canvas, levelData, tileset)
   if (!canvas || !levelData) return
-  console.log("rendering")
+  const tilesize = 25
   const ctx = canvas.getContext("2d")
 
   ctx.imageSmoothingEnabled = false;
 
   ctx.fillStyle = "#C29A62"
   ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-  const decoded = decodeRLE(levelData.data.layers[0])
-  const data = calculateAdjacencies(decoded, levelData.width, levelData.height, tileset)
+  const decoded = decodeRLE(levelData.data.layers[0].data)
+  const shifted = decoded.map(t => t << 4)
+  console.log(shifted)
+  const data = calculateAdjacencies(shifted, levelData.width, levelData.height, tileset)
+  console.log(data)
 
   const spawnId = tileset.find(f => f.mechanics && f.mechanics.includes("spawn")).id
-  const spawnIdx = data.findIndex(f => (f >> 4) == spawnId)
-  console.log(spawnIdx)
+  const spawnIdx = decoded.findIndex(f => f == spawnId)
 
   let spawnX = 0
   let spawnY = 0
-
   if (spawnIdx !== -1) {
     const tileX = spawnIdx % levelData.width
     const tileY = Math.floor(spawnIdx / levelData.width)
-
-    spawnX = tileX * 64 + 32
-    spawnY = tileY * 64 + 32
+    spawnX = (tileX * tilesize) + (tilesize / 2)
+    spawnY = (tileY * tilesize) + (tilesize / 2)
   }
 
+
   console.log(spawnX, spawnY)
-  const camX = Math.floor(spawnX - canvas.width)
-  const camY = Math.floor(spawnY - canvas.height)
+  let camX = Math.floor(spawnX - (canvas.width / 2))
+  let camY = Math.floor(spawnY - (canvas.height / 2))
   console.log(camX, camY)
 
-  const startCol = Math.floor(camX / 64)
-  const endCol = startCol + Math.ceil(canvas.width / 64) + 1
-  const startRow = Math.floor(camY / 64)
-  const endRow = startRow + Math.ceil(canvas.height / 64)
+  const maxCamX = (levelData.width * tilesize) - canvas.width
+  const maxCamY = (levelData.width * tilesize) - canvas.height
+
+  camX = Math.max(0, Math.min(camX, maxCamX > 0 ? maxCamX : 0))
+  camY = Math.max(0, Math.min(camY, maxCamY > 0 ? maxCamY : 0))
+
+  const startCol = Math.floor(camX / tilesize)
+  const endCol = startCol + Math.ceil(canvas.width / tilesize) + 1
+  const startRow = Math.floor(camY / tilesize)
+  const endRow = Math.ceil((camY + canvas.height) / tilesize)
+
+  console.log(startCol, endCol)
+  console.log(startRow, endRow)
 
   for (let y = startRow; y < endRow; y++) {
     for (let x = startCol; x < endCol; x++) {
@@ -258,10 +267,11 @@ async function renderLevelPreview(canvas, levelData, tileset = tileset) {
 
         const tileDef = tileset[tileId]
         if (tileDef) {
-          const drawX = Math.floor((x * 64) - camX)
-          const drawY = Math.floor((y * 64) - camY)
+          const drawX = Math.floor((x * tilesize) - camX)
+          const drawY = Math.floor((y * tilesize) - camY)
+          console.log(!!(tileDef.images && tileDef.images[variant]))
           const img = (tileDef.images && tileDef.images[variant]) ? tileDef.images[variant] : tileDef.image
-          ctx.drawImage(img, drawX, drawY, 64, 64)
+          ctx.drawImage(img, drawX, drawY, tilesize, tilesize)
         }
       }
     }

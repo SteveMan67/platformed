@@ -101,6 +101,7 @@
     border-radius: 7px;
     box-sizing: border-box;
     aspect-ratio: 5 / 3;
+    overflow: hidden;
 }
 
 .no-image {
