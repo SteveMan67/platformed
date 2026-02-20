@@ -237,7 +237,6 @@ async function renderLevelPreview(canvas, levelData) {
   const data = calculateAdjacencies(shifted, levelData.width, levelData.height, tileset)
 
   const rotationData = decodeRLE(levelData.data.layers[1] ? levelData.data.layers[1].data : [])
-  console.log(rotationData)
 
   const spawnId = tileset.find(f => f.mechanics && f.mechanics.includes("spawn")).id
   const spawnIdx = decoded.findIndex(f => f == spawnId)
@@ -270,8 +269,7 @@ async function renderLevelPreview(canvas, levelData) {
   for (let y = startRow; y < endRow; y++) {
     for (let x = startCol; x < endCol; x++) {
       const idx = y * levelData.width + x;
-      const rotated = data[idx] + rotationData[idx]
-     const raw = data[idx]
+      const raw = data[idx] + rotationData[idx]
 
       if (raw) {
         const tileId = raw >> 4;
