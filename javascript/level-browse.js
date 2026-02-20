@@ -10,7 +10,6 @@ async function getLevel(page = 1) {
 
 async function addLevels(levels) {
   levelsElement.innerHTML = ''
-  const tileset = await loadTileset()
   levels.forEach(level => {
     const levelElement = document.createElement("a")
     levelElement.href = `/level/${level.id}`
@@ -52,7 +51,7 @@ async function addLevels(levels) {
     const imageWrapper = document.querySelector(`.image[data-level="${level.id}"]`)
     const canvas = document.createElement("canvas")
     imageWrapper.appendChild(canvas)
-    renderLevelPreview(canvas, level, Object.values(tileset))
+    renderLevelPreview(canvas, level)
   })
 }
 
@@ -169,8 +168,11 @@ function calculateAdjacency(tileIdx, tileId, tiles, tileset, w, h) {
 
 }
 
-async function loadTileset() {
-  const res = await fetch("/assets/medium.json")
+const tilesetMap = new Map()
+
+async function loadTileset(tilesetPath) {
+  if (tilesetMap.has(tilesetPath)) return tilesetMap.get(tilesetPath)
+  const res = await fetch(tilesetPath)
   const rawJson = await res.json()
   const tilesetJson = rawJson.tiles
   const tileset = {}
@@ -205,10 +207,14 @@ async function loadTileset() {
     }
   })
   await Promise.all(promises)
+  tilesetMap.set(path, tileset)
   return tileset
 }
 
-async function renderLevelPreview(canvas, levelData, tileset = tileset) {
+async function renderLevelPreview(canvas, levelData) {
+  let tileset = await loadTileset(levelData.data.tilesetPath)
+  tileset = Object.values(tileset)
+  console.log(tileset)
   if (!canvas || !levelData) return
   const tilesize = 25
   const ctx = canvas.getContext("2d")
