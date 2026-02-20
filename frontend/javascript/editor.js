@@ -73,7 +73,7 @@ export function placeTile(tx, ty) {
   const idx = ty * editor.map.w + tx
   const selected = editor.selectedTile
   const tile = editor.tileset[selected]
-  if (tile.mechanics) {
+  if (tile && tile.mechanics) {
     if (tile.mechanics.includes("spawn") && !editor.limitedPlacedTiles.includes(selected)) {
       editor.playerSpawn = { x: tx, y: ty }
       console.log(editor.playerSpawn)
