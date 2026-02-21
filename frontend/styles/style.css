@@ -393,6 +393,22 @@ i::before {
   display: flex;
   justify-content: right;
   margin-right: 10px;
+  align-items: center;
+  font-size: 25px;
+}
+
+.step input[type="number"] {
+  height: calc(100% - 20px);
+  max-width: 75px;
+  margin: 10px;
+  padding: 5px 10px;
+  box-sizing: border-box;
+  font-size: 25px;
+  outline: none;
+  border: none;
+  background-color: #C29A62;
+  border-radius: 10px;
+  font-family: "Fredoka", sans-serif;
 }
 
 .step .options img {

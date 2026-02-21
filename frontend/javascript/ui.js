@@ -111,7 +111,7 @@ function getOptionHTML(stepData) {
   if (stepData.type == "teleport") {
     html += `x <input type="number" class="tp-x" value="${stepData.x || 0}"> y <input type="number" class="tp-y" value=${stepData.y || 0}>`
   }
-  html += `<img src="/assets/icons/delete.svg" alt="delete" class="delete-step"`
+  html += `<img src="/assets/icons/delete.svg" alt="delete" class="delete-step">`
   console.log(html)
   return html
 }
