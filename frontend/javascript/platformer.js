@@ -284,7 +284,23 @@ function handleTriggers(tx, ty) {
     if (step.type == "toggleBlocks") {
       player.toggledTile = !player.toggledTile
     }
+    if (step.type == "teleport") {
+      if (!step.x || !step.y) continue
+      console.log(step.x, step.y)
+      teleportPlayer(step.x, step.y)
+    }
   }
+}
+
+function teleportPlayer(tx, ty) {
+  player.vy = 0
+  player.vx = 0
+  player.died = true
+  player.dieCameraTimer = player.dieCameraTime
+  player.dieCameraStart = { x: player.cam.x, y: player.cam.y }
+  console.log(tx, ty)
+  player.x = tx * player.tileSize
+  player.y = ty * player.tileSize
 }
 
 function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {

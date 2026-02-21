@@ -94,6 +94,7 @@ function addStepToUI(stepData) {
     <div class="type">
       <select class="action-type" id="type">
         <option value="toggleBlocks" ${stepData.type === 'toggleBlocks' ? 'selected' : ''}>Swap red and blue</option>
+        <option value="teleport" ${stepData.type === "teleport" ? 'selected' : ''}>Teleport</option>
       </select>
     </div>
     <div class="options">
@@ -106,7 +107,12 @@ function addStepToUI(stepData) {
 
 function getOptionHTML(stepData) {
   let html = ''
+
+  if (stepData.type == "teleport") {
+    html += `x <input type="number" class="tp-x" value="${stepData.x || 0}"> y <input type="number" class="tp-y" value=${stepData.y || 0}>`
+  }
   html += `<img src="/assets/icons/delete.svg" alt="delete" class="delete-step"`
+  console.log(html)
   return html
 }
 
@@ -142,7 +148,6 @@ export function addEventListeners() {
 
   const stepsContainer = document.querySelector('.steps')
   const applyButton = document.querySelector('.apply')
-  console.log(applyButton)
 
   applyButton.addEventListener('click', (e) => {
     console.log(activeTrigger)
@@ -154,6 +159,13 @@ export function addEventListeners() {
     stepElements.forEach(stepEl => {
       const type = stepEl.querySelector('.action-type').value
       let stepData = { type: type }
+
+      if (type == 'teleport') {
+        const xInput = stepEl.querySelector('.tp-x')
+        const yInput = stepEl.querySelector('.tp-y')
+        stepData.x = xInput ? parseInt(xInput.value, 10) : 0
+        stepData.y = yInput ? parseInt(yInput.value, 10) : 0
+      }
       newExecuteArray.push(stepData)
     })
     console.log(newExecuteArray)
