@@ -272,6 +272,19 @@ function checkPixelCollsion(tile, tx, ty, px, py, pw, ph) {
   return false
 }
 
+function handleTriggers(tx, ty) {
+  const trigger = player.triggers.find(f => f.x == tx && f.y == ty)
+  if (!trigger) return
+  player.standingOnTrigger = true
+  console.log(player.triggers)
+
+  for (const step of trigger.execute) {
+    if (step.type == "toggleBlocks") {
+      player.toggledTile = !player.toggledTile
+    }
+  }
+}
+
 function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
   const mechanics = editor.tileset[tileId].mechanics
   if (!mechanics) return
@@ -332,8 +345,7 @@ function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
     }
   }
   if (mechanics.includes("trigger") && !player.standingOnTrigger) {
-    player.standingOnTrigger = true
-    player.toggledTile = !player.toggledTile
+    handleTriggers(tx, ty)
   }
 }
 

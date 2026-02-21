@@ -3,6 +3,7 @@ export const state = {
     id: null
   },
   player: {
+    triggers: [],
     standingOnTrigger: false,
     toggledTile: true,
     dieCameraTime: 30, // frames

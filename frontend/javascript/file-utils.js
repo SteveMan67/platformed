@@ -33,6 +33,9 @@ export async function loadMapFromData(json) {
   } else {
     await updateTileset("/assets/medium.json")
   }
+  if (json.triggers) {
+    player.triggers = json.triggers
+  }
   if (json.spawn) {
     editor.playerSpawn = { x: json.spawn.x, y: json.spawn.y }
   }
@@ -161,7 +164,7 @@ export function createMap(width = editor.map.w, height = editor.map.h, data = Ar
     "data": tileIdRLE
   }
   json.layers.push(mapLayer)
-
+  json.triggers = player.triggers
   // encode layer with 2 bits of rotation data, 0-3 and run length encode it
   let rotationList = []
   for (let i = 0; i < data.length; i++) {
