@@ -226,6 +226,7 @@ function checkPixelCollsion(tile, tx, ty, px, py, pw, ph) {
       } else {
         img = tile.images[0]
       }
+      console.log(img, img.width, img.height)
     } else {
       img = tile.image
     }
@@ -330,6 +331,10 @@ function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
       player.dissipations.push(dissipation)
     }
   }
+  if (mechanics.includes("trigger") && !player.standingOnTrigger) {
+    player.standingOnTrigger = true
+    player.toggledTile = !player.toggledTile
+  }
 }
 
 function checkCollision(dt, x, y, w, h, simulate = false) {
@@ -358,6 +363,9 @@ function checkCollision(dt, x, y, w, h, simulate = false) {
         if (tile && tile.mechanics && tile.mechanics.includes("hidden")) {
           continue
         }
+        if (tile && tile.mechanics && tile.mechanics.includes("trigger")) {
+          touchingTrigger = true
+        }
         if (tile && tile.mechanics && tile.mechanics.includes("bouncePad")) {
           continue
         }
@@ -366,6 +374,12 @@ function checkCollision(dt, x, y, w, h, simulate = false) {
         }
         if (tile && tile.mechanics && tile.mechanics.includes("pixelCollision")) {
           return checkPixelCollsion(editor.map.tiles[idx], px, py, x, y, w, h)
+        }
+        if (tile && tile.mechanics && tile.mechanics.includes("swapTrigger1") && player.toggledTile) {
+          continue
+        }
+        if (tile && tile.mechanics && tile.mechanics.includes("swapTrigger2") && !player.toggledTile) {
+          continue
         }
         if (tile && tile.mechanics && tile.mechanics.includes("dissipate")) {
           const dissipation = player.dissipations.find(d => d.tileIdx === idx)
@@ -394,6 +408,7 @@ function limitControl(time, multiplier) {
 }
 
 let lastJumpInput = false;
+let touchingTrigger = false
 function updatePhysics(dt) {
   if (player.coyoteTimer > 0) player.coyoteTimer -= dt
   if (player.jumpBufferTimer > 0) player.jumpBufferTimer -= dt
@@ -469,6 +484,7 @@ function updatePhysics(dt) {
   const offY = (player.h - player.hitboxH)
 
   player.x += player.vx * dt
+  touchingTrigger = false
   if (checkCollision(dt, player.x + offX, player.y + offY, player.hitboxW, player.hitboxH)) {
     if (player.vx > 0) {
       const hitRight = player.x + offX + player.hitboxW
@@ -504,6 +520,10 @@ function updatePhysics(dt) {
 
   const touchingLeft = checkCollision(dt, player.x + offX - 2, player.y + offY + 2, player.hitboxW, player.hitboxH - 4, true)
   const touchingRight = checkCollision(dt, player.x + offX + 2, player.y + offY + 2, player.hitboxW, player.hitboxH - 4, true)
+
+  if (!touchingTrigger) {
+    player.standingOnTrigger = false
+  }
 
   // coyote timer
   if (touchingLeft) {

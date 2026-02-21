@@ -140,6 +140,40 @@
       "mechanics": [
         "noCollision"
       ]
+    },
+    {
+      "id": 12,
+      "name": "Blue Toggle Block",
+      "file": "blue-block.png",
+      "category": "triggers",
+      "type": "adjacency",
+      "triggerAdjacency": true,
+      "mechanics": [
+        "swapTrigger1"
+      ]
+    },
+    {
+      "id": 13,
+      "name": "Red Toggle Block",
+      "file": "red-block.png",
+      "category": "triggers",
+      "type": "adjacency",
+      "triggerAdjacency": true,
+      "mechanics": [
+        "swapTrigger2"
+      ]
+    },
+    {
+      "id": 14,
+      "name": "Trigger 1",
+      "file": "trigger-one.png",
+      "category": "triggers",
+      "type": "rotation",
+      "triggerAdjacency": true,
+      "mechanics": [
+        "trigger",
+        "noCollision"
+      ]
     }
   ]
 }

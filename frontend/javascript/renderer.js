@@ -1,4 +1,3 @@
-import { initEditor } from "./editor.js";
 import { splitStripImages } from "./file-utils.js";
 import { loadTileset } from "./file-utils.js";
 import { loadPlayerSprites } from "./file-utils.js";
@@ -26,6 +25,12 @@ export function drawMap(tileSize = editor.tileSize, cam = editor.cam) {
       let showTile = true;
       if (editor.tileset[tileId] && editor.tileset[tileId].mechanics && editor.tileset[tileId].mechanics.includes("hidden") && mode == 'play') {
         showTile = false;
+      }
+      if (editor.tileset[tileId] && editor.tileset[tileId].mechanics && editor.tileset[tileId].mechanics.includes("swapTrigger1") && player.toggledTile && mode == 'play') {
+        showTile = false
+      }
+      if (editor.tileset[tileId] && editor.tileset[tileId].mechanics && editor.tileset[tileId].mechanics.includes("swapTrigger2") && !player.toggledTile && mode == 'play') {
+        showTile = false
       }
       if (player.collectedCoinList.includes(y * editor.map.w + x) && mode === 'play') {
         showTile = false;
