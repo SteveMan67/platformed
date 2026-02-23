@@ -2,7 +2,8 @@ import { calcAdjacentAdjacency, calculateAdjacency, enemies } from "./platformer
 import { canvas, ctx, drawMap } from "./renderer.js"
 import { input, key } from "./site.js"
 import { state } from "./state.js"
-const { editor } = state
+import { toggleTriggerDialog } from "./ui.js"
+const { editor, player } = state
 
 export function zoomMap(zoomDirectionIsIn) {
   const currentZoom = editor.tileSize
@@ -37,7 +38,7 @@ export function changeSelectedTile(tileId) {
   if (editor.selectedTile !== editor.lastSelectedTiles[1] && editor.selectedTile != 0) {
     editor.lastSelectedTiles[1] = editor.selectedTile
   }
-  if (tileId == "last") { 
+  if (tileId == "last") {
     editor.selectedTile = editor.lastSelectedTiles[0]
     editor.lastSelectedTiles.unshift(editor.lastSelectedTiles[1])
     editor.lastSelectedTiles.pop()
@@ -45,7 +46,7 @@ export function changeSelectedTile(tileId) {
     editor.lastSelectedTiles.shift()
     editor.lastSelectedTiles.push(tileId)
     editor.selectedTile = tileId
-  } 
+  }
 }
 
 export function scrollCategoryTiles(up) {
@@ -55,15 +56,102 @@ export function scrollCategoryTiles(up) {
     // sorry
     editor.selectedTile = !up ? Number(currentSelectedTiles[(currentSelectedTiles.indexOf(currentSelectedTiles.find(f => f.dataset.tile == String(editor.selectedTile))) + 1) % currentSelectedTiles.length].dataset.tile) : Number(currentSelectedTiles[(currentSelectedTiles.indexOf(currentSelectedTiles.find(f => f.dataset.tile == String(editor.selectedTile))) - 1 + currentSelectedTiles.length) % currentSelectedTiles.length].dataset.tile)
   }
-}export function initEditor() {
+}
+
+export function initEditor() {
   enemies.forEach(enemy => enemies.pop())
   ctx.imageSmoothingEnabled = false
 }
 
 export let mouseDown = false;
+export let rightClick = false
 export let rDown = false;
 export let spaceDown = false;
 export let lastIdx;
+
+function addTrigger(tx, ty) {
+  player.triggers.push({
+    x: tx,
+    y: ty,
+    execute: [
+      {
+        type: "toggleBlocks"
+      }
+    ]
+  })
+}
+
+export function placeTile(tx, ty) {
+  let tileLimitPlaced = false
+  if (editor.limitedPlacedTiles.includes(editor.selectedTile)) {
+    tileLimitPlaced = true
+  }
+  const idx = ty * editor.map.w + tx
+  const selected = editor.selectedTile
+  const tile = editor.tileset[selected]
+
+  const underCursor = editor.map.tiles[idx] >> 4
+
+  if (editor.tileset[underCursor] && editor.tileset[underCursor].mechanics && editor.tileset[underCursor].mechanics.includes("trigger")) {
+    const trigger = player.triggers.findIndex(f => f.x == tx && f.y == ty)
+    if (trigger !== -1) {
+      player.triggers.slice(trigger, 1)
+    }
+  }
+
+  if (tile && tile.mechanics) {
+    if (tile.mechanics.includes("spawn") && !editor.limitedPlacedTiles.includes(selected)) {
+      editor.playerSpawn = { x: tx, y: ty }
+      console.log(editor.playerSpawn)
+    }
+    if (tile.mechanics.includes("end") && !editor.limitedPlacedTiles.includes(selected)) {
+      editor.end = { x: tx, y: ty }
+    }
+    if (tile.mechanics.includes("onePerLevel") && !editor.limitedPlacedTiles.includes(selected)) {
+      editor.limitedPlacedTiles.push(selected)
+    }
+    if (tile.mechanics.includes("trigger")) {
+      addTrigger(tx, ty)
+    }
+  }
+
+  if (editor.limitedPlacedTiles.includes(editor.map.tiles[idx] >> 4) && editor.map.tiles[idx] >> 4 !== selected) {
+    editor.limitedPlacedTiles = editor.limitedPlacedTiles.filter(f => f !== editor.map.tiles[idx] >> 4)
+  }
+
+
+  if (tile.type == "adjacency" && !tileLimitPlaced) {
+    calcAdjacentAdjacency(idx, editor.selectedTile)
+  } else if (tile.type == "rotation" && !tileLimitPlaced) {
+    editor.map.tiles[idx] = (editor.selectedTile * 16) + editor.currentRotation
+  } else if (tile.type == "empty") {
+    calcAdjacentAdjacency(idx, selected)
+  } else if (!tileLimitPlaced) {
+    calcAdjacentAdjacency(idx, selected)
+  }
+  lastIdx = idx
+  editor.dirty = true
+}
+
+const selectedTileEl = document.querySelector(".selected-tile")
+const tileIdEl = document.querySelector(".selected-tile-id")
+const xEl = document.querySelector(".x")
+const yEl = document.querySelector(".y")
+
+function updateBottomBar(tx, ty) {
+  if (selectedTileEl.innerText !== editor.tileset[editor.selectedTile].name) {
+    selectedTileEl.innerText = editor.tileset[editor.selectedTile].name
+  }
+  if (tileIdEl.innerText !== String(editor.selectedTile)) {
+    tileIdEl.innerText = String(editor.selectedTile)
+  }
+  if (xEl.innerText !== String(tx)) {
+    xEl.innerText = String(tx)
+  }
+  if (yEl.innerText !== String(ty)) {
+    yEl.innerText = String(ty)
+  }
+}
 
 export function levelEditorLoop(dt) {
   let timeScale = dt * 60
@@ -78,44 +166,38 @@ export function levelEditorLoop(dt) {
   const tx = Math.floor(worldX / tileSize)
   const ty = Math.floor(worldY / tileSize)
 
+  updateBottomBar(tx, ty)
+
   if (input.down) {
     const idx = ty * map.w + tx
     if (!mouseDown) {
       if (tx >= 0 && tx < map.w && ty >= 0 && ty < map.h) {
-        // set a limit on tiles with a mechanic of "onePerLevel"
-        let tileLimitPlaced = false
-        if (editor.limitedPlacedTiles.includes(editor.selectedTile)) {
-          tileLimitPlaced = true
-        }
-        if (editor.tileset[editor.selectedTile].mechanics) {
-          if (editor.tileset[editor.selectedTile].mechanics.includes("onePerLevel") && !editor.limitedPlacedTiles.includes(editor.selectedTile)) {
-            editor.limitedPlacedTiles.push(editor.selectedTile)
-          }
-          if (tileset[editor.selectedTile].mechanics.includes("spawn")) {
-            editor.playerSpawn = { x: tx, y: ty }
-          }
-          if (tileset[editor.selectedTile].mechanics.includes("end")) {
-            editor.end = { x: tx, y: ty }
-          }
-        }
-        if (tileset[editor.selectedTile].type == "adjacency" && !tileLimitPlaced) {
-          calcAdjacentAdjacency(idx, editor.selectedTile)
-        } else if (tileset[editor.selectedTile].type == 'rotation' && !tileLimitPlaced) {
-          editor.map.tiles[idx] = (editor.selectedTile * 16) + editor.currentRotation
-        } else if (tileset[editor.selectedTile].type == 'empty') {
-          editor.limitedPlacedTiles = editor.limitedPlacedTiles.filter(f => f !== editor.map.tiles[idx] >> 4)
-          calcAdjacentAdjacency(idx, editor.selectedTile)
-        } else if (!tileLimitPlaced) {
-          calcAdjacentAdjacency(idx, editor.selectedTile)
-        }
-        editor.dirty = true
+        placeTile(tx, ty)
       }
+      mouseDown = true
     }
+    // so the user can drag
     if (lastIdx !== idx) {
       mouseDown = false
     }
   } else {
     mouseDown = false
+  }
+
+  if (input.rightClick) {
+    if (!rightClick) {
+      const idx = ty * map.w + tx
+      if (tx >= 0 && tx < map.w && ty >= 0 && ty < map.h) {
+        const raw = editor.map.tiles[idx]
+        const tileId = raw >> 4
+        if (editor.tileset[tileId] && editor.tileset[tileId].mechanics && editor.tileset[tileId].mechanics.includes("trigger")) {
+          toggleTriggerDialog(true, tx, ty)
+        }
+      }
+      rightClick = true
+    }
+  } else {
+    rightClick = false
   }
 
   if (input.keys['r']) {

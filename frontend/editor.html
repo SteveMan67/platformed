@@ -36,7 +36,7 @@
         <img class="import" src="/assets/icons/import.svg">
         <img class="play" src="/assets/icons/play_nofill.svg" alt="">
         <img class="menu-button" src="/assets/icons/menu.svg"
-          onclick="document.querySelector('.menu').style.display = 'flex'">
+          onclick="document.querySelector('.menu-content').style.display = ''; document.querySelector('.overlay').style.display = 'flex'">
       </div>
     </div>
     <div class="game">
@@ -55,10 +55,9 @@
           <div class="categories">
             <div class="category" data-category="mechanics">
               <img src="/assets/icons/mechanics.svg">
-
             </div>
-            <div class="category" data-category="fluids">
-              <img src="/assets/icons/fluids.svg">
+            <div class="category" data-category="triggers">
+              <img src="/assets/icons/triggers.svg">
             </div>
             <div class="category" data-category="mobs">
               <img src="/assets/icons/mobs.svg">
@@ -82,16 +81,58 @@
         </div>
       </div>
     </div>
+    <div class="bottom-bar">
+      <div class="left-info">
+        <p class="selected-tile">Trigger 2</p>
+        <p>|</p>
+        <p>tileId:</p>
+        <p class="selected-tile-id">16</p>
+      </div>
+      <div class="right-info">
+        <p>x:</p>
+        <p class="x">30</p>
+        <p>|</p>
+        <p>y:</p>
+        <p class="y">20</p>
+      </div>
+    </div>
   </div>
-  <div class="menu">
-    <div class="background" onclick="document.querySelector('.menu').style.display = 'none'"></div>
+  <div class="overlay">
+    <div class="background"
+      onclick="document.querySelector('.overlay').style.display = 'none'; document.querySelector('.menu-content').style.display = 'none'">
+    </div>
+    <div class="trigger-dialog">
+      <p>Edit Trigger</p>
+      <div class="steps-wrapper">
+        <div class="arrow"></div>
+        <div class="steps">
+          <div class="step">
+            <div class="type">
+              <select name="type" id="type">
+                <option value="toggle">Swap red and blue blocks</option>
+              </select>
+            </div>
+            <div class="options">
+              <img src="/assets/icons/delete.svg" alt="">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="buttons">
+        <div id="new">
+          <img src="/assets/icons/plus.svg" alt="add step">
+        </div>
+        <div class="apply">
+          <p>apply</p>
+        </div>
+      </div>
+    </div>
     <div class="menu-content">
       <input type="radio" name="tabs" id="tab1">
       <input type="radio" name="tabs" id="tab2" checked>
       <input type="radio" name="tabs" id="tab3">
       <input type="radio" name="tabs" id="tab4">
       <input type="radio" name="tabs" id="tab5">
-
       <div class="tabs">
         <ul>
           <li><label for="tab1">Level</label></li>
@@ -176,28 +217,7 @@
         </div>
         <!-- Share -->
         <div class="tab">
-          <!-- <div class="menu-item">
-            <label for="level-name">Level Name</label>
-            <input type="text" id="level-name" class="level-name" placeholder="Name..." autocomplete="off"
-              autocorrect="off">
-          </div>
-          <div class="menu-item">
-            <label for="visibility">Visibility</label>
-            <select name="visibility" id="visibility">
-              <option value="public">Public</option>
-              <option value="private">Private</option>
-            </select>
-          </div>
-          <div class="menu-item">
-            <label for="">Description</label>
-          </div>
-          <div class="menu-item">
-            <div class="description-border">
-              <input type="text" name="description" id="description">
-            </div>
-          </div> -->
           <div class="menu-item align-items-left">
-            <!-- <input type="submit" id="level-upload" value="Upload Level"> -->
             <input type="button" value="Save as JSON" id="save-as-json">
           </div>
           <div class="menu-item">
@@ -215,7 +235,8 @@
             <li><span class="keyboard-shortcut">&lt;space&gt;</span> - switch between the two last blocks</li>
             <li><span class="keyboard-shortcut">P</span> - toggle play mode</li>
             <li><span class="keyboard-shortcut">O</span> - open file</li>
-            <li><span class="keyboard-shortcut">R</span> - rotate block (if applicable)</li>
+            <li><span class="keyboard-shortcut">R</span> - rotate block (editor)</li>
+            <li><span class="keyboard-shortcut">R</span> - respawn (play mode)</li>
           </ul>
         </div>
       </div>

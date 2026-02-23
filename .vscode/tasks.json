@@ -15,7 +15,7 @@
         "isDefault": false
       },
       "presentation": {
-        "reveal": "always",
+        "reveal": "silent",
         "panel": "shared"
       },
       "problemMatcher": []
@@ -28,14 +28,19 @@
         "cwd": "${workspaceFolder}",
         "shell": {
           "executable": "/bin/bash",
-          "args": ["-lc"]
+          "args": [
+            "-lc"
+          ]
         }
       },
       "group": {
         "kind": "build",
         "isDefault": true
       },
-      "presentation": { "reveal": "always", "panel": "shared" },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
       "problemMatcher": []
     }
   ]

@@ -140,6 +140,64 @@
       "mechanics": [
         "noCollision"
       ]
+    },
+    {
+      "id": 13,
+      "name": "Blue Toggle Block",
+      "file": "blue-block.png",
+      "category": "triggers",
+      "type": "standalone",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "swapTrigger1"
+      ]
+    },
+    {
+      "id": 14,
+      "name": "Red Toggle Block",
+      "file": "red-block.png",
+      "category": "triggers",
+      "type": "standalone",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "swapTrigger2"
+      ]
+    },
+    {
+      "id": 15,
+      "name": "Trigger 1",
+      "file": "trigger-one.png",
+      "category": "triggers",
+      "type": "rotation",
+      "triggerAdjacency": true,
+      "mechanics": [
+        "trigger",
+        "noCollision"
+      ]
+    },
+    {
+      "id": 16,
+      "name": "Invisible Trigger",
+      "file": "trigger-two.png",
+      "category": "triggers",
+      "type": "standalone",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "hidden",
+        "trigger"
+      ]
+    },
+    {
+      "id": 17,
+      "name": "Trigger 3",
+      "file": "trigger-three.png",
+      "category": "triggers",
+      "type": "standalone",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "noCollision",
+        "trigger"
+      ]
     }
   ]
 }

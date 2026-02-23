@@ -101,12 +101,18 @@
     border-radius: 7px;
     box-sizing: border-box;
     aspect-ratio: 5 / 3;
+    overflow: hidden;
 }
 
 .no-image {
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100%;
+}
+
+.image canvas {
+    width: 100%;
     height: 100%;
 }
 
@@ -132,11 +138,31 @@
     font-size: 25px;
     font-weight: 500;
     margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    margin-right: 10px;
+    position: relative;
+    width: 100%;
+}
+
+.name::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: linear-gradient(to right, transparent 95%, #C29A62 100%)
 }
 
 .name.my-levels {
+    width: auto;
     margin: auto;
     margin-top: 5px;
+}
+
+.name.my-levels::after {
+    background: none;
 }
 
 .approval-rating-wrapper {
@@ -181,15 +207,14 @@
 }
 
 .quick-action {
-    display: flex;
     flex-direction: row;
     align-items: center;
-    margin: auto 10px;
+    margin: 10px 20px;
 }
 
 .quick-action img {
-    width: 26px;
-    height: 26px;
+    width: 35px;
+    height: 35px;
 }
 
 .quick-action p {
@@ -206,6 +231,7 @@
 .quick-actions button {
     border: none;
     background-color: transparent;
+    padding: 0;
 }
 
 .overlay {
@@ -255,4 +281,16 @@
     font-size: 30px;
     margin: 0;
     padding: 10px 50px;
+}
+
+.quick-actions p {
+    font-size: 35px;
+    margin: 0 auto;
+}
+
+.divider {
+    width: 0;
+    height: 30px;
+    border-left: 3px solid black;
+    border-radius: 13px;
 }

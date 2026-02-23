@@ -33,6 +33,9 @@ export async function loadMapFromData(json) {
   } else {
     await updateTileset("/assets/medium.json")
   }
+  if (json.triggers) {
+    player.triggers = json.triggers
+  }
   if (json.spawn) {
     editor.playerSpawn = { x: json.spawn.x, y: json.spawn.y }
   }
@@ -48,7 +51,7 @@ export async function loadMapFromData(json) {
   // need to set width and height before calculateAdjacencies otherwise it don't work
   editor.width = json.width;
   editor.height = json.height;
-  
+
   rawTileLayer = calculateAdjacencies(rawTileLayer, json.width, json.height);
 
   for (let i = 0; i < rawTileLayer.length; i++) {
@@ -161,7 +164,7 @@ export function createMap(width = editor.map.w, height = editor.map.h, data = Ar
     "data": tileIdRLE
   }
   json.layers.push(mapLayer)
-
+  json.triggers = player.triggers
   // encode layer with 2 bits of rotation data, 0-3 and run length encode it
   let rotationList = []
   for (let i = 0; i < data.length; i++) {
@@ -299,19 +302,21 @@ export async function updateMap() {
     const payload = {}
     payload.levelId = levelNum
     payload.data = createMap()
-  
+
     fetch(`${serverUrl}/api/edit`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json"},
+      headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify(payload),
     }).then(res => {
       console.log(res)
     })
   } else {
-    uploadLevel([
+    const levelId = await uploadLevel([
       ["data", createMap()]
     ])
+    console.log(await levelId)
+    window.location.href = `/level/${await levelId}`
   }
 }
 

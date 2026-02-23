@@ -1,6 +1,15 @@
 import postgres from "postgres"
-import { authenticate, type SessionCookie } from "./auth.ts"
+import { authenticate, type authResponse, getCookies } from "./auth.ts"
 
+function cleanString(str: String) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27')
+    .replace(/\//g, '&#x@F;')
+}
 // CORS stuf
 
 async function readJson(req: Request) {
@@ -36,15 +45,6 @@ function withCors(respInit: ResponseInit, CORS: any) {
 const DATABASE_URL = process.env.DATABASE_URL ?? "postgres://postgres:postgres@localhost:4321/postgres"
 const sql = postgres(DATABASE_URL)
 
-function getCookies(reqest: Request) {
-  const cookieHeader = reqest.headers.get("Cookie") ?? ""
-  const cookies: Record<string, string> = {}
-  cookieHeader.split(";").forEach(c => {
-    const [key, ...v] = c.split("=")
-    if (key) cookies[key.trim()] = v.join("=").trim()
-  })
-  return cookies
-}
 
 const server = Bun.serve({
   port: 1010,
@@ -52,11 +52,7 @@ const server = Bun.serve({
 
     // --- login page --
     "/login": async (req) => {
-      const token = req.cookies.get("token") || ""
-      const sessionId = req.cookies.get("session-id") || ""
-      console.log(sessionId || "not found")
-      console.log(await authenticate({ sessionId: sessionId, token: token }))
-      if (sessionId != "" && token != "" && await authenticate({ sessionId: sessionId, token: token })) {
+      if ((await authenticate(req))?.signedIn) {
         console.log("user already authenticated")
         return new Response(Bun.file("./frontend/index.html"))
       } else {
@@ -71,23 +67,12 @@ const server = Bun.serve({
       return new Response(Bun.file("./frontend/register.html"))
     },
     "/myLevels": async (req) => {
-      const token = req.cookies.get("token") || ""
-      const sessionId = req.cookies.get("session-id") || ""
-      console.log(sessionId || "not found")
-      console.log(await authenticate({ sessionId: sessionId, token: token }))
-      if (sessionId != "" && token != "" && await authenticate({ sessionId: sessionId, token: token })) {
+      if ((await authenticate(req))?.signedIn) {
         console.log("user already authenticated")
         return new Response(Bun.file("./frontend/user.html"))
       } else {
         return new Response(Bun.file("./frontend/login.html"))
       }
-    },
-    "/myLevels/level": (req) => {
-      return new Response(Bun.file("./frontend/level-meta.html"))
-    },
-    "/meta": () => {
-      console.log("recieved /meta url")
-      return new Response(Bun.file("./frontend/level-meta.html"))
     },
     "/new": () => {
       return new Response(Bun.file("./frontend/new-level.html"))
@@ -224,15 +209,9 @@ const server = Bun.serve({
 
     // --- return who is logged in --- 
     if (pathname == "/api/me") {
-      const cookies = getCookies(req)
-      const sessionId = cookies["session-id"]
-      const token = cookies["token"]
-      if (sessionId && token) {
-        const sessionCookie: SessionCookie = { sessionId: sessionId, token: token }
-        const authorized = await authenticate(sessionCookie)
-        if (typeof authorized == 'number') {
-          return new Response(JSON.stringify({ user: authorized }), { status: 200, headers: { "Content-Type": "application/json" } })
-        }
+      const authentication = await authenticate(req)
+      if (authentication?.signedIn) {
+        return new Response(JSON.stringify({ user: authentication.user }), { status: 200, headers: { "Content-Type": "application/json" } })
       }
       return new Response("Authentication Failed", { status: 401 })
     }
@@ -241,12 +220,16 @@ const server = Bun.serve({
     if (pathname == "/api/level") {
       const match = url.search.match(/levelId=(\d+)/)
       const levelId = match ? Number(match[1]) : undefined
+      const authentication = await authenticate(req)
       if (levelId) {
-        const level = await sql`select id, data, name, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels where id = ${levelId} limit 1`
+        const level = await sql`select id, public, data, name, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels where id = ${levelId} limit 1`
         if (!level[0] || level.length === 0) {
           return new Response(JSON.stringify({ error: "Level not found" }), withCors({ status: 404, headers: { "Content-Type": "application/json" } }, CORS))
         }
-        return new Response(JSON.stringify(level[0]), withCors({ headers: { "Content-Type": "application/json" } }, CORS))
+
+        const returnedJson = level[0]
+        returnedJson.owned = returnedJson.owner == authentication?.user || false
+        return new Response(JSON.stringify(returnedJson), withCors({ headers: { "Content-Type": "application/json" } }, CORS))
       } else {
         return new Response(JSON.stringify({ error: "Must specify a level id with the levelId parameter" }), withCors({ status: 404, headers: { "Content-Type": "application/json" } }, CORS))
       }
@@ -257,10 +240,28 @@ const server = Bun.serve({
       const match = url.search.match(/page=(\d+)/)
       const page = match ? Number(match[1]) : 1
       if (page) {
-        const levels = await sql`select id, name, created_at, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels
+        const levels = await sql`select id, data, name, created_at, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels
         WHERE public = true 
         limit 50 offset ${(page - 1) * 50}`
         return new Response(JSON.stringify(levels), withCors({ headers: { "Content-Type": "application/json" } }, CORS))
+      }
+    }
+    if (pathname.startsWith("/api/search")) {
+      const page = Number(url.searchParams.get("page")) || 1
+      const search = url.searchParams.get("search") || ""
+      console.log((page - 1) * 50)
+      if (search) {
+        const levels = await sql`
+        select id, data, name, created_at, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels
+        WHERE public = true AND name ILIKE ${'%' + search + '%'}
+        limit 50 offset ${(Number(page - 1) * 50)}
+        `
+        console.log(levels)
+        return new Response(JSON.stringify(levels), {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
       }
     }
 
@@ -268,34 +269,25 @@ const server = Bun.serve({
     if (pathname == "/api/upload" && req.method == "POST") {
       const raw = await req.json()
       const level = raw.data
-      const cookies = getCookies(req)
-      const sessionId = cookies["session-id"]
-      const token = cookies["token"]
-      if (!sessionId || !token) {
-        console.log(cookies)
-        console.log(`sessionId = ${sessionId} & token = ${token}`)
-        return new Response("Unauthorized logic", withCors({ status: 401 }, CORS))
-      }
-      const sessionCookie: SessionCookie = { sessionId: sessionId, token: token }
-      const authorized = await authenticate(sessionCookie)
-      if (authorized) {
-        const user = await sql`
-          SELECT user_id FROM sessions WHERE id = ${sessionId} 
-        `
+      const authentication = await authenticate(req)
+      if (authentication?.signedIn) {
         const name = raw.name ? raw.name : "My New Level"
         const createdAt = Date.now()
-        const width = raw.data.width ? raw.data.width : 100
-        const height = raw.data.height ? raw.data.height : 50
-        const owner = user[0].user_id
+        const width = raw.data && raw.data.width ? raw.data.width : 100
+        const height = raw.data && raw.data.height ? raw.data.height : 50
+        const owner = authentication.user
         const tags = raw.tags ? raw.tags : []
         const imageUrl = raw.image_url ? raw.image_url : ""
         const description = raw.description ? raw.description : ""
         const levelStyle = raw.level_style ? raw.level_style : ""
+        // console.log(name, level, owner, createdAt, width, height, tags, imageUrl, description, levelStyle)
         const insertInto = await sql`
           INSERT INTO levels (name, data, owner, created_at, width, height, tags, image_url, description, level_style)
-          VALUES (${name}, ${level}, ${Number(owner)}, ${createdAt}, ${width}, ${height}, ${tags}, ${imageUrl}, ${description}, ${levelStyle})
+          VALUES (${cleanString(name)}, ${level}, ${Number(owner)}, ${createdAt}, ${width}, ${height}, ${tags}, ${imageUrl}, ${cleanString(description)}, ${levelStyle})
+          returning id
         `
-        return new Response("Level Added", withCors({ status: 200 }, CORS))
+        console.log({ levelId: insertInto[0].id })
+        return new Response(JSON.stringify({ levelId: insertInto[0].id }), withCors({ status: 200 }, CORS))
       } else {
         return new Response("Invalid Auth", withCors({ status: 401 }, CORS))
       }
@@ -305,30 +297,23 @@ const server = Bun.serve({
     if (pathname == "/api/delete" && req.method == "DELETE") {
       const raw = await req.json()
       const levelId = raw.levelId
-      const cookies = getCookies(req)
-      const sessionId = cookies["session-id"]
-      const token = cookies["token"]
-      if (!sessionId || !token) {
-        return new Response("Unauthorized logic", withCors({ status: 401 }, CORS))
-      }
-      const sessionCookie: SessionCookie = { sessionId: sessionId, token: token }
-      if (await authenticate(sessionCookie)) {
-        const user = await sql`
-          SELECT user_id FROM sessions WHERE id = ${sessionId} 
-        `
+      const authentication = await authenticate(req)
+      if (authentication?.signedIn) {
         const levelOwner = await sql`
           SELECT owner FROM levels WHERE id = ${levelId}
         `
         if (!levelOwner.length) {
           return new Response("Level does not exist", withCors({ status: 404 }, CORS))
         }
-        if (levelOwner[0].owner != user[0].user_id) {
+        if (levelOwner[0].owner != authentication.user) {
           return new Response("Unauthorized", withCors({ status: 401 }, CORS))
         }
         const deleteLevel = await sql`
           DELETE FROM levels WHERE id = ${levelId}
         `
         return new Response("Level Deleted Sucessfully", withCors({ status: 200 }, CORS))
+      } else {
+        return new Response("Unauthorized logic", withCors({ status: 401 }, CORS))
       }
     }
 
@@ -360,63 +345,100 @@ const server = Bun.serve({
       }
 
       const allowedTags = new Set([
-        "name", "data", "width", "height", "tags", "image_url", "description", "level_style"
+        "name", "data", "width", "height", "tags", "image_url", "description", "level_style", "public"
       ])
 
       const updateData: Record<string, any> = {}
       for (const [k, v] of Object.entries(raw)) {
         if (allowedTags.has(k)) {
-          updateData[k] = v
+          if (k == "name" || k == "description") {
+            console.log(cleanString(v as string))
+            updateData[k] = cleanString(v as string)
+          } else {
+            updateData[k] = v
+          }
         }
       }
 
-      console.log(updateData)
-
-      const cookies = getCookies(req)
-      const sessionId = cookies["session-id"]
-      const token = cookies["token"]
-      if (!sessionId || !token) {
-        return new Response("Unable to Authenticate", withCors({ status: 401 }, CORS))
-      }
-      const sessionCookie: SessionCookie = { sessionId: sessionId, token: token }
-      const user = await authenticate(sessionCookie)
-      if (typeof user == 'number') {
+      const authentication = await authenticate(req)
+      if (authentication?.signedIn) {
         const update = await sql`
           UPDATE levels
           SET ${sql(updateData)}
-          WHERE id = ${levelId} AND owner = ${user}
+          WHERE id = ${levelId} AND owner = ${authentication.user}
         `
         return new Response("Updated Successfully", { status: 200 })
       } else {
         return new Response("Incorrect Authorization", withCors({ status: 200, headers: { "Content-Type": "application/json" } }, CORS))
       }
     }
-    // ADD fetch levels per user  
 
     if (pathname == "/api/myLevels" && req.method == "GET") {
-      const cookies = getCookies(req)
-      const sessionId = cookies["session-id"]
-      const token = cookies["token"]
-      if (!sessionId || !token) {
-        console.log(cookies)
-        console.log(`sessionId = ${sessionId} & token = ${token}`)
-        return new Response("Unauthorized logic", withCors({ status: 401 }, CORS))
-      }
-      const sessionCookie: SessionCookie = { sessionId: sessionId, token: token }
-      const authorized = await authenticate(sessionCookie)
-      console.log(authorized, sessionCookie)
-      if (authorized) {
-        const rows = await sql`
-          SELECT user_id FROM sessions WHERE id = ${sessionId}
-        `
-
-        const level = await sql`select id, name, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels where owner = ${authorized} limit 1`
+      const authentication = await authenticate(req)
+      console.log(authentication)
+      if (authentication?.signedIn) {
+        const level = await sql`select id, name, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels where owner = ${authentication.user}`
         if (!level[0] || level.length === 0) {
           return new Response(JSON.stringify({ error: "Level not found" }), withCors({ status: 404, headers: { "Content-Type": "application/json" } }, CORS))
         }
-        return new Response(JSON.stringify(level[0]), withCors({ headers: { "Content-Type": "application/json" } }, CORS))
+        return new Response(JSON.stringify(level), withCors({ headers: { "Content-Type": "application/json" } }, CORS))
       } else {
         return new Response(JSON.stringify({ error: "Must specify a level id with the user parameter" }), withCors({ status: 404, headers: { "Content-Type": "application/json" } }, CORS))
+      }
+    }
+
+    if (pathname == "/api/rate") {
+      const levelId = url.searchParams.get("levelId")
+      const ratingParam = url.searchParams.get("rating")
+      const rating = ratingParam == "approve" ? true : false
+      if (!levelId) {
+        return new Response("Must Provide LevelId", { status: 400 })
+      }
+
+      if (!ratingParam) {
+        return new Response("Must Provide rating", { status: 400 })
+      }
+
+      const authentication = await authenticate(req)
+      if (authentication?.signedIn) {
+        const rated = (await sql`select id, thumbs_up from ratings where user_id = ${authentication.user} AND level_id = ${levelId}`)
+        const isAlreadyRated = rated.length > 0
+
+        if (isAlreadyRated) {
+          const insert = await sql`
+            update ratings
+            set thumbs_up = ${rating}
+          `
+          if (rated[0].thumbs_up && !rating) {
+            const updateLevels = await sql`
+              update levels 
+              set approvals = approvals - 1
+              set disapprovals = disapprovals + 1
+              where id = ${rated[0].id}
+            `
+          } else if (!rated[0].thumbs_up && rating) {
+            const updateLevels = await sql`
+              update levels
+              set approvals = approvals + 1
+              set disapprovals = disapprovals - 1
+              where id = ${rated[0].id}
+            `
+          }
+        } else {
+          const insert = await sql`
+            insert into ratings(thumbs_up, level_id, user_id)
+            values (${rating}, ${levelId}, ${authentication.user})
+          `
+
+          const updateLevels = await sql`
+            update levels 
+            set approvals = approvals + ${rating ? 1 : 0},
+            disapprovals = disapprovals + ${rating ? 0 : 1}
+            where id = ${levelId}
+          `
+        }
+
+        return new Response("Rated Sucessfully", { status: 200 })
       }
     }
 
@@ -446,11 +468,15 @@ const server = Bun.serve({
           mime = "application/json; charset=utf-8"
           break
       }
+      const fileExists = await file.exists()
+      console.log(fileExists)
+      if (!fileExists) {
+        return new Response("Not Found", withCors({ status: 404 }, CORS))
+      }
       return new Response(file, withCors({ status: 200, headers: { "Content-Type": mime } }, CORS))
     } catch {
       return new Response("Not Found", withCors({ status: 404 }, CORS))
     }
-    return new Response("Not Found", withCors({ status: 404 }, CORS))
   }
 })
 

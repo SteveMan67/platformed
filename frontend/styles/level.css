@@ -4,12 +4,15 @@
   align-items: center;
   width: 100%;
   height: 100%;
-  position: absolute
+  position: absolute;
+  overflow-y: scroll;
+  scrollbar-width: none;
 }
 
 .game-wrapper {
   width: min(90vw, 1200px);
   aspect-ratio: 5 / 3;
+  max-height: calc(80vh - 80px);
   border: 4px solid black;
   border-radius: 20px;
   position: relative;
@@ -24,12 +27,17 @@ body .game {
   z-index: 0;
 }
 
+.image {
+  overflow: hidden;
+}
+
 canvas {
   z-index: 0 !important;
 }
 
 .approval-percentage {
   font-size: 25px;
+  margin: 0;
 }
 
 .name {
@@ -38,8 +46,11 @@ canvas {
 
 .info p,
 .info h2 {
-  margin-top: 10px;
   margin-bottom: 0;
+}
+
+.info {
+  margin-top: 10px;
 }
 
 .row {
@@ -59,4 +70,81 @@ canvas {
   font-size: 25px;
   margin: 0;
   margin-left: 10px;
+}
+
+.approval-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 0;
+}
+
+.edit {
+  font-size: 25px;
+  background-color: black;
+  outline: none;
+  border: none;
+  color: #c29a62;
+  font-family: "Fredoka", sans-serif;
+  border-radius: 10px;
+  margin-left: 20px;
+  padding: 5px 15px;
+  display: flex;
+  flex-direction: row;
+  text-decoration: none;
+}
+
+a.edit img {
+  width: 26px;
+  aspect-ratio: 1;
+  margin-left: 10px;
+}
+
+.settings img {
+  width: 36px;
+  aspect-ratio: 1;
+  margin-left: 10px;
+}
+
+.approval-wrapper img {
+  width: 36px;
+  aspect-ratio: 1;
+  margin-left: 10px;
+  position: relative;
+}
+
+.edit p {
+  margin: 0;
+}
+
+.description {
+  font-size: 20px;
+}
+
+.thumbs-up-wrapper,
+.thumbs-down-wrapper {
+  position: relative;
+  overflow: visible;
+}
+
+.thumbs-up-wrapper::before,
+.thumbs-down-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  transform: translate(-40%, -55%);
+  width: 0;
+  aspect-ratio: 1;
+  background: radial-gradient(rgba(0, 0, 0, 0.2) 25%, transparent 100%);
+  transition: width 150ms ease, background 150ms ease;
+
+}
+
+.thumbs-down-wrapper.clicked::before,
+.thumbs-up-wrapper.clicked::before {
+  width: 40px;
+  background: radial-gradient(rgba(0, 0, 0, 0.1) 25%, transparent 100%);
+  border: 2px solid rgba(0, 0, 0, 0.5);
 }

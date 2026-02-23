@@ -14,9 +14,8 @@ export async function uploadLevel(dataList) {
     credentials: 'include',
     body: JSON.stringify(payload)
   })
-    .then(response => {
-      console.log(response)
-    })
+  const levelId = await upload.json()
+  return levelId.levelId
 }
 
 export function play(levelId, finished) {

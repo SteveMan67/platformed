@@ -15,12 +15,16 @@ export const inEditor = !window.location.pathname.startsWith("/level")
 
 export function endLevel() {
   mode = inEditor ? "editor" : "play"
-  setTimeout(inEditor? initEditor : initPlatformer, 1)
+  setTimeout(inEditor ? initEditor : initPlatformer, 1)
   playSound("./assets/audio/victory.wav")
 
-  const levelNum = Number(window.location.href.match(/\/level\/(\d+)/)[1])
-  if (levelNum) {
-    play(levelNum, true)
+  try {
+    const levelNum = Number(window.location.href.match(/\/level\/(\d+)/)[1])
+    if (levelNum) {
+      play(levelNum, true)
+    }
+  } catch {
+    setMode("editor")
   }
 }
 
@@ -28,6 +32,7 @@ export const input = {
   x: 0,
   y: 0,
   down: false,
+  rightClick: false,
   keys: {}
 }
 
@@ -52,7 +57,7 @@ function engineLoop(timestamp) {
     levelEditorLoop(dt)
   }
   requestAnimationFrame(engineLoop)
-} 
+}
 
 function deltaTime(timestamp) {
   if (!timestamp) timestamp = performance.now()
@@ -122,7 +127,7 @@ async function preloadSound(url) {
 
 export function playSound(url, randomness = 0) {
   if (audioCtx.state === 'suspended') audioCtx.resume()
-  
+
   const buffer = soundbuffers.get(url)
   if (!buffer) {
     preloadSound(url)
