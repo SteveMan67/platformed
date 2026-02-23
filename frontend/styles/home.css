@@ -94,6 +94,12 @@
     margin: 20px;
     color: black !important;
     text-decoration: none !important;
+    transition: transform 200ms ease;
+}
+
+.level:hover {
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
 }
 
 .image {
