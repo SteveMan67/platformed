@@ -28,6 +28,14 @@ export function drawMinimap() {
       ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize)
     }
   }
+
+  ctx.strokeStyle = 'rgba(0,0,0,1)'
+  const gameCanvas = document.querySelector(".canvas")
+  const startX = Math.floor(editor.cam.x / editor.tileSize * tileSize)
+  const startY = Math.floor(editor.cam.y / editor.tileSize * tileSize)
+  const width = Math.floor(gameCanvas.width / editor.tileSize * tileSize)
+  const height = Math.floor(gameCanvas.height / editor.tileSize * tileSize)
+  ctx.strokeRect(startX, startY, width, height)
 }
 
 export function drawMap(tileSize = editor.tileSize, cam = editor.cam) {
