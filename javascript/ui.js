@@ -11,10 +11,10 @@ export function toggleEditorUI(on) {
   const minimap = document.querySelector('.minimap')
   if (on) {
     grid.classList.remove("grid-uihidden")
-    minimap.style.display = 'block'
+    if (minimap) minimap.style.display = 'block'
   } else {
     grid.classList.add("grid-uihidden")
-    minimap.style.display = 'none'
+    if (minimap) minimap.style.display = 'none'
   }
   updateCanvasSize()
 }
