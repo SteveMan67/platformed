@@ -159,10 +159,22 @@ export function levelEditorLoop(dt) {
   let timeScale = dt * 60
   const { map, cam, tileSize, tileset } = editor
   const speed = 10
-  if (key("up") && cam.y >= 0) cam.y -= speed * timeScale
-  if (key("down") && cam.y <= (map.h * tileSize) - canvas.height) cam.y += speed * timeScale
-  if (key("left") && cam.x >= 0) cam.x -= speed * timeScale
-  if (key("right") && cam.x <= (map.w * tileSize) - canvas.width) cam.x += speed * timeScale
+  if (key("up") && cam.y >= 0) {
+    cam.y -= speed * timeScale
+    drawMinimap()
+  }
+  if (key("down") && cam.y <= (map.h * tileSize) - canvas.height) {
+    cam.y += speed * timeScale
+    drawMinimap()
+  }
+  if (key("left") && cam.x >= 0) {
+    cam.x -= speed * timeScale
+    drawMinimap()
+  }
+  if (key("right") && cam.x <= (map.w * tileSize) - canvas.width) {
+    cam.x += speed * timeScale
+    drawMinimap()
+  }
   const worldX = input.x + cam.x
   const worldY = input.y + cam.y
   const tx = Math.floor(worldX / tileSize)

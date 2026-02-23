@@ -1,7 +1,7 @@
 import { importMap, updateMap, createMap } from "./file-utils.js"
 import { mode, setMode, input } from "./site.js"
 import { state } from "./state.js"
-import { canvas, updateCanvasSize, updateTileset } from "./renderer.js"
+import { canvas, drawMinimap, updateCanvasSize, updateTileset } from "./renderer.js"
 import { toggleErase, changeSelectedTile, zoomMap, scrollCategoryTiles } from "./editor.js"
 import { killPlayer } from "./platformer.js"
 const { editor, player } = state
@@ -16,8 +16,6 @@ export function toggleEditorUI(on) {
     grid.classList.add("grid-uihidden")
     minimap.style.display = 'none'
   }
-
-
   updateCanvasSize()
 }
 
@@ -133,6 +131,10 @@ function getOptionHTML(stepData) {
   return html
 }
 
+function moveMinimap(e) {
+
+}
+
 export function addEventListeners() {
 
   window.addEventListener("beforeunload", (e) => {
@@ -165,6 +167,35 @@ export function addEventListeners() {
 
   const stepsContainer = document.querySelector('.steps')
   const applyButton = document.querySelector('.apply')
+  let mousedown = false
+  const minimap = document.querySelector(".minimap")
+
+  minimap.addEventListener('mousedown', (e) => {
+    mousedown = true
+    moveMinimap(e)
+  })
+
+  window.addEventListener('mouseup', (e) => {
+    mousedown = false
+  })
+
+  function moveMinimap(e) {
+    if (!mousedown) return
+    const tx = e.offsetX / 3
+    const ty = e.offsetY / 3
+    const x = tx * editor.tileSize
+    const y = ty * editor.tileSize
+    const mapX = Math.max(0, Math.min(x - (canvas.width / 2), (editor.map.w * editor.tileSize) - canvas.width))
+    const mapY = Math.max(0, Math.min(y - (canvas.height / 2), (editor.map.h * editor.tileSize) - canvas.height))
+
+    editor.cam.x = mapX
+    editor.cam.y = mapY
+    drawMinimap()
+  }
+
+  minimap.addEventListener('mousemove', (e) => {
+    moveMinimap(e)
+  })
 
   applyButton.addEventListener('click', (e) => {
     console.log(activeTrigger)
@@ -282,6 +313,7 @@ export function addEventListeners() {
 
   window.addEventListener('resize', () => {
     updateCanvasSize()
+    drawMinimap()
   })
 
   zoomIn.addEventListener('click', () => {
