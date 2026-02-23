@@ -277,11 +277,13 @@ i::before {
 }
 
 .menu-content {
+  max-height: max(70vh, 500px);
   margin-top: 20px;
   z-index: 3;
   background-color: #C29A62;
   border-radius: 20px;
   min-height: 400px;
+  width: min(700px, 90vw);
   user-select: none;
   font-weight: 500;
 }
@@ -627,6 +629,8 @@ input[type="radio"] {
 
 .tab {
   display: none;
+  max-height: 100%;
+
 }
 
 .menu-content input[type="radio"]:nth-of-type(1):checked~.tab-content .tab:nth-of-type(1),
@@ -635,6 +639,8 @@ input[type="radio"] {
 .menu-content input[type="radio"]:nth-of-type(4):checked~.tab-content .tab:nth-of-type(4),
 .menu-content input[type="radio"]:nth-of-type(5):checked~.tab-content .tab:nth-of-type(5) {
   display: block;
+  overflow: scroll;
+  scrollbar-width: none;
 }
 
 .keyboard-shortcuts {
@@ -647,9 +653,14 @@ input[type="radio"] {
   padding: 0;
 }
 
-.keyboard-shortcuts p {
+.help p {
   font-size: 25px;
   margin: 10px;
+}
+
+.help p.body-text {
+  font-size: 18px;
+  font-weight: 400;
 }
 
 span.keyboard-shortcut {
@@ -660,7 +671,7 @@ span.keyboard-shortcut {
   color: black;
 }
 
-.keyboard-shortcuts li {
+.help li {
   padding: 5px;
   font-size: 18px;
 }
