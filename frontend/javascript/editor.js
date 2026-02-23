@@ -1,5 +1,5 @@
 import { calcAdjacentAdjacency, calculateAdjacency, enemies } from "./platformer.js"
-import { canvas, ctx, drawMap } from "./renderer.js"
+import { canvas, ctx, drawMap, drawMinimap } from "./renderer.js"
 import { input, key } from "./site.js"
 import { state } from "./state.js"
 import { toggleTriggerDialog } from "./ui.js"
@@ -61,6 +61,7 @@ export function scrollCategoryTiles(up) {
 export function initEditor() {
   enemies.forEach(enemy => enemies.pop())
   ctx.imageSmoothingEnabled = false
+  drawMinimap()
 }
 
 export let mouseDown = false;
@@ -131,6 +132,7 @@ export function placeTile(tx, ty) {
   }
   lastIdx = idx
   editor.dirty = true
+  drawMinimap()
 }
 
 const selectedTileEl = document.querySelector(".selected-tile")

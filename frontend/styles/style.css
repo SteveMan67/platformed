@@ -245,6 +245,20 @@ i::before {
   scrollbar-width: none;
 }
 
+.minimap {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  margin: 10px;
+  background-color: #C29A62;
+  border: 3px solid black;
+  border-radius: 10px;
+}
+
+.minimap-canvas {
+  display: block;
+}
+
 .canvas {
   position: absolute;
   box-sizing: border-box;

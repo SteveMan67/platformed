@@ -26,6 +26,9 @@
       "command": "/home/codespace/.bun/bin/bun run /backend/server.ts",
       "options": {
         "cwd": "${workspaceFolder}",
+        "env": {
+          "DATABASE_URL": "postgres://postgres:PopptotheTop7!@localhost:5432/postgres"
+        },
         "shell": {
           "executable": "/bin/bash",
           "args": [
