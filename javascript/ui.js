@@ -8,11 +8,16 @@ const { editor, player } = state
 
 export function toggleEditorUI(on) {
   const grid = document.querySelector(".grid")
+  const minimap = document.querySelector('.minimap')
   if (on) {
     grid.classList.remove("grid-uihidden")
+    minimap.style.display = 'block'
   } else {
     grid.classList.add("grid-uihidden")
+    minimap.style.display = 'none'
   }
+
+
   updateCanvasSize()
 }
 
@@ -262,11 +267,16 @@ export function addEventListeners() {
     })
   })
 
+  let lastWheelTime = 0
   document.addEventListener('wheel', (e) => {
-    if (e.wheelDelta > 0) {
+    const now = Date.now()
+    if (now - lastWheelTime < 150) return
+    if (e.deltaY < 0) {
       scrollCategoryTiles(true)
-    } else {
+      lastWheelTime = now
+    } else if (e.deltaY > 0) {
       scrollCategoryTiles(false)
+      lastWheelTime = now
     }
   })
 

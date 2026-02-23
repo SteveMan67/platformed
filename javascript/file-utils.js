@@ -211,7 +211,38 @@ export async function loadTileset(manifestPath) {
         return new Promise((resolve, reject) => {
           const img = new Image()
           img.src = manifest.path + tileData.file
-          img.onload = () => resolve({ ...tileData, image: img })
+          img.onload = () => {
+            const canvas = document.createElement('canvas')
+            const ctx = canvas.getContext('2d')
+            canvas.width = img.height || 1
+            canvas.height = img.height || 1
+            ctx.drawImage(img, 0, 0)
+
+            let minimapColor = 'rgba(0,0,0,0)'
+            try {
+              const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data
+              const colorCounts = {}
+              let maxCount = 0
+              for (let i = 0; i < imgData.length; i += 4) {
+                const r = imgData[i]
+                const g = imgData[i + 1]
+                const b = imgData[i + 2]
+                const a = imgData[i + 3]
+
+                if (a < 128) continue
+                const rgb = `rgb(${r}, ${g}, ${b})`
+                colorCounts[rgb] = (colorCounts[rgb] || 0) + 1
+
+                if (colorCounts[rgb] > maxCount) {
+                  maxCount = colorCounts[rgb]
+                  minimapColor = rgb
+                }
+              }
+            } catch (e) {
+              console.warn("Could not calculate minimap color", e)
+            }
+            resolve({ ...tileData, image: img, minimapColor })
+          }
           img.onerror = reject
         })
       })
@@ -230,6 +261,7 @@ export async function loadTileset(manifestPath) {
           items.forEach(item => {
             tileset[item.id] = item
           })
+          console.log(tileset)
           return { tileset, characterImage }
         })
     })

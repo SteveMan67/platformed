@@ -7,6 +7,29 @@ import { state } from "./state.js";
 import { addTileSelection } from "./ui.js";
 const { player, editor } = state
 
+export function drawMinimap() {
+  const canvas = document.querySelector(".minimap-canvas")
+  if (!canvas) return
+  const ctx = canvas.getContext('2d')
+  const tiles = editor.map.tiles
+  ctx.imageSmoothingEnabled = false
+  const w = editor.width
+  const h = editor.height
+  const tileSize = 3
+  canvas.width = w * tileSize
+  canvas.height = h * tileSize
+
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const raw = tiles[y * w + x]
+      const tileId = raw >> 4
+      const tileDef = editor.tileset[tileId]
+      ctx.fillStyle = tileDef.minimapColor || 'transparent'
+      ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize)
+    }
+  }
+}
+
 export function drawMap(tileSize = editor.tileSize, cam = editor.cam) {
 
   const startX = Math.floor(cam.x / tileSize);
@@ -14,7 +37,6 @@ export function drawMap(tileSize = editor.tileSize, cam = editor.cam) {
   const startY = Math.floor(cam.y / tileSize);
   const endY = startY + (canvas.height / tileSize) + 1;
   const tiles = mode == "play" ? player.tiles : editor.map.tiles
-  console.log(tiles)
   for (let y = startY; y < endY; y++) {
     for (let x = startX; x < endX; x++) {
       if (x < 0 || x >= editor.map.w || y < 0 || y >= editor.map.h) continue;
