@@ -22,7 +22,7 @@ body {
 
 .grid-uihidden {
   grid-template-columns: 1fr 0px;
-  grid-template-rows: 80px 1fr;
+  grid-template-rows: 80px 1fr 0px;
 }
 
 .grid-uihidden ::after {

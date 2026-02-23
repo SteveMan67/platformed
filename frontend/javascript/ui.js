@@ -110,7 +110,7 @@ function getOptionHTML(stepData) {
   let html = ''
 
   if (stepData.type == "teleport") {
-    html += `x <input type="number" class="tp-x" value="${stepData.x || 0}" min="0" max="${editor.width}"> y <input type="number" class="tp-y" value=${stepData.y || 0} min="0" max="${editor.height}>`
+    html += `x <input type="number" class="tp-x" value="${stepData.x || 0}" min="0" max="${editor.width}"> y <input type="number" class="tp-y" value=${stepData.y || 0} min="0" max="${editor.height}">`
   }
   if (stepData.type == "rotate") {
     html += `

@@ -26,9 +26,10 @@ function isStrip(img) {
 }
 
 function getMechanics(idx) {
+  const tiles = mode == "play" ? player.tiles : editor.map.tiles
   let outList = []
   if (idx >= 0 && idx < (editor.width * editor.height)) {
-    const tilesetItem = editor.tileset[editor.map.tiles[idx] >> 4]
+    const tilesetItem = editor.tileset[tiles[idx] >> 4]
     if (tilesetItem.id == 0 || !tilesetItem.mechanics) return outList
     outList = [...tilesetItem.mechanics]
     return outList
@@ -105,7 +106,7 @@ export function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles, ti
 }
 
 export function calcAdjacentAdjacency(centerTileIdx) {
-  const tiles = editor.map.tiles
+  const tiles = mode == "play" ? player.tiles : editor.map.tiles
   const centerVal = calculateAdjacency(centerTileIdx, editor.selectedTile)
   tiles[centerTileIdx] = centerVal
   const w = editor.width
@@ -149,7 +150,7 @@ function getJumpSpeed(jumpLengthInTiles, jumpForce, yInertia, tilesize) {
 
 function scanLevelOnPlay() {
   // enemies
-  const tiles = editor.map.tiles
+  const tiles = mode == "play" ? player.tiles : editor.map.tiles
   for (let i = 0; i < tiles.length; i++) {
     const raw = tiles[i]
     const tileId = raw >> 4
@@ -174,8 +175,9 @@ function scanLevelOnPlay() {
 
 export function initPlatformer() {
   toggleEditorUI(false)
-  player.toggledTile = true,
-    player.x = editor.playerSpawn.x * player.tileSize
+  player.tiles = new Uint16Array(editor.map.tiles)
+  player.toggledTile = true
+  player.x = editor.playerSpawn.x * player.tileSize
   player.y = editor.playerSpawn.y * player.tileSize
   player.w = player.tileSize
   player.h = player.tileSize
@@ -307,18 +309,19 @@ function teleportPlayer(tx, ty) {
 
 function rotateTile(tx, ty, amount) {
   const idx = ty * editor.width + tx
-  const raw = editor.map.tiles[idx]
+  const raw = player.tiles[idx]
   const rotation = raw & 3
   const newRotation = (rotation + amount) % 4
   if (editor.tileset[raw >> 4].type == "rotation") {
-    editor.map.tiles[idx] = (raw >> 4 << 4) + newRotation
+    player.tiles[idx] = (raw >> 4 << 4) + newRotation
   }
 }
 function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
+  const tiles = mode == "play" ? player.tiles : editor.map.tiles
   const mechanics = editor.tileset[tileId].mechanics
   if (!mechanics) return
   if (mechanics.includes("killOnTouch")) {
-    if (checkPixelCollsion(editor.map.tiles[tileIdx], tx, ty, x, y, w, h)) {
+    if (checkPixelCollsion(tiles[tileIdx], tx, ty, x, y, w, h)) {
       killPlayer()
     }
   }
@@ -326,9 +329,9 @@ function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
     endLevel()
   }
   if (mechanics.includes("bouncePad")) {
-    if (checkPixelCollsion(editor.map.tiles[tileIdx], tx, ty, x, y, w, h)) {
+    if (checkPixelCollsion(tiles[tileIdx], tx, ty, x, y, w, h)) {
       const idx = ty * editor.map.w + tx
-      const bounceTile = editor.map.tiles[idx]
+      const bounceTile = tiles[idx]
       if ((bounceTile & 15) == 0) {
         player.vy = -getJumpHeight(player.bouncePadHeight, player.yInertia, player.tileSize)
       } else if ((bounceTile & 15) == 1) {
@@ -347,7 +350,7 @@ function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
     player.lastCheckpointSpawn = { x: tx, y: ty }
   }
   if (mechanics.includes("coin")) {
-    if (checkPixelCollsion(editor.map.tiles[tileIdx], tx, ty, x, y, w, h)) {
+    if (checkPixelCollsion(tiles[tileIdx], tx, ty, x, y, w, h)) {
       const idx = ty * editor.map.w + tx
       player.collectedCoins++
       player.collectedCoinList.push(idx)
@@ -379,6 +382,7 @@ function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
 }
 
 function checkCollision(dt, x, y, w, h, simulate = false) {
+  const tiles = mode == "play" ? player.tiles : editor.map.tiles
   const startX = Math.floor(x / player.tileSize)
   const endX = Math.floor((x + w - 0.01) / player.tileSize)
   const startY = Math.floor(y / player.tileSize)
@@ -388,7 +392,7 @@ function checkCollision(dt, x, y, w, h, simulate = false) {
     for (let px = startX; px <= endX; px++) {
       if ((px < 0 || px >= editor.map.w || py < 0) && !simulate) return true
       const idx = py * editor.map.w + px
-      const tileId = editor.map.tiles[idx] >> 4
+      const tileId = tiles[idx] >> 4
 
       const oldX = player.x;
       const oldY = player.y
@@ -414,7 +418,7 @@ function checkCollision(dt, x, y, w, h, simulate = false) {
           continue
         }
         if (tile && tile.mechanics && tile.mechanics.includes("pixelCollision")) {
-          return checkPixelCollsion(editor.map.tiles[idx], px, py, x, y, w, h)
+          return checkPixelCollsion(tiles[idx], px, py, x, y, w, h)
         }
         if (tile && tile.mechanics && tile.mechanics.includes("swapTrigger1") && player.toggledTile) {
           continue

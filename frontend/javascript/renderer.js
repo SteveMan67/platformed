@@ -13,11 +13,12 @@ export function drawMap(tileSize = editor.tileSize, cam = editor.cam) {
   const endX = startX + (canvas.width / tileSize) + 1;
   const startY = Math.floor(cam.y / tileSize);
   const endY = startY + (canvas.height / tileSize) + 1;
-
+  const tiles = mode == "play" ? player.tiles : editor.map.tiles
+  console.log(tiles)
   for (let y = startY; y < endY; y++) {
     for (let x = startX; x < endX; x++) {
       if (x < 0 || x >= editor.map.w || y < 0 || y >= editor.map.h) continue;
-      const raw = editor.map.tiles[y * editor.map.w + x];
+      const raw = tiles[y * editor.map.w + x];
       const tileId = raw >> 4;
       const scrX = Math.floor((x * tileSize) - cam.x);
       const scrY = Math.floor((y * tileSize) - cam.y);
