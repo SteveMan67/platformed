@@ -210,7 +210,7 @@ async function loadTileset(tilesetPath) {
   return tileset
 }
 
-async function renderLevelPreview(canvas, levelData) {
+export async function renderLevelPreview(canvas, levelData) {
   let tileset = await loadTileset(levelData.data.tilesetPath)
   tileset = Object.values(tileset)
   if (!canvas || !levelData) return
