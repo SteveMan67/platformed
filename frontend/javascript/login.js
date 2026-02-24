@@ -1,8 +1,11 @@
 const loginForm = document.getElementById('login-form')
 const serverUrl = window.location.origin
 
+const url = new URLSearchParams(window.location)
+const redirectUrl = url.get('redirect')
+
 try {
-  fetch(`${serverUrl}/api/ping`, {method: "POST"}).then(res => console.log(res.body))
+  fetch(`${serverUrl}/api/ping`, { method: "POST" }).then(res => console.log(res.body))
 } catch {
   alert("Failed to connect to server.")
 }
@@ -41,7 +44,7 @@ loginForm.addEventListener("submit", async (e) => {
       username: form.username.value,
       password: form.password.value
     }
-  
+
     const url = `${serverUrl}/api/login`
     console.log(JSON.stringify(payload))
     const res = await fetch(url, {
@@ -50,10 +53,10 @@ loginForm.addEventListener("submit", async (e) => {
       credentials: 'include',
       body: JSON.stringify(payload)
     })
-    
+
     if (res.ok) {
       console.log("request ok")
-      window.location.href = `/editor`
+      window.location.href = redirectUrl ? redirectUrl : "/"
     } else {
       const text = await res.text()
       getErrorText(res)

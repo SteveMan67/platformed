@@ -85,7 +85,7 @@ fetch(`${serverUrl}/api/me`)
   .catch(e => {
     console.log(myLevelsbutton)
     myLevelsbutton.innerText = "Sign In"
-    myLevelsbutton.href = "/login"
+    myLevelsbutton.href = `/login?redirect=${encodeURIComponent('/')}`
   })
 
 function decodeRLE(data) {

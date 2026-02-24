@@ -34,6 +34,8 @@ export const input = {
   y: 0,
   down: false,
   rightClick: false,
+  jumpButton: false,
+  joystickX: 0,
   keys: {}
 }
 
@@ -75,7 +77,7 @@ export function key(key) {
   } else if (key === "left") {
     return !!(input.keys["a"] || input.keys["ArrowLeft"])
   } else if (key === "up") {
-    return !!(input.keys[" "] || input.keys["w"] || input.keys["ArrowUp"])
+    return !!(input.keys[" "] || input.keys["w"] || input.keys["ArrowUp"] || input.jumpButton)
   } else if (key === "down") {
     return !!(input.keys['s'] || input.keys['ArrowDown'])
   } else if (key === "any") {
