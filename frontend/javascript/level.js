@@ -60,8 +60,8 @@ let startY = 0
 joystickHitbox.addEventListener("touchstart", (e) => {
   e.preventDefault()
   joystickActive = true
-  startX = e.touches[0].screenX
-  startY = e.touches[0].screenY
+  startX = e.targetTouches[0].screenX
+  startY = e.targetTouches[0].screenY
   joystick.style.transition = "none"
 })
 
@@ -71,8 +71,8 @@ joystickHitbox.addEventListener("touchmove", (e) => {
   if (!joystickActive) return
   const maxDistance = 50
 
-  let dx = e.touches[0].screenX - startX
-  let dy = e.touches[0].screenY - startY
+  let dx = e.targetTouches[0].screenX - startX
+  let dy = e.targetTouches[0].screenY - startY
 
   const distance = Math.sqrt(dx * dx + dy * dy)
 
@@ -100,15 +100,14 @@ joystickHitbox.addEventListener("touchcancel", resetJoystick)
 const jumpButton = document.querySelector(".jump")
 
 jumpButton.addEventListener("touchstart", (e) => {
-  e.preventDefault()
   input.jumpButton = true
 })
 
-window.addEventListener("touchend", () => {
+jumpButton.addEventListener("touchend", () => {
   input.jumpButton = false
 })
 
-window.addEventListener("touchcancel", () => {
+jumpButton.addEventListener("touchcancel", () => {
   input.jumpButton = false
 })
 
