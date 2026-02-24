@@ -175,12 +175,56 @@ export function addEventListeners() {
     moveMinimap(e)
   })
 
+  let isDraggingMap = false
+  const dragStart = {}
+  const camStart = {}
+
+
+  canvas.addEventListener("mousedown", (e) => {
+    if (e.button == 1) {
+      isDraggingMap = true
+      dragStart.x = e.screenX
+      dragStart.y = e.screenY
+      camStart.x = editor.cam.x
+      camStart.y = editor.cam.y
+      console.log(camStart.x, camStart.y)
+      console.log(dragStart.x, dragStart.y)
+    }
+  })
+
+  const gameCanvas = document.querySelector(".canvas")
+  let animationFrameId = null
+
+  window.addEventListener("mousemove", (e) => {
+    if (!isDraggingMap) return
+    const maxX = (editor.width * editor.tileSize) - gameCanvas.width
+    const maxY = (editor.height * editor.tileSize) - gameCanvas.height
+
+    const dx = dragStart.x - e.screenX
+    const dy = dragStart.y - e.screenY
+
+    const newX = camStart.x + dx
+    const newY = camStart.y + dy
+
+    editor.cam.x = Math.max(0, Math.min(newX, maxX))
+    editor.cam.y = Math.max(0, Math.min(newY, maxY))
+    if (!animationFrameId) {
+      animationFrameId = requestAnimationFrame(() => {
+        console.log(camStart.x, camStart.y)
+        console.log(newX, newY)
+        drawMinimap()
+        animationFrameId = null
+      })
+    }
+  })
+
   window.addEventListener('mouseup', (e) => {
     mousedown = false
+    isDraggingMap = false
   })
 
   function moveMinimap(e) {
-    if (!mousedown) return
+    if (!mousedown || isDraggingMap) return
     const tx = e.offsetX / 3
     const ty = e.offsetY / 3
     const x = tx * editor.tileSize
@@ -407,6 +451,7 @@ export function setInputEventListeners() {
     if (menuElement && menuElement.style.display != '' && menuElement.style.display != "none") return
     input.keys[e.key] = false
   })
+
 
   canvas.addEventListener('mousemove', e => {
     const rect = canvas.getBoundingClientRect()
