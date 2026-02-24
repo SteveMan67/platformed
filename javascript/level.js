@@ -1,6 +1,7 @@
 import { play } from "/javascript/api.js"
 import { updateCanvasSize } from "/javascript/renderer.js"
 import { mobile } from "/javascript/ui.js"
+import { input } from "/javascript/site.js"
 
 const serverUrl = window.location.origin
 async function getLevel(level = 1) {
@@ -49,10 +50,68 @@ const game = document.querySelector(".game")
 const elem = document.documentElement
 
 const mobileControls = document.querySelector(".mobile-controls")
+const joystick = document.querySelector(".knob")
+
+let joystickActive = false
+let startX = 0
+let startY = 0
+
+joystick.addEventListener("touchstart", (e) => {
+  joystickActive = true
+  startX = e.touches[0].screenX
+  startY = e.touches[0].screenY
+  joystick.style.transition = "none"
+}, { passive: true })
+
+joystick.addEventListener("touchmove", (e) => {
+  if (!joystickActive) return
+  const maxDistance = 50
+
+  let dx = e.touches[0].screenX - startX
+  let dy = e.touches[0].screenY - startY
+
+  const distance = Math.sqrt(dx * dx + dy * dy)
+
+  if (distance > maxDistance) {
+    dx = (dx / distance) * maxDistance
+    dy = (dy / distance) * maxDistance
+  }
+
+  input.joystickX = Math.floor(dx / 50 * 100) / 100
+  console.log(Math.floor(dx / 50 * 100) / 100)
+
+  joystick.style.transform = `translate(calc(${dx}px - 50%), calc(${dy}px - 50%))`
+})
+
+function resetJoystick() {
+  joystickActive = false
+  joystick.style.transition = "transform 200ms ease-out"
+  joystick.style.transform = ``
+  input.joystickX = 0
+}
+
+joystick.addEventListener("touchend", resetJoystick)
+joystick.addEventListener("touchcancel", resetJoystick)
+
+const jumpButton = document.querySelector(".jump")
+
+jumpButton.addEventListener("touchstart", () => {
+  input.jumpButton = true
+})
+
+window.addEventListener("touchend", () => {
+  input.jumpButton = false
+})
+
+window.addEventListener("touchcancel", () => {
+  input.jumpButton = false
+})
 
 if (mobile()) {
   mobileControls.classList.remove("hidden")
 }
+
+
 
 fullscreenControl.addEventListener("click", (e) => {
   game.classList.toggle("fullscreen")

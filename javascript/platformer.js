@@ -460,7 +460,7 @@ function updatePhysics(dt) {
 
   //determine whether jump was just pressed down
   let isJumping = false;
-  if (key("up")) {
+  if (key("up") || input.jumpButton) {
     if (!lastJumpInput) {
       player.jumpBufferTimer = player.jumpBuffer;
       player.wallCoyoteTimer = 0
@@ -495,20 +495,26 @@ function updatePhysics(dt) {
   const jumpControl = player.decreaseAirControl && !player.grounded ? 1 : 1
   const currentControl = jumpControl * player.controlMultiplier
   let activeInput = false
-  if ((key("left") && !key("right")) || (key("left") && !player.grounded)) {
+
+  const moveLeft = (key("left") && !key("right")) || input.joystickX < -0.1
+  const moveRight = (key("right") && !key("left")) || input.joystickX > 0.1
+
+  if (moveLeft) {
     activeInput = true
-    if (player.vx > -player.speed) {
-      player.vx -= player.xInertia * 1 * currentControl * dt
+    const analog = input.joystickX > 0.1 ? Math.abs(input.joystickX) : 1
+    if (player.vx > -player.speed * analog) {
+      player.vx -= player.xInertia * analog * currentControl * dt
     } else {
-      player.vx = -player.speed
+      player.vx = -player.speed * analog
     }
   }
-  if (key("right") && !key("left") || (key("right") && !player.grounded)) {
+  if (moveRight) {
     activeInput = true
-    if (player.vx < player.speed) {
-      player.vx += player.xInertia * 1 * currentControl * dt
+    const analog = input.joystickX > 0.1 ? Math.abs(input.joystickX) : 1
+    if (player.vx < player.speed * analog) {
+      player.vx += player.xInertia * analog * currentControl * dt
     } else {
-      player.vx = player.speed
+      player.vx = player.speed * analog
     }
   }
 
@@ -586,7 +592,7 @@ function updatePhysics(dt) {
   // walljump
   if (!player.grounded && player.wallJump !== "none" && key("any") && player.jumpBufferTimer !== 0 && !player.wallCoyoteTimer == 0) {
     if (player.wallJump == "off") {
-      if (player.lastWallSide == 1 && key("up")) {
+      if (player.lastWallSide == 1 && (key("up") || input.jumpButton)) {
         player.vx = -player.speed
       } else if (player.lastWallSide == -1 && key("up")) {
         player.vx = player.speed
