@@ -168,7 +168,16 @@ export function addEventListeners() {
   const stepsContainer = document.querySelector('.steps')
   const applyButton = document.querySelector('.apply')
   let mousedown = false
+  const minimapToggle = document.getElementById("show-minimap")
   const minimap = document.querySelector(".minimap")
+
+  minimapToggle.addEventListener("input", (e) => {
+    if (minimapToggle.checked) {
+      minimap.style.display = 'block'
+    } else {
+      minimap.style.display = 'none'
+    }
+  })
 
   minimap.addEventListener('mousedown', (e) => {
     mousedown = true
@@ -187,8 +196,6 @@ export function addEventListeners() {
       dragStart.y = e.screenY
       camStart.x = editor.cam.x
       camStart.y = editor.cam.y
-      console.log(camStart.x, camStart.y)
-      console.log(dragStart.x, dragStart.y)
     }
   })
 
@@ -210,8 +217,6 @@ export function addEventListeners() {
     editor.cam.y = Math.max(0, Math.min(newY, maxY))
     if (!animationFrameId) {
       animationFrameId = requestAnimationFrame(() => {
-        console.log(camStart.x, camStart.y)
-        console.log(newX, newY)
         drawMinimap()
         animationFrameId = null
       })

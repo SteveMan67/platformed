@@ -44,6 +44,9 @@
       <div class="minimap">
         <canvas class="minimap-canvas"></canvas>
       </div>
+      <div class="fullscreen-control">
+        <img src="/assets/icons/maximize" alt="">
+      </div>
     </div>
     <div class="sidebar">
       <div class="sidebar-one">
@@ -227,9 +230,17 @@
           </div>
         </div>
         <!-- Options -->
-        <div class="tab"></div>
+        <div class="tab options">
+          <div class="menu-item">
+            <label for="show-minimap">Show Minimap</label>
+            <input type="checkbox" class="toggle" id="show-minimap" checked>
+          </div>
+        </div>
         <!-- Help -->
         <div class="tab help">
+          <p>Getting Around</p>
+          <p class="body-text">You can move the view with WASD, middle mouse button click and drag, or the minimap.</p>
+
           <p>Keyboard Shortcuts</p>
           <ul class="keyboard-shortcuts">
             <li><span class="keyboard-shortcut">E</span> - toggle eraser</li>
