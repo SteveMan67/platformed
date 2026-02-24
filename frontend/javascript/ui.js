@@ -203,8 +203,8 @@ export function addEventListeners() {
     const dx = dragStart.x - e.screenX
     const dy = dragStart.y - e.screenY
 
-    const newX = camStart.x + dx
-    const newY = camStart.y + dy
+    const newX = Math.round(camStart.x + dx)
+    const newY = Math.round(camStart.y + dy)
 
     editor.cam.x = Math.max(0, Math.min(newX, maxX))
     editor.cam.y = Math.max(0, Math.min(newY, maxY))
