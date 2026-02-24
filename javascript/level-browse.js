@@ -30,7 +30,7 @@ async function addLevels(levels) {
       <div class="name-and-rating">
         <h2 class="name">${level.name}</h2>
         <div class="approval-rating-wrapper">
-          <p class="approval-rating">${level.approval_percentage}%</p>
+          <p class="approval-rating">${Math.floor(level.approval_percentage)}%</p>
           <img src="./assets/icons/thumbs-up.svg" alt="">
         </div>
       </div>
