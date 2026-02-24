@@ -43,6 +43,14 @@ const description = document.querySelector(".description")
 const plays = document.querySelector(".plays")
 const finishes = document.querySelector(".finishes")
 
+const fullscreenControl = document.querySelector(".fullscreen-control")
+const game = document.querySelector(".game")
+
+fullscreenControl.addEventListener("click", (e) => {
+  game.classList.toggle("fullscreen")
+  updateCanvasSize()
+})
+
 let levelNum
 try {
   levelNum = Number(window.location.href.match(/\/level\/(\d+)/)[1])
@@ -56,7 +64,7 @@ getLevel(levelNum).then(level => {
     window.location.href = "/"
   } else {
     levelName.innerHTML = level.name
-    approvalPercentage.innerHTML = `${level.approval_percentage}%`
+    approvalPercentage.innerHTML = `${Math.floor(level.approval_percentage)}%`
     description.innerHTML = level.description
     plays.innerHTML = level.total_plays
     finishes.innerHTML = level.finished_plays

@@ -27,6 +27,53 @@ body .game {
   z-index: 0;
 }
 
+.fullscreen {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+
+}
+
+.fullscreen-control {
+  width: 35px;
+  aspect-ratio: 1;
+  background-color: #C29A62;
+  border: 3px solid black;
+  border-radius: 10px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fullscreen~.fullscreen-control {
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.fullscreen-control img.maximize {
+  width: 30px;
+  aspect-ratio: 1;
+}
+
+.fullscreen-control img.minimize {
+  width: 0;
+}
+
+.fullscreen~.fullscreen-control>.minimize {
+  width: 30px;
+  aspect-ratio: 1;
+}
+
+.fullscreen~.fullscreen-control>.maximize {
+  display: none;
+}
+
 .image {
   overflow: hidden;
 }

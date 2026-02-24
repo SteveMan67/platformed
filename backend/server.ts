@@ -53,7 +53,6 @@ const server = Bun.serve({
     // --- login page --
     "/login": async (req) => {
       if ((await authenticate(req))?.signedIn) {
-        console.log("user already authenticated")
         return new Response(Bun.file("./frontend/index.html"))
       } else {
         return new Response(Bun.file("./frontend/login.html"))
@@ -68,7 +67,6 @@ const server = Bun.serve({
     },
     "/myLevels": async (req) => {
       if ((await authenticate(req))?.signedIn) {
-        console.log("user already authenticated")
         return new Response(Bun.file("./frontend/user.html"))
       } else {
         return new Response(Bun.file("./frontend/login.html"))
@@ -108,7 +106,6 @@ const server = Bun.serve({
     }
 
     if (pathname == "/level" || pathname.startsWith("/level/")) {
-      console.log(pathname)
       return new Response(Bun.file("./frontend/level.html"))
     }
 
@@ -143,10 +140,7 @@ const server = Bun.serve({
         const uuid = crypto.randomUUID()
         const hashedCookie = await Bun.password.hash(uuid)
 
-        console.log(`token: ${uuid}`)
-        console.log(`hashed token: ${hashedCookie}`)
         const expirationTime = Date.now() + (60 * 60 * 24 * 14 * 1000)
-        console.log(expirationTime)
         const sessionId = await sql`
           insert into sessions(token_hash, expires_at, user_id) 
           values (${hashedCookie}, ${expirationTime}, ${user.id})
@@ -249,14 +243,12 @@ const server = Bun.serve({
     if (pathname.startsWith("/api/search")) {
       const page = Number(url.searchParams.get("page")) || 1
       const search = url.searchParams.get("search") || ""
-      console.log((page - 1) * 50)
       if (search) {
         const levels = await sql`
         select id, data, name, created_at, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels
         WHERE public = true AND name ILIKE ${'%' + search + '%'}
         limit 50 offset ${(Number(page - 1) * 50)}
         `
-        console.log(levels)
         return new Response(JSON.stringify(levels), {
           headers: {
             "Content-Type": "application/json"
@@ -280,13 +272,11 @@ const server = Bun.serve({
         const imageUrl = raw.image_url ? raw.image_url : ""
         const description = raw.description ? raw.description : ""
         const levelStyle = raw.level_style ? raw.level_style : ""
-        // console.log(name, level, owner, createdAt, width, height, tags, imageUrl, description, levelStyle)
         const insertInto = await sql`
           INSERT INTO levels (name, data, owner, created_at, width, height, tags, image_url, description, level_style)
           VALUES (${cleanString(name)}, ${level}, ${Number(owner)}, ${createdAt}, ${width}, ${height}, ${tags}, ${imageUrl}, ${cleanString(description)}, ${levelStyle})
           returning id
         `
-        console.log({ levelId: insertInto[0].id })
         return new Response(JSON.stringify({ levelId: insertInto[0].id }), withCors({ status: 200 }, CORS))
       } else {
         return new Response("Invalid Auth", withCors({ status: 401 }, CORS))
@@ -320,7 +310,6 @@ const server = Bun.serve({
     if (pathname == "/api/play") {
       const raw = await req.json()
       const levelId = raw.levelId
-      console.log(levelId)
 
       if (raw.finished) {
         const incrementCounter = await sql`
@@ -338,7 +327,6 @@ const server = Bun.serve({
     // --- Edit a Level
     if (pathname == "/api/edit" && req.method == "PATCH") {
       const raw = await readJson(req)
-      console.log(raw)
       const levelId = raw.levelId
       if (!levelId) {
         return new Response("Must provide level id", { status: 400 })
@@ -352,7 +340,6 @@ const server = Bun.serve({
       for (const [k, v] of Object.entries(raw)) {
         if (allowedTags.has(k)) {
           if (k == "name" || k == "description") {
-            console.log(cleanString(v as string))
             updateData[k] = cleanString(v as string)
           } else {
             updateData[k] = v
@@ -375,7 +362,6 @@ const server = Bun.serve({
 
     if (pathname == "/api/myLevels" && req.method == "GET") {
       const authentication = await authenticate(req)
-      console.log(authentication)
       if (authentication?.signedIn) {
         const level = await sql`select id, data, name, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels where owner = ${authentication.user}`
         if (!level[0] || level.length === 0) {
@@ -390,7 +376,7 @@ const server = Bun.serve({
     if (pathname == "/api/rate") {
       const levelId = url.searchParams.get("levelId")
       const ratingParam = url.searchParams.get("rating")
-      const rating = ratingParam == "approve" ? true : false
+      const rating = ratingParam
       if (!levelId) {
         return new Response("Must Provide LevelId", { status: 400 })
       }
@@ -408,20 +394,23 @@ const server = Bun.serve({
           const insert = await sql`
             update ratings
             set thumbs_up = ${rating}
+            where id = ${rated[0].id}
           `
           if (rated[0].thumbs_up && !rating) {
             const updateLevels = await sql`
               update levels 
-              set approvals = approvals - 1
-              set disapprovals = disapprovals + 1
-              where id = ${rated[0].id}
+              set approvals = approvals - 1, 
+              disapprovals = disapprovals + 1,
+              approval_percentage = DEFAULT
+              where id = ${levelId}
             `
           } else if (!rated[0].thumbs_up && rating) {
             const updateLevels = await sql`
               update levels
-              set approvals = approvals + 1
-              set disapprovals = disapprovals - 1
-              where id = ${rated[0].id}
+              set approvals = approvals + 1,
+              disapprovals = disapprovals - 1,
+              approval_percentage = DEFAULT
+              where id = ${levelId}
             `
           }
         } else {
@@ -469,7 +458,6 @@ const server = Bun.serve({
           break
       }
       const fileExists = await file.exists()
-      console.log(fileExists)
       if (!fileExists) {
         return new Response("Not Found", withCors({ status: 404 }, CORS))
       }
