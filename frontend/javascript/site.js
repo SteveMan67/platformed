@@ -81,7 +81,7 @@ export function key(key) {
   } else if (key === "down") {
     return !!(input.keys['s'] || input.keys['ArrowDown'])
   } else if (key === "any") {
-    return !!(input.keys["d"] || input.keys["ArrowRight"] || input.keys["a"] || input.keys["ArrowLeft"] || input.keys[" "] || input.keys["w"] || input.keys["ArrowUp"])
+    return !!(input.keys["d"] || input.keys["ArrowRight"] || input.keys["a"] || input.keys["ArrowLeft"] || input.keys[" "] || input.keys["w"] || input.keys["ArrowUp"]) || input.jumpButton
   } else {
     return false
   }
