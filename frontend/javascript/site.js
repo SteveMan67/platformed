@@ -73,9 +73,9 @@ function deltaTime(timestamp) {
 
 export function key(key) {
   if (key === "right") {
-    return !!(input.keys["d"] || input.keys["ArrowRight"])
+    return !!(input.keys["d"] || input.keys["ArrowRight"] || input.joystickX > 0)
   } else if (key === "left") {
-    return !!(input.keys["a"] || input.keys["ArrowLeft"])
+    return !!(input.keys["a"] || input.keys["ArrowLeft"] || input.joystickX < 0)
   } else if (key === "up") {
     return !!(input.keys[" "] || input.keys["w"] || input.keys["ArrowUp"] || input.jumpButton)
   } else if (key === "down") {

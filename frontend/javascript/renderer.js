@@ -2,7 +2,7 @@ import { splitStripImages } from "./file-utils.js";
 import { loadTileset } from "./file-utils.js";
 import { loadPlayerSprites } from "./file-utils.js";
 import { enemies } from "./platformer.js";
-import { inEditor, input, mode } from "./site.js";
+import { inEditor, input, mode, key } from "./site.js";
 import { state } from "./state.js";
 import { addTileSelection } from "./ui.js";
 const { player, editor } = state
@@ -101,18 +101,18 @@ export function drawPlayer(dt) {
   }
   if (!player.sprites) return
   let selectedFrame = 0
-  if ((input.keys["a"] || input.keys["ArrowLeft"]) && (input.keys["d"] || input.keys["ArrowRight"])) {
+  if (key("left") && key("right")) {
     // pressing both keys, don't rapidly switch between frames
-  } else if (!player.facingLeft && (input.keys["a"] || input.keys["ArrowLeft"])) {
+  } else if (!player.facingLeft && key("left")) {
     player.facingLeft = 1
-  } else if (player.facingLeft && (input.keys["d"] || input.keys["ArrowRight"])) {
+  } else if (player.facingLeft && key("right")) {
     player.facingLeft = 0
   }
   if (player.grounded) {
     // has to be one of the first 6
-    if ((input.keys["a"] || input.keys["ArrowLeft"]) && (input.keys["d"] || input.keys["ArrowRight"])) {
+    if (key("left") && key("right")) {
       // pressing both keys, don't rapidly switch between frames
-    } else if (input.keys["a"] || input.keys["d"] || input.keys["ArrowRight"] || input.keys["ArrowLeft"]) {
+    } else if (key("left") || key("right")) {
       // we're moving, calculate the animation frame of the movement
       selectedFrame = (player.AnimationFrame << 1) + player.facingLeft + 2
     } else {
