@@ -51,12 +51,13 @@ const elem = document.documentElement
 
 const mobileControls = document.querySelector(".mobile-controls")
 const joystick = document.querySelector(".knob")
+const joystickHitbox = document.querySelector(".joystick")
 
 let joystickActive = false
 let startX = 0
 let startY = 0
 
-joystick.addEventListener("touchstart", (e) => {
+joystickHitbox.addEventListener("touchstart", (e) => {
   e.preventDefault()
   joystickActive = true
   startX = e.touches[0].screenX
@@ -65,7 +66,7 @@ joystick.addEventListener("touchstart", (e) => {
 })
 
 
-joystick.addEventListener("touchmove", (e) => {
+joystickHitbox.addEventListener("touchmove", (e) => {
   e.preventDefault()
   if (!joystickActive) return
   const maxDistance = 50
@@ -93,8 +94,8 @@ function resetJoystick() {
   input.joystickX = 0
 }
 
-joystick.addEventListener("touchend", resetJoystick)
-joystick.addEventListener("touchcancel", resetJoystick)
+joystickHitbox.addEventListener("touchend", resetJoystick)
+joystickHitbox.addEventListener("touchcancel", resetJoystick)
 
 const jumpButton = document.querySelector(".jump")
 
