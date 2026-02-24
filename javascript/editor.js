@@ -61,7 +61,6 @@ export function scrollCategoryTiles(up) {
 export function initEditor() {
   enemies.forEach(enemy => enemies.pop())
   ctx.imageSmoothingEnabled = false
-  drawMinimap()
 }
 
 export let mouseDown = false;

@@ -253,6 +253,7 @@ i::before {
   background-color: #C29A62;
   border: 3px solid black;
   border-radius: 10px;
+  overflow: hidden;
 }
 
 .minimap-canvas {
@@ -465,6 +466,77 @@ i::before {
 
 input[type="radio"] {
   display: none;
+}
+
+.tab.options .menu-item {
+  margin-top: 0;
+}
+
+.toggle {
+  appearance: none;
+  box-sizing: border-box;
+  height: 34px;
+  aspect-ratio: 5/3;
+  background-color: #C29A62;
+  border: 3px solid black;
+  border-radius: 50px;
+  position: relative;
+  cursor: pointer;
+  background: none;
+  border: none;
+  outline: none;
+}
+
+.toggle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 2px;
+  width: 20px;
+  aspect-ratio: 1;
+  background-color: transparent;
+  border: 3px solid black;
+  border-radius: 50%;
+  transition: transform 150ms ease;
+}
+
+.toggle::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.toggle:checked::before {
+  border: 3px solid #C29A62;
+  height: 7px;
+  left: 10px;
+  border-radius: 3px;
+}
+
+.toggle:not(:checked)::before {
+  border: 3px solid black;
+  border-radius: 50%;
+  right: 5px;
+  width: 8px;
+  aspect-ratio: 1;
+  background-color: #C29A62;
+}
+
+.toggle:checked {
+  background-color: black;
+  border: 3px solid black;
+}
+
+.toggle:not(:checked) {
+  background-color: #C29A62;
+  border: 3px solid black;
+}
+
+.toggle:checked::after {
+  background-color: #C29A62;
+  transform: translateX(22px) translateY(-50%);
 }
 
 .menu-content input[type="radio"]:nth-of-type(1):checked~.tabs li:nth-of-type(1),

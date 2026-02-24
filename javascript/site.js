@@ -7,6 +7,7 @@ import { levelEditorLoop } from "./editor.js";
 import { addEventListeners, addTileSelection, setInputEventListeners, toggleEditorUI } from "./ui.js";
 import { state } from "./state.js"
 import { play } from "./api.js";
+import { drawMinimap } from "./renderer.js";
 
 const { editor } = state
 export let mode = "editor"
@@ -97,6 +98,7 @@ export function init() {
       initPlatformer()
     } else {
       initEditor()
+      drawMinimap()
     }
     engineLoop()
   })
