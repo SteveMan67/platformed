@@ -79,7 +79,11 @@ search.addEventListener("input", async (e) => {
 const myLevelsbutton = document.getElementById("my-levels")
 
 fetch(`${serverUrl}/api/me`)
+  .then(res => {
+    if (!res.ok) throw new Error("not logged in")
+  })
   .catch(e => {
+    console.log(myLevelsbutton)
     myLevelsbutton.innerText = "Sign In"
     myLevelsbutton.href = "/login"
   })
