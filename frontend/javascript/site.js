@@ -17,7 +17,7 @@ export const inEditor = !window.location.pathname.startsWith("/level")
 export function endLevel() {
   mode = inEditor ? "editor" : "play"
   setTimeout(inEditor ? initEditor : initPlatformer, 1)
-  playSound("./assets/audio/victory.wav")
+  playSound("/assets/audio/victory.wav")
 
   try {
     const levelNum = Number(window.location.href.match(/\/level\/(\d+)/)[1])
@@ -109,6 +109,13 @@ const audioCtx = new Audiocontext();
 
 const soundbuffers = new Map();
 const activeFetches = new Map()
+
+preloadSound("/assets/audio/jump.wav")
+preloadSound("/assets/audio/coin.wav")
+preloadSound("/assets/audio/checkpoint.wav")
+preloadSound("/assets/audio/death.wav")
+preloadSound("/assets/audio/victory.wav")
+preloadSound("/assets/audio/deathmusic.wav")
 
 async function preloadSound(url) {
   if (soundbuffers.has(url)) return soundbuffers.get(url)
