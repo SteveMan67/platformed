@@ -57,13 +57,16 @@ let startX = 0
 let startY = 0
 
 joystick.addEventListener("touchstart", (e) => {
+  e.preventDefault()
   joystickActive = true
   startX = e.touches[0].screenX
   startY = e.touches[0].screenY
   joystick.style.transition = "none"
-}, { passive: true })
+})
+
 
 joystick.addEventListener("touchmove", (e) => {
+  e.preventDefault()
   if (!joystickActive) return
   const maxDistance = 50
 
@@ -95,7 +98,8 @@ joystick.addEventListener("touchcancel", resetJoystick)
 
 const jumpButton = document.querySelector(".jump")
 
-jumpButton.addEventListener("touchstart", () => {
+jumpButton.addEventListener("touchstart", (e) => {
+  e.preventDefault()
   input.jumpButton = true
 })
 
@@ -116,9 +120,12 @@ if (mobile()) {
 fullscreenControl.addEventListener("click", (e) => {
   game.classList.toggle("fullscreen")
   if (game.classList.contains("fullscreen")) {
-    elem.requestFullscreen().catch(err => {
-      console.error(`error trying to go fullscreen: ${err.message}`)
-    })
+    const reqFullscreen = elem.requestFullscreen || elem.webkitRequestFullscreen
+    if (reqFullscreen) {
+      reqFullscreen.call(elem).catch(err => {
+        console.error(`error trying to go fullscreen: ${err.message}`)
+      })
+    }
   } else {
     document.exitFullscreen()
   }

@@ -27,6 +27,13 @@ body .game {
   z-index: 0;
 }
 
+.game,
+.mobile-controls {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 .fullscreen {
   position: fixed;
   z-index: 10;
