@@ -1,5 +1,6 @@
 import { play } from "/javascript/api.js"
 import { updateCanvasSize } from "/javascript/renderer.js"
+import { mobile } from "/javascript/ui.js"
 
 const serverUrl = window.location.origin
 async function getLevel(level = 1) {
@@ -45,9 +46,24 @@ const finishes = document.querySelector(".finishes")
 
 const fullscreenControl = document.querySelector(".fullscreen-control")
 const game = document.querySelector(".game")
+const elem = document.documentElement
+
+const mobileControls = document.querySelector(".mobile-controls")
+
+if (mobile()) {
+  mobileControls.classList.remove("hidden")
+}
 
 fullscreenControl.addEventListener("click", (e) => {
   game.classList.toggle("fullscreen")
+  if (game.classList.contains("fullscreen")) {
+    elem.requestFullscreen().catch(err => {
+      console.error(`error trying to go fullscreen: ${err.message}`)
+    })
+  } else {
+    document.exitFullscreen()
+  }
+
   updateCanvasSize()
 })
 

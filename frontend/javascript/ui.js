@@ -131,8 +131,8 @@ function getOptionHTML(stepData) {
   return html
 }
 
-function moveMinimap(e) {
-
+export function mobile() {
+  return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0)
 }
 
 export function addEventListeners() {
