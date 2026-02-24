@@ -48,6 +48,62 @@ body .game {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 10;
+}
+
+.mobile-controls {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: end;
+}
+
+.mobile-controls.hidden {
+  display: none;
+}
+
+.mobile-controls .joystick {
+  background-color: rgba(255, 255, 255, 0.2);
+  width: 200px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  position: relative;
+  margin: 10px;
+}
+
+.mobile-controls .joystick .knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 75px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  z-index: 9;
+}
+
+.mobile-controls .jump {
+  width: 100px;
+  height: 100px;
+  background-color: rgba(255, 255, 255, 0.2);
+  margin: 10px;
+  margin-bottom: 50px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-controls .jump img {
+  width: 75px;
+  fill: transparent;
+  aspect-ratio: 1;
+
 }
 
 .fullscreen~.fullscreen-control {
