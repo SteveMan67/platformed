@@ -196,7 +196,6 @@ export function levelEditorLoop(dt) {
           }
           const replacedBlock = { idx: idx, before: beforeTile, after: afterTile }
           editor.history[editor.history.length - 1].replacedBlocks.push(replacedBlock)
-
         }
       }
       mouseDown = true

@@ -54,7 +54,6 @@ export function calculateAdjacencies(tiles, w, h, tileset = editor.tileset) {
 }
 
 export function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles, tileset = editor.tileset, w = editor.width, h = editor.height) {
-  tiles = mode == "play" ? player.tiles : editor.map.tiles
   // calculate the adjacency for a given tile when it's placed
   // bug: walls other than the top and bottom don't work
   let variant = 0
@@ -106,9 +105,8 @@ export function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles, ti
 
 }
 
-export function calcAdjacentAdjacency(centerTileIdx, tile = editor.selectedTile) {
-  const tiles = mode == "play" ? player.tiles : editor.map.tiles
-  const centerVal = calculateAdjacency(centerTileIdx, tile)
+export function calcAdjacentAdjacency(centerTileIdx, tile = editor.selectedTile, tiles = editor.map.tiles) {
+  const centerVal = calculateAdjacency(centerTileIdx, tile, tiles)
   tiles[centerTileIdx] = centerVal
   const w = editor.width
   const neighbors = []
@@ -120,7 +118,7 @@ export function calcAdjacentAdjacency(centerTileIdx, tile = editor.selectedTile)
   neighbors.forEach(n => {
     const tileId = tiles[n] >> 4
     if (tileId !== 0 && editor.tileset[tileId].type == 'adjacency') {
-      tiles[n] = calculateAdjacency(n)
+      tiles[n] = calculateAdjacency(n, tileId, tiles)
     }
   })
 
@@ -298,7 +296,7 @@ function handleTriggers(tx, ty) {
     if (step.type == "updateBlock") {
       if (step.x == undefined || step.y == undefined || step.block == undefined) return
       const idx = step.y * editor.width + step.x
-      calcAdjacentAdjacency(idx, step.block)
+      calcAdjacentAdjacency(idx, step.block, player.tiles)
     }
   }
 }
