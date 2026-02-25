@@ -64,6 +64,7 @@ export function initEditor() {
 }
 
 export let mouseDown = false;
+let differentTile = false
 export let rightClick = false
 export let rDown = false;
 export let spaceDown = false;
@@ -183,17 +184,29 @@ export function levelEditorLoop(dt) {
 
   if (input.down) {
     const idx = ty * map.w + tx
-    if (!mouseDown) {
+    if (!mouseDown || differentTile) {
       if (tx >= 0 && tx < map.w && ty >= 0 && ty < map.h) {
+        const beforeTile = editor.map.tiles[idx] >> 4
         placeTile(tx, ty)
+        const afterTile = editor.map.tiles[idx] >> 4
+        if (beforeTile !== afterTile) {
+          if (!mouseDown && !differentTile) {
+            const entry = { type: "replaceBlocks", replacedBlocks: [] }
+            editor.history.push(entry)
+          }
+          const replacedBlock = { idx: idx, before: beforeTile, after: afterTile }
+          editor.history[editor.history.length - 1].replacedBlocks.push(replacedBlock)
+        }
       }
       mouseDown = true
+      differentTile = false
     }
     // so the user can drag
     if (lastIdx !== idx) {
-      mouseDown = false
+      differentTile = true
     }
-  } else {
+  } else if (mouseDown == true) {
+
     mouseDown = false
   }
 
