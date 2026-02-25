@@ -296,7 +296,6 @@ function handleTriggers(tx, ty) {
       rotateTile(step.x, step.y, step.rotation)
     }
     if (step.type == "updateBlock") {
-      console.log(step)
       if (step.x == undefined || step.y == undefined || step.block == undefined) return
       const idx = step.y * editor.width + step.x
       calcAdjacentAdjacency(idx, step.block)

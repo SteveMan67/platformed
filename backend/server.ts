@@ -7,8 +7,8 @@ function cleanString(str: String) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27')
-    .replace(/\//g, '&#x@F;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;')
 }
 // CORS stuf
 
@@ -269,7 +269,8 @@ const server = Bun.serve({
         const width = raw.data && raw.data.width ? raw.data.width : 100
         const height = raw.data && raw.data.height ? raw.data.height : 50
         const owner = authentication.user
-        const tags = raw.tags ? raw.tags : []
+        let tags = raw.tags ? raw.tags : []
+        tags = tags.map(f => cleanString(f))
         const imageUrl = raw.image_url ? raw.image_url : ""
         const description = raw.description ? raw.description : ""
         const levelStyle = raw.level_style ? raw.level_style : ""
@@ -324,7 +325,6 @@ const server = Bun.serve({
         return new Response("Updated Play Counter", { status: 200 })
       }
     }
-
     // --- Edit a Level
     if (pathname == "/api/edit" && req.method == "PATCH") {
       const raw = await readJson(req)
