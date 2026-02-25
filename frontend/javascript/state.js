@@ -70,5 +70,6 @@ export const state = {
     dissipateTime: 2 * 60,
     dissipateDelay: 2 * 60,
     history: [],
+    future: []
   },
 };

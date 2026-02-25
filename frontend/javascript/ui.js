@@ -2,7 +2,7 @@ import { importMap, updateMap, createMap } from "./file-utils.js"
 import { mode, setMode, input } from "./site.js"
 import { state } from "./state.js"
 import { canvas, drawMinimap, updateCanvasSize, updateTileset } from "./renderer.js"
-import { toggleErase, changeSelectedTile, zoomMap, scrollCategoryTiles } from "./editor.js"
+import { toggleErase, changeSelectedTile, zoomMap, scrollCategoryTiles, undo, redo } from "./editor.js"
 import { killPlayer } from "./platformer.js"
 const { editor, player } = state
 
@@ -434,10 +434,10 @@ export function addEventListeners() {
     if (menuElement && menuElement.style.display != '' && menuElement.style.display != "none") return
     if (e.key == 'e') {
       toggleErase()
-    } else if (e.key == 'p') {
+    } else if (e.key.toLowerCase == 'p') {
       const desiredMode = mode == 'editor' ? 'play' : 'editor'
       setMode(desiredMode)
-    } else if (e.key == 'o') {
+    } else if (e.key.toLowerCase == 'o') {
       let input = document.createElement('input')
       input.type = 'file'
       input.id = 'mapFileInput'
@@ -448,10 +448,22 @@ export function addEventListeners() {
       })
       input.value = ''
       input.click()
-    } else if (e.key == 'r') {
+    } else if (e.key.toLowerCase == 'r') {
       killPlayer()
     }
+    console.log(e)
+    if ((e.ctrlKey || e.metaKey) && e.code == "KeyZ") {
+      console.log("undo")
+      if (e.shiftKey) {
+        e.preventDefault()
+        redo()
+      } else {
+        e.preventDefault()
+        undo()
+      }
+    }
   })
+
 }
 
 

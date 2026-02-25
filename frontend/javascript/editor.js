@@ -155,6 +155,34 @@ function updateBottomBar(tx, ty) {
   }
 }
 
+export function undo() {
+  const latestChange = editor.history[editor.history.length - 1]
+  if (!latestChange) return
+  if (latestChange.type == "replaceBlocks") {
+    if (!latestChange.replacedBlocks) return
+    for (const change of latestChange.replacedBlocks) {
+      if (change.after == undefined || change.before == undefined || change.idx == undefined) continue
+      editor.map.tiles[change.idx] = change.before << 4
+      calcAdjacentAdjacency(change.idx, change.before)
+    }
+    editor.future.push(editor.history.pop())
+  }
+}
+
+export function redo() {
+  const latest = editor.future[editor.future.length - 1]
+  if (!latest) return
+  if (latest.type == "replaceBlocks") {
+    if (!latest.replacedBlocks) return
+    for (const change of latest.replacedBlocks) {
+      if (change.after == undefined || change.before == undefined || change.idx == undefined) continue
+      editor.map.tiles[change.idx] = change.after << 4
+      calcAdjacentAdjacency(change.idx, change.after)
+    }
+    editor.history.push(editor.future.pop())
+  }
+}
+
 export function levelEditorLoop(dt) {
   let timeScale = dt * 60
   const { map, cam, tileSize, tileset } = editor
@@ -206,7 +234,7 @@ export function levelEditorLoop(dt) {
       differentTile = true
     }
   } else if (mouseDown == true) {
-
+    console.log(editor.history)
     mouseDown = false
   }
 

@@ -31,6 +31,10 @@ function deleteLevel(levelId = deletedLevelNumber) {
     )
 }
 
+const confirmButton = document.querySelector("#confirm-button")
+confirmButton.addEventListener("click", (e) => {
+  deleteLevel()
+})
 
 const levelsElement = document.querySelector(".levels")
 getLevel(1).then(levels => {
