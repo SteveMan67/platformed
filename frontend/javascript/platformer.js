@@ -294,6 +294,10 @@ function handleTriggers(tx, ty) {
       if (!step.x || !step.y || !step.rotation) return
       rotateTile(step.x, step.y, step.rotation)
     }
+    if (step.type == "updateBlock") {
+      if (!step.x || !step.y || !step.block) return
+      player.tiles[step.y * editor.width + step.x] = step.block << 4
+    }
   }
 }
 

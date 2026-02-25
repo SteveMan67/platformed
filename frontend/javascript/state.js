@@ -69,5 +69,6 @@ export const state = {
     tilesetPath: "/assets/medium.json",
     dissipateTime: 2 * 60,
     dissipateDelay: 2 * 60,
+
   },
 };
