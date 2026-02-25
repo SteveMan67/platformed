@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="module" src="/javascript/my-levels.js" defer></script>
+  <script src="/javascript/delete.js"></script>
   <link rel="stylesheet" href="/styles/style.css">
   <link rel="stylesheet" href="/styles/home.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,13 +36,12 @@
         <div id="cancel-button" class="option" onclick="document.querySelector('.menu').style.display = none">
           <p>Cancel</p>
         </div>
-        <div id="confirm-button" class="option" onclick="deleteLevel()">
+        <div id="confirm-button" class="option">
           <p>Delete</p>
         </div>
       </div>
     </div>
   </div>
-  <script type="module" src="./javascript/my-levels.js" defer></script>
 </body>
 
 </html>
