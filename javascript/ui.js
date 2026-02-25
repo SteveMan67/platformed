@@ -435,10 +435,10 @@ export function addEventListeners() {
     if (menuElement && menuElement.style.display != '' && menuElement.style.display != "none") return
     if (e.key == 'e') {
       toggleErase()
-    } else if (e.key.toLowerCase == 'p') {
+    } else if (e.key == 'p') {
       const desiredMode = mode == 'editor' ? 'play' : 'editor'
       setMode(desiredMode)
-    } else if (e.key.toLowerCase == 'o') {
+    } else if (e.key == 'o') {
       let input = document.createElement('input')
       input.type = 'file'
       input.id = 'mapFileInput'

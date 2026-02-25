@@ -242,6 +242,28 @@
       "mechanics": [
         "noCollision"
       ]
+    },
+    {
+      "id": 22,
+      "name": "Half Spikes Right",
+      "file": "half-double-spike-right.png",
+      "category": "hazards",
+      "type": "rotation",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "killOnTouch"
+      ]
+    },
+    {
+      "id": 23,
+      "name": "Half Spikes Left",
+      "file": "half-double-spike-left.png",
+      "category": "hazards",
+      "type": "rotation",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "killOnTouch"
+      ]
     }
   ]
 }

@@ -141,7 +141,7 @@ const xEl = document.querySelector(".x")
 const yEl = document.querySelector(".y")
 
 function updateBottomBar(tx, ty) {
-  if (selectedTileEl.innerText !== editor.tileset[editor.selectedTile].name) {
+  if (editor.tileset[editor.selectedTile] && selectedTileEl.innerText !== editor.tileset[editor.selectedTile].name) {
     selectedTileEl.innerText = editor.tileset[editor.selectedTile].name
   }
   if (tileIdEl.innerText !== String(editor.selectedTile)) {
