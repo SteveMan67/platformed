@@ -198,6 +198,50 @@
         "noCollision",
         "trigger"
       ]
+    },
+    {
+      "id": 18,
+      "name": "Right Sign",
+      "file": "sign-right.png",
+      "category": "blocks",
+      "type": "rotation",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "noCollision"
+      ]
+    },
+    {
+      "id": 19,
+      "name": "Left Sign",
+      "file": "sign-left.png",
+      "category": "blocks",
+      "type": "rotation",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "noCollision"
+      ]
+    },
+    {
+      "id": 20,
+      "name": "Up Sign",
+      "file": "sign-up.png",
+      "category": "blocks",
+      "type": "rotation",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "noCollision"
+      ]
+    },
+    {
+      "id": 21,
+      "name": "Down Sign",
+      "file": "sign-down.png",
+      "category": "blocks",
+      "type": "rotation",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "noCollision"
+      ]
     }
   ]
 }
