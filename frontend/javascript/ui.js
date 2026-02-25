@@ -129,8 +129,9 @@ function getOptionHTML(stepData) {
   }
   if (stepData.type == "updateBlock") {
     let tileOptions = ''
+    console.log(stepData)
     for (const tile of editor.tileset) {
-      tileOptions += `<option value=${tile.id}>${tile.name}</option>`
+      tileOptions += `<option value=${tile.id} ${tile.id == stepData.block ? 'selected' : ''}>${tile.name}</option>`
     }
     html += `
       x <input type="number" class="block-x coord" value="${stepData.x || 0}" min="0" max="${editor.width}">
