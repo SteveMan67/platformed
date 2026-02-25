@@ -297,10 +297,8 @@ function handleTriggers(tx, ty) {
     }
     if (step.type == "updateBlock") {
       console.log(step)
-      if (!step.x || !step.y || !step.block) return
+      if (step.x == undefined || step.y == undefined || step.block == undefined) return
       const idx = step.y * editor.width + step.x
-      console.log(idx)
-      console.log(calcAdjacentAdjacency(idx))
       calcAdjacentAdjacency(idx, step.block)
     }
   }
