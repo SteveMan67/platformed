@@ -376,7 +376,7 @@ const server = Bun.serve({
 
     if (pathname == "/api/rate") {
       const levelId = url.searchParams.get("levelId")
-      const ratingParam = url.searchParams.get("rating")
+      const ratingParam = Boolean(url.searchParams.get("rating"))
       const rating = ratingParam
       if (!levelId) {
         return new Response("Must Provide LevelId", { status: 400 })
@@ -424,6 +424,7 @@ const server = Bun.serve({
             update levels 
             set approvals = approvals + ${rating ? 1 : 0},
             disapprovals = disapprovals + ${rating ? 0 : 1}
+            approval_percentage = DEFAULT
             where id = ${levelId}
           `
         }
