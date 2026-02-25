@@ -261,7 +261,6 @@ export async function loadTileset(manifestPath) {
           items.forEach(item => {
             tileset[item.id] = item
           })
-          console.log(tileset)
           return { tileset, characterImage }
         })
     })
@@ -328,8 +327,6 @@ export async function updateMap() {
   const serverUrl = window.location.origin
 
   const isOwner = editor.level.id && editor.level.owner == user.id
-  console.log(editor.level, user.id)
-  console.log(`isOwner: ${isOwner}`)
   if (isOwner) {
     const payload = {}
     payload.levelId = levelNum
@@ -341,7 +338,6 @@ export async function updateMap() {
       credentials: "include",
       body: JSON.stringify(payload),
     }).then(res => {
-      console.log(res)
     })
   } else {
     const levelId = await uploadLevel([
@@ -355,5 +351,4 @@ export async function updateMap() {
 export function loadOwnerData(json) {
   if (json.id) editor.level.id = json.id
   if (json.owner) editor.level.owner = json.owner
-  console.log(editor.level)
 }

@@ -99,6 +99,7 @@ function addStepToUI(stepData) {
         <option value="toggleBlocks" ${stepData.type === 'toggleBlocks' ? 'selected' : ''}>Swap red and blue</option>
         <option value="teleport" ${stepData.type === "teleport" ? 'selected' : ''}>Teleport</option>
         <option value="rotate" ${stepData.type === "rotate" ? 'selected' : ''}>Rotate Block</option>
+        <option value="updateBlock" ${stepData.type === "updateBlock" ? 'selected' : ''}>Change Block</option>
       </select>
     </div>
     <div class="options">
@@ -117,8 +118,8 @@ function getOptionHTML(stepData) {
   }
   if (stepData.type == "rotate") {
     html += `
-    x <input type="number" class="tp-x" value="${stepData.x || 0}" min="0" max="${editor.width}">
-    y <input type="number" class="tp-y" value=${stepData.y || 0} min="0" max="${editor.height}">
+    x <input type="number" class="rotate-x" value="${stepData.x || 0}" min="0" max="${editor.width}">
+    y <input type="number" class="rotate-y" value=${stepData.y || 0} min="0" max="${editor.height}">
     <select class="rotation-amount">
       <option value="1">90</option>
       <option value="2">180</option>
@@ -126,8 +127,20 @@ function getOptionHTML(stepData) {
     </select>
     `
   }
+  if (stepData.type == "updateBlock") {
+    let tileOptions = ''
+    for (const tile of editor.tileset) {
+      tileOptions += `<option value=${tile.id}>${tile.name}</option>`
+    }
+    html += `
+      x <input type="number" class="block-x coord" value="${stepData.x || 0}" min="0" max="${editor.width}">
+      y <input type="number" class="block-y coord" value=${stepData.y || 0} min="0" max="${editor.height}">
+      <select class="block">
+        ${tileOptions}
+      </select>
+    `
+  }
   html += `<img src="/assets/icons/delete.svg" alt="delete" class="delete-step">`
-  console.log(html)
   return html
 }
 
@@ -247,7 +260,6 @@ export function addEventListeners() {
   })
 
   applyButton.addEventListener('click', (e) => {
-    console.log(activeTrigger)
     if (!activeTrigger) return
 
     const newExecuteArray = []
@@ -264,16 +276,23 @@ export function addEventListeners() {
         stepData.y = yInput ? parseInt(yInput.value, 10) : 0
       }
       if (type == 'rotate') {
-        const xInput = stepEl.querySelector('.tp-x')
-        const yInput = stepEl.querySelector('.tp-y')
+        const xInput = stepEl.querySelector('.rotate-x')
+        const yInput = stepEl.querySelector('.rotate-y')
         const rotationEl = stepEl.querySelector('.rotation-amount')
         stepData.x = xInput ? Number(xInput.value) : 0
         stepData.y = yInput ? Number(yInput.value) : 0
         stepData.rotation = rotationEl ? Number(rotationEl.value) : 1
       }
+      if (type == "updateBlock") {
+        const xInput = stepEl.querySelector('.block-x')
+        const yInput = stepEl.querySelector('.block-y')
+        const blockEl = stepEl.querySelector('.block')
+        stepData.x = xInput ? Number(xInput.value) : null
+        stepData.y = xInput ? Number(yInput.value) : null
+        stepData.block = blockEl ? Number(blockEl.value) : null
+      }
       newExecuteArray.push(stepData)
     })
-    console.log(newExecuteArray)
     activeTrigger.execute = newExecuteArray
     toggleTriggerDialog(false)
   })

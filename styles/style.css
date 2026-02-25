@@ -392,6 +392,15 @@ i::before {
   font-family: "Fredoka", sans-serif;
 }
 
+.step select.block,
+div.step .options input.coord {
+  font-size: 20px;
+}
+
+div.step .options input.coord {
+  width: 50px;
+}
+
 .steps .step:not(:last-child)::after {
   content: "";
   position: absolute;
