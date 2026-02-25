@@ -40,8 +40,8 @@ export async function loadMapFromData(json) {
     editor.playerSpawn = { x: json.spawn.x, y: json.spawn.y }
   }
   player.wallJump = json.wallJump;
-  const tileLayer = json.layers.find(l => l.type === "tilelayer");
-  const rotationLayer = json.layers.find(l => l.type === "rotation");
+  const tileLayer = json.layers?.find(l => l.type === "tilelayer");
+  const rotationLayer = json.layers?.find(l => l.type === "rotation");
   const rawRotationLayer = decodeRLE(rotationLayer.data);
   let rawTileLayer = decodeRLE(tileLayer.data);
   if (rawTileLayer.length !== json.width * json.height) {
