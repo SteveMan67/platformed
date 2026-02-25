@@ -435,6 +435,13 @@ div.step .options input.coord {
   background-color: #C29A62;
   border-radius: 10px;
   font-family: "Fredoka", sans-serif;
+  appearance: textfield;
+}
+
+.step input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
 }
 
 .step .options img {
