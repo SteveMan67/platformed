@@ -47,7 +47,7 @@ const sql = postgres(DATABASE_URL)
 
 
 const server = Bun.serve({
-  port: 9020,
+  port: 1010,
   hostname: "0.0.0.0",
   routes: {
 
@@ -233,13 +233,26 @@ const server = Bun.serve({
     // --- level browse ---
     if (pathname == "/api/browse") {
       const match = url.search.match(/page=(\d+)/)
+      const sortBy = url.searchParams.get("sortBy")
       const page = match ? Number(match[1]) : 1
-      if (page) {
-        const levels = await sql`select id, data, name, created_at, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels
-        WHERE public = true 
-        limit 50 offset ${(page - 1) * 50}`
-        return new Response(JSON.stringify(levels), withCors({ headers: { "Content-Type": "application/json" } }, CORS))
+
+      let sortBySQL
+
+      if (sortBy == "date") {
+        sortBySQL = sql`ORDER BY created_at DESC`
+      } else if (sortBy == "plays") {
+        sortBySQL = sql`ORDER BY total_plays DESC`
+      } else {
+        sortBySQL = sql`ORDER BY approval_percentage DESC`
       }
+
+
+      const levels = await sql`select id, data, name, created_at, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels
+        WHERE public = true 
+        ${sortBySQL}
+        limit 50 offset ${(page - 1) * 50}
+        `
+      return new Response(JSON.stringify(levels), withCors({ headers: { "Content-Type": "application/json" } }, CORS))
     }
     if (pathname.startsWith("/api/search")) {
       const page = Number(url.searchParams.get("page")) || 1
