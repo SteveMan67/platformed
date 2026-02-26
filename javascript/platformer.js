@@ -622,11 +622,8 @@ function updatePhysics(dt) {
   }
 
   if (player.wallJump == "off" && !player.grounded && !walljumpControlLimited) {
-    if (touchingLeft) {
-      limitControl(20, 0)
-      walljumpControlLimited = true
-    } else if (touchingRight) {
-      limitControl(20, 0)
+    if (touchingLeft || touchingRight) {
+      limitControl(10, 0)
       walljumpControlLimited = true
     } else {
       walljumpControlLimited = false
