@@ -76,6 +76,14 @@ search.addEventListener("input", async (e) => {
   }
 })
 
+const sortBy = document.getElementById("sort-by")
+
+sortBy.addEventListener("input", async (e) => {
+  const raw = await fetch(`${serverUrl}/api/browse?sortBy=${encodeURIComponent(sortBy.value)}`)
+  const levels = await raw.json()
+  addLevels(levels)
+})
+
 const myLevelsbutton = document.getElementById("my-levels")
 
 fetch(`${serverUrl}/api/me`)

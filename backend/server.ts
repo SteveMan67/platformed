@@ -242,8 +242,12 @@ const server = Bun.serve({
         sortBySQL = sql`ORDER BY created_at DESC`
       } else if (sortBy == "plays") {
         sortBySQL = sql`ORDER BY total_plays DESC`
-      } else {
+      } else if (sortBy == "finishes") {
+        sortBySQL = sql`ORDER BY finished_plays DESC`
+      } else if (sortBy == "rating") {
         sortBySQL = sql`ORDER BY approval_percentage DESC`
+      } else {
+        sortBySQL = sql`ORDER BY total_plays DESC`
       }
 
 
