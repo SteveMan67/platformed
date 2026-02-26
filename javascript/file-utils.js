@@ -200,14 +200,37 @@ export function loadPlayerSprites(playerImg) {
   }
   player.sprites = sprites
 }
+
+const loadedTilesets = new Map()
+const loadedPlayers = new Map()
+
 export async function loadTileset(manifestPath) {
+  if (loadedTilesets.has(manifestPath)) {
+    const tileset = loadedTilesets.get(manifestPath)
+    const characterImage = loadedPlayers.get(manifestPath)
+    return { tileset, player: characterImage }
+  }
+
   return fetch(manifestPath)
     .then(response => response.json())
     .then(manifest => {
+      let loadedCount = 0
+      const totalCount = manifest.tiles.length + 1
+
+      function updateProgress() {
+        loadedCount++
+        console.log("dispatching event")
+        window.dispatchEvent(new CustomEvent('loading:progress', {
+          detail: { loaded: loadedCount, total: totalCount }
+        }))
+      }
 
       const promises = manifest.tiles.map(tileData => {
 
-        if (!tileData.file) return Promise.resolve(tileData)
+        if (!tileData.file) {
+          updateProgress()
+          return Promise.resolve(tileData)
+        }
         return new Promise((resolve, reject) => {
           const img = new Image()
           img.src = manifest.path + tileData.file
@@ -241,18 +264,31 @@ export async function loadTileset(manifestPath) {
             } catch (e) {
               console.warn("Could not calculate minimap color", e)
             }
+            updateProgress()
             resolve({ ...tileData, image: img, minimapColor })
           }
-          img.onerror = reject
+          img.onerror = (e) => {
+            updateProgress()
+            reject(e)
+          }
         })
       })
 
       const characterPromise = new Promise((resolve) => {
-        if (!manifest.characterFile) return resolve(null)
+        if (!manifest.characterFile) {
+          updateProgress()
+          return resolve(null)
+        }
         const img = new Image()
         img.src = manifest.path + manifest.characterFile
-        img.onload = () => resolve(img)
-        img.onerror = () => resolve(null)
+        img.onload = () => {
+          updateProgress()
+          resolve(img)
+        }
+        img.onerror = () => {
+          updateProgress()
+          resolve(null)
+        }
       })
 
       return Promise.all([Promise.all(promises), characterPromise])
@@ -261,6 +297,9 @@ export async function loadTileset(manifestPath) {
           items.forEach(item => {
             tileset[item.id] = item
           })
+
+          loadedTilesets.set(manifestPath, tileset)
+          loadedPlayers.set(manifestPath, characterImage)
           return { tileset, characterImage }
         })
     })

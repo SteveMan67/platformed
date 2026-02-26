@@ -130,6 +130,7 @@ export function drawPlayer(dt) {
   ctx.imageSmoothingEnabled = false
   ctx.drawImage(player.sprites[selectedFrame], Math.floor(player.x - player.cam.x), Math.floor(player.y - player.cam.y), player.w, player.h)
 }
+
 export async function updateTileset(path) {
   editor.tilesetPath = path
   const { tileset, characterImage } = await loadTileset(editor.tilesetPath)
