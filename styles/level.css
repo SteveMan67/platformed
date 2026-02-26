@@ -235,8 +235,25 @@ a.edit img {
 .thumbs-down-wrapper {
   position: relative;
   overflow: visible;
+  display: flex;
 }
 
+.thumbs-up-wrapper img,
+.thumbs-down-wrapper img {
+  display: none;
+}
+
+.thumbs-up-wrapper.clicked .fill,
+.thumbs-down-wrapper.clicked .fill {
+  display: block;
+}
+
+.thumbs-up-wrapper:not(.clicked) .nofill,
+.thumbs-down-wrapper:not(.clicked) .nofill {
+  display: block;
+}
+
+/*
 .thumbs-up-wrapper::before,
 .thumbs-down-wrapper::before {
   content: '';
@@ -258,3 +275,4 @@ a.edit img {
   background: radial-gradient(rgba(0, 0, 0, 0.1) 25%, transparent 100%);
   border: 2px solid rgba(0, 0, 0, 0.5);
 }
+*/
