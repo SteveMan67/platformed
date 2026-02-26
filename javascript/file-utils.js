@@ -219,7 +219,6 @@ export async function loadTileset(manifestPath) {
 
       function updateProgress() {
         loadedCount++
-        console.log("dispatching event")
         window.dispatchEvent(new CustomEvent('loading:progress', {
           detail: { loaded: loadedCount, total: totalCount }
         }))

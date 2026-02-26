@@ -82,7 +82,6 @@
     import { loadMapFromData, loadOwnerData } from '/javascript/file-utils.js'
     setMode('play')
     window.addEventListener('loading:progress', async (e) => {
-      console.log("received event")
       const { loaded, total } = e.detail
       const percentage = (loaded / total) * 100
       document.querySelector('.progress-bar-fill').style.width = `${percentage}px`
@@ -93,7 +92,6 @@
       init()
 
       const loadingScreen = document.querySelector('.loading-screen')
-      console.log(loadingScreen)
       if (loadingScreen) {
         loadingScreen.remove()
       }
