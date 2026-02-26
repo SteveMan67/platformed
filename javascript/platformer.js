@@ -458,6 +458,8 @@ function limitControl(time, multiplier) {
 
 let lastJumpInput = false;
 let touchingTrigger = false
+let walljumpControlLimited = false
+
 function updatePhysics(dt) {
   if (player.coyoteTimer > 0) player.coyoteTimer -= dt
   if (player.jumpBufferTimer > 0) player.jumpBufferTimer -= dt
@@ -595,10 +597,11 @@ function updatePhysics(dt) {
 
   // walljump
   if (!player.grounded && player.wallJump !== "none" && key("any") && player.jumpBufferTimer !== 0 && !player.wallCoyoteTimer == 0) {
+
     if (player.wallJump == "off") {
       if (player.lastWallSide == 1 && (key("up") || input.jumpButton)) {
         player.vx = -player.speed
-      } else if (player.lastWallSide == -1 && key("up")) {
+      } else if (player.lastWallSide == -1 && key("up") || input.jumpButton) {
         player.vx = player.speed
       }
       player.vy = -player.jump
@@ -606,7 +609,7 @@ function updatePhysics(dt) {
       player.lastWallSide = 0
       player.wallCoyoteTimer = 0
       player.airControl = true
-      limitControl(20, 0.0)
+      limitControl(40, 0.0)
       playSound("/assets/audio/jump.wav", 0.1)
     } else if (player.wallJump == "up") {
       player.vx = player.lastWallSide == -1 ? player.speed * 1.2 : -player.speed * 1.2
@@ -618,7 +621,18 @@ function updatePhysics(dt) {
     }
   }
 
+  if (player.wallJump == "off" && !player.grounded && !walljumpControlLimited) {
+    if (touchingLeft) {
+      limitControl(20, 0)
+      walljumpControlLimited = true
+    } else if (touchingRight) {
+      limitControl(20, 0)
+      walljumpControlLimited = true
+    } else {
+      walljumpControlLimited = false
+    }
 
+  }
 }
 
 function aabbIntersect(ax, ay, aw, ah, bx, by, bw, bh) {

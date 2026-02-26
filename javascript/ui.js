@@ -483,6 +483,13 @@ export function setInputEventListeners() {
   window.addEventListener('keydown', e => {
     if (menuElement && menuElement.style.display != '' && menuElement.style.display != "none") return
     input.keys[e.key] = true
+    if (e.key == 'w' || e.key == 'd' || e.key == 'a' || e.key == 'ArrowUp' || e.key == "ArrowLeft" || e.key == "") {
+      // has keyboard
+      player.hasKeyboard = true
+      const mobileControls = document.querySelector('.mobile-controls')
+      mobileControls?.classList.add("hidden")
+
+    }
   })
   window.addEventListener('keyup', e => {
     if (menuElement && menuElement.style.display != '' && menuElement.style.display != "none") return
