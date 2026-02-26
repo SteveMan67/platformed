@@ -43,6 +43,7 @@ export const state = {
     autoJump: false,
     controlTimer: 0,
     controlMultiplier: 1,
+    hasKeyboard: true,
     dissipations: [],
   },
   editor: {
