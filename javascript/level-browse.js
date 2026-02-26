@@ -22,7 +22,7 @@ async function addLevels(levels) {
     }
 
     const imageHtml = document.createElement("canvas")
-
+    const ratingImg = level.approval_percentage > 50 ? "up" : "down-fill"
     const body = `
       <div data-level="${level.id}" class="image">
         
@@ -31,7 +31,7 @@ async function addLevels(levels) {
         <h2 class="name">${level.name}</h2>
         <div class="approval-rating-wrapper">
           <p class="approval-rating">${Math.floor(level.approval_percentage)}%</p>
-          <img src="./assets/icons/thumbs-up.svg" alt="">
+          <img src="./assets/icons/thumbs-${ratingImg}.svg" alt="">
         </div>
       </div>
       <div class="tags-and-plays">
