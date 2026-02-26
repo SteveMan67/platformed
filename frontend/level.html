@@ -39,6 +39,12 @@
                 <img src="/assets/icons/jump.svg" alt="">
               </div>
             </div>
+            <div class="loading-screen">
+              <p>loading...</p>
+              <div class="progress-bar">
+                <div class="progress-bar-fill"></div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="info">
@@ -75,10 +81,23 @@
     import { init, setMode } from '/javascript/site.js'
     import { loadMapFromData, loadOwnerData } from '/javascript/file-utils.js'
     setMode('play')
+    window.addEventListener('loading:progress', async (e) => {
+      console.log("received event")
+      const { loaded, total } = e.detail
+      const percentage = (loaded / total) * 100
+      document.querySelector('.progress-bar-fill').style.width = `${percentage}px`
+    })
     window.addEventListener('level:loaded', async (e) => {
       const levelData = await e.detail
       await loadMapFromData(levelData.data)
       init()
+
+      const loadingScreen = document.querySelector('.loading-screen')
+      console.log(loadingScreen)
+      if (loadingScreen) {
+        loadingScreen.remove()
+      }
+
     })
   </script>
   <script type="module" src="/javascript/level.js" defer></script>
