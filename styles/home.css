@@ -66,12 +66,26 @@
     outline: none;
     padding: 5px 10px 5px 15px;
     -webkit-text-fill-color: black;
-    /* styles the placeholder */
     font-size: 20px;
 }
 
 .searchbar img {
     padding-right: 10px;
+}
+
+.sort-by-label {
+    font-size: 20px;
+    margin: auto 0 auto 25px;
+}
+
+#sort-by {
+    outline: none;
+    border: 3px solid black;
+    font-size: 20px;
+    border-radius: 15px;
+    padding: 5px 10px 5px 15px;
+    background-color: #C29A62;
+    margin-left: 20px;
 }
 
 .levels {
