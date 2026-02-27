@@ -83,6 +83,7 @@ export const state = {
       offsetY: 0,
       isDragging: false,
       hasFloatingTiles: false,
+      triggers: []
     }
   },
 };

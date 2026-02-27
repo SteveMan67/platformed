@@ -191,6 +191,20 @@ export function liftSelection() {
   const maxX = Math.max(selection.startX, selection.endX)
   const minY = Math.min(selection.startY, selection.endY)
   const maxY = Math.max(selection.startY, selection.endY)
+
+  selection.triggers = []
+  if (player.triggers) {
+    const remainingTriggers = []
+    for (const trigger of player.triggers) {
+      if (trigger.x >= minX && trigger.x <= maxX && trigger.y >= minY && trigger.y <= maxY) {
+        selection.triggers.push({ ...trigger })
+      } else {
+        remainingTriggers.push(trigger)
+      }
+    }
+    player.triggers = remainingTriggers
+  }
+
   const liftedTiles = []
   for (let y = minY; y <= maxY; y++) {
     for (let x = minX; x <= maxX; x++) {
@@ -250,6 +264,23 @@ function stampSelection() {
       }
       selectionLayer[idx] = 0
     }
+  }
+
+  if (selection.triggers.length > 0) {
+    console.log(selection.triggers)
+    for (const trigger of selection.triggers) {
+      const newX = trigger.x + selection.offsetX
+      const newY = trigger.y + selection.offsetY
+
+      if (newX >= 0 && newX < map.w && newY >= 0 && newY < map.h) {
+        player.triggers = player.triggers.filter(t => t.x !== newX || t.y !== newY)
+
+        trigger.x = newX
+        trigger.y = newY
+        player.triggers.push(trigger)
+      }
+    }
+    selection.triggers = []
   }
   calculateAdjacenciesForIndexes(changedIndexes)
   const historyItem = {
