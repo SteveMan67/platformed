@@ -226,19 +226,20 @@ function stampSelection() {
       const newX = x + selection.offsetX
       const newY = y + selection.offsetY
 
-      if (newX >= 0 && newX < map.w && newY >= 0 && newY < map.w) {
+      if (newX >= 0 && newX < map.w && newY >= 0 && newY < map.h) {
         const newIdx = newY * map.w + newX;
         const beforeTile = map.tiles[newIdx] >> 4
 
-        map.tiles[newIdx] = tile
-        changedTiles.push({ idx: idx, before: beforeTile, after: tile >> 4 })
+        if (selectionLayer[idx] !== 0) {
+          map.tiles[newIdx] = tile
+          changedTiles.push({ idx: newIdx, before: beforeTile, after: tile >> 4 })
+        }
       }
       selectionLayer[idx] = 0
     }
   }
   const historyItem = {
     type: "replaceBlocks",
-    stamp: true,
     replacedBlocks: changedTiles
   }
   editor.history.push(historyItem)
@@ -282,8 +283,9 @@ export function levelEditorLoop(dt) {
         const maxX = Math.max(selection.startX, selection.endX) + selection.offsetX
         const minY = Math.min(selection.startY, selection.endY) + selection.offsetY
         const maxY = Math.min(selection.startY, selection.endY) + selection.offsetY
+        console.log(minX, maxX, minY, maxY)
 
-        if (selection.active && tx >= minX && tx <= maxX && ty >= minY && ty <= maxX) {
+        if (selection.active && tx >= minX && tx <= maxX && ty >= minY && ty <= maxY) {
           if (!selection.hasFloatingTiles) {
             liftSelection()
           }
