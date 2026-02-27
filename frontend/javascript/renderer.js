@@ -52,7 +52,7 @@ export function drawMap(tileSize = editor.tileSize, cam = editor.cam) {
       const tileId = raw >> 4;
       const scrX = Math.floor((x * tileSize) - cam.x);
       const scrY = Math.floor((y * tileSize) - cam.y);
-      const selectedTile = editor.tileset[tileId];
+      const selectedTile = editor.tileset[tileId]
       let showTile = true;
       if (editor.tileset[tileId] && editor.tileset[tileId].mechanics && editor.tileset[tileId].mechanics.includes("hidden") && mode == 'play') {
         showTile = false;
