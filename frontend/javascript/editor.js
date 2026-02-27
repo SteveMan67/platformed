@@ -282,14 +282,38 @@ export function levelEditorLoop(dt) {
     cam.x += speed * timeScale
     drawMinimap()
   }
+
+  const shiftDown = input.keys["Shift"]
+
+  if (shiftDown || editor.selection.isDragging) {
+    const sideThreshold = 50
+    const movementSpeed = 15
+    if (input.x < sideThreshold) {
+      cam.x -= movementSpeed * timeScale
+      drawMinimap()
+    } else if (input.x > canvas.width - sideThreshold) {
+      cam.x += movementSpeed * timeScale
+      drawMinimap()
+    }
+    if (input.y < sideThreshold) {
+      cam.y -= movementSpeed * timeScale
+      drawMinimap()
+    } else if (input.y > canvas.height - sideThreshold) {
+      cam.y += movementSpeed * timeScale
+      drawMinimap()
+    }
+  }
+
+  cam.x = Math.round(Math.max(0, Math.min(cam.x, (editor.map.w * editor.tileSize) - canvas.width)))
+  cam.y = Math.round(Math.max(0, Math.min(cam.y, (editor.map.h * editor.tileSize) - canvas.height)))
   const worldX = input.x + cam.x
   const worldY = input.y + cam.y
   const tx = Math.floor(worldX / tileSize)
   const ty = Math.floor(worldY / tileSize)
 
+
   updateBottomBar(tx, ty)
 
-  const shiftDown = input.keys["Shift"]
   const { selection } = editor
 
   let isHoveringSelection = false
@@ -329,10 +353,10 @@ export function levelEditorLoop(dt) {
         selection.hasFloatingTiles = false
         selection.offsetX = 0
         selection.offsetY = 0
-        selection.startX = tx
-        selection.startY = ty
-        selection.endX = tx
-        selection.endY = ty
+        selection.startX = Math.max(0, Math.min(tx, map.w - 1))
+        selection.startY = Math.max(0, Math.min(ty, map.h - 1))
+        selection.endX = selection.startX
+        selection.endY = selection.startY
         handledBySelection = true
       } else if (selection.active) {
         if (selection.hasFloatingTiles) stampSelection()
@@ -341,12 +365,25 @@ export function levelEditorLoop(dt) {
     } else {
       // dragging mouse around
       if (selection.isDragging) {
-        selection.offsetX = selection.initialOffsetX + (tx - selection.dragStartX)
-        selection.offsetY = selection.initialOffsetY + (ty - selection.dragStartY)
+        // moving the selection around
+        const rawOffsetX = selection.initialOffsetX + (tx - selection.dragStartX)
+        const rawOffsetY = selection.initialOffsetY + (ty - selection.dragStartY)
+
+        const minX = Math.min(selection.startX, selection.endX)
+        const maxX = Math.max(selection.startX, selection.endX)
+        const minY = Math.min(selection.startY, selection.endY)
+        const maxY = Math.max(selection.startY, selection.endY)
+
+        selection.offsetX = Math.max(-minX, Math.min(rawOffsetX, map.w - 1 - maxX))
+        selection.offsetY = Math.max(-minY, Math.min(rawOffsetY, map.h - 1 - maxY))
+
+        drawMinimap()
         handledBySelection = true
       } else if (selection.active && !selection.hasFloatingTiles) {
-        selection.endX = tx
-        selection.endY = ty
+        // changing the size of the selection
+        selection.endX = Math.max(0, Math.min(tx, map.w - 1))
+        selection.endY = Math.max(0, Math.min(ty, map.h - 1))
+        drawMinimap()
         handledBySelection = true
       }
     }
