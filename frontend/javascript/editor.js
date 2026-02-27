@@ -221,9 +221,9 @@ export function levelEditorLoop(dt) {
           if (!mouseDown && !differentTile) {
             const entry = { type: "replaceBlocks", replacedBlocks: [] }
             editor.history.push(entry)
+            const replacedBlock = { idx: idx, before: beforeTile, after: afterTile }
+            editor.history[editor.history.length - 1]?.replacedBlocks.push(replacedBlock)
           }
-          const replacedBlock = { idx: idx, before: beforeTile, after: afterTile }
-          editor.history[editor.history.length - 1].replacedBlocks.push(replacedBlock)
         }
       }
       mouseDown = true
