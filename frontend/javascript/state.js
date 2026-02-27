@@ -71,6 +71,18 @@ export const state = {
     dissipateTime: 2 * 60,
     dissipateDelay: 2 * 60,
     history: [],
-    future: []
+    future: [],
+    selectionLayer: new Uint16Array(100 * 50),
+    selection: {
+      active: false,
+      startX: 0,
+      startY: 0,
+      endX: 0,
+      endY: 0,
+      offsetX: 0,
+      offsetY: 0,
+      isDragging: false,
+      hasFloatingTiles: false,
+    }
   },
 };
