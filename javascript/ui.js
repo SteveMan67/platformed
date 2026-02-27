@@ -499,7 +499,6 @@ export function setInputEventListeners() {
     input.keys[e.key] = false
   })
 
-
   canvas.addEventListener('mousemove', e => {
     const rect = canvas.getBoundingClientRect()
     input.x = e.clientX - rect.left
