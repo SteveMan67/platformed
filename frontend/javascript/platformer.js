@@ -489,8 +489,8 @@ function updatePhysics(dt) {
   const gravity = ((0.7 * player.yInertia) + 0.5) * (player.tileSize / 64)
   player.vy += gravity * dt
 
-  if (player.vy > player.tileSize * 0.6) {
-    player.vy = player.tileSize * 0.6
+  if (player.vy > player.tileSize * 0.8) {
+    player.vy = player.tileSize * 0.8
   }
 
   if (player.jumpBufferTimer > 0 && player.coyoteTimer > 0) {
@@ -550,10 +550,10 @@ function updatePhysics(dt) {
   if (checkCollision(dt, player.x + offX, player.y + offY, player.hitboxW, player.hitboxH)) {
     if (player.vx > 0) {
       const hitRight = player.x + offX + player.hitboxW
-      player.x = (Math.floor(hitRight / player.tileSize) * player.tileSize) - player.hitboxW - offX
+      player.x = (Math.floor(hitRight / player.tileSize) * player.tileSize) - player.hitboxW - offX - 0.01
     } else if (player.vx < 0) {
       const hitLeft = player.x + offX
-      player.x = ((Math.floor(hitLeft / player.tileSize) + 1) * player.tileSize) - offX
+      player.x = ((Math.floor(hitLeft / player.tileSize) + 1) * player.tileSize) - offX + 0.01
     }
     player.vx = 0
   }
@@ -565,11 +565,11 @@ function updatePhysics(dt) {
     if (player.vy > 0) {
       const hitBottom = player.y + offY + player.hitboxH
       const tileTop = Math.floor(hitBottom / player.tileSize) * player.tileSize
-      player.y = tileTop - player.hitboxH - offY
+      player.y = tileTop - player.hitboxH - offY - 0.01
       player.grounded = true
       player.coyoteTimer = player.coyoteTime
     } else if (player.vy < 0) {
-      player.y = (Math.floor(player.y / player.tileSize) + 1) * player.tileSize
+      player.y = (Math.floor(player.y / player.tileSize) + 1) * player.tileSize + 0.01
     }
     player.vy = 0
   } else {
@@ -614,7 +614,7 @@ function updatePhysics(dt) {
       player.lastWallSide = 0
       player.wallCoyoteTimer = 0
       player.airControl = true
-      limitControl(40, 0.0)
+      limitControl(20, 0.0)
       playSound("/assets/audio/jump.wav", 0.1)
     } else if (player.wallJump == "up") {
       player.vx = player.lastWallSide == -1 ? player.speed * 1.2 : -player.speed * 1.2
