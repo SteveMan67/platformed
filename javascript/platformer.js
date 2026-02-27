@@ -1,4 +1,4 @@
-import { toggleEditorUI, sortByCategory } from "./ui.js"
+import { toggleEditorUI, sortByCategory, needsSmallerLevel } from "./ui.js"
 import { canvas, ctx, drawEnemies, drawMap, drawPlayer, getCameraCoords } from "./renderer.js"
 import { endLevel, key, playSound, input, mode } from "./site.js"
 import { state } from "./state.js"
@@ -126,13 +126,13 @@ export function calcAdjacentAdjacency(centerTileIdx, tile = editor.selectedTile,
 }
 
 function getJumpHeight(heightInTiles, yInertia, tileSize) {
-  const gravity = (0.7 * yInertia) + 0.5
+  const gravity = ((0.7 * yInertia) + 0.5) * (tileSize / 64)
   const heightInPixels = heightInTiles * tileSize
   return Math.sqrt(2 * gravity * heightInPixels)
 }
 
 function getJumpSpeed(jumpLengthInTiles, jumpForce, yInertia, tilesize) {
-  const gravity = (0.7 * yInertia) + 0.5
+  const gravity = ((0.7 * yInertia) + 0.5) * (tilesize / 64)
   let vy = -jumpForce
   let y = 0
   let frames = 0
@@ -172,24 +172,26 @@ function scanLevelOnPlay() {
   }
 }
 
-export function initPlatformer() {
-  toggleEditorUI(false)
-  player.tiles = new Uint16Array(editor.map.tiles)
-  player.toggledTile = true
+export function updatePhysicsConstants() {
+  const ratio = player.tileSize / 64
+  player.jump = getJumpHeight(player.jumpHeight + 0.3, player.yInertia, player.tileSize)
+  player.speed = getJumpSpeed(player.jumpWidth - 1, player.jump, player.yInertia, player.tileSize)
   player.x = editor.playerSpawn.x * player.tileSize
   player.y = editor.playerSpawn.y * player.tileSize
   player.w = player.tileSize
   player.h = player.tileSize
   player.hitboxW = 0.8 * player.tileSize
   player.hitboxH = 0.8 * player.tileSize
-  const ratio = player.tileSize / 64
-  player.jump = getJumpHeight(player.jumpHeight + 0.3, player.yInertia, player.tileSize)
-  player.speed = getJumpSpeed(player.jumpWidth - 1, player.jump, player.yInertia, player.tileSize)
   player.stopThreshold = 0.4 * ratio
-  player.x = editor.playerSpawn.x * player.tileSize
-  player.y = editor.playerSpawn.y * player.tileSize
+}
+
+export function initPlatformer() {
+  toggleEditorUI(false)
+  player.tiles = new Uint16Array(editor.map.tiles)
+  player.toggledTile = true
   player.lastCheckpointSpawn = { x: 0, y: 0 }
   player.collectedCoinList = []
+  updatePhysicsConstants()
   scanLevelOnPlay()
 }
 
@@ -484,10 +486,11 @@ function updatePhysics(dt) {
     player.controlMultiplier = 1
   }
 
-  player.vy += ((0.7 * player.yInertia) + 0.5) * dt
+  const gravity = ((0.7 * player.yInertia) + 0.5) * (player.tileSize / 64)
+  player.vy += gravity * dt
 
-  if (player.vy > player.tileSize * 0.8) {
-    player.vy = player.tileSize * 0.8
+  if (player.vy > player.tileSize * 0.6) {
+    player.vy = player.tileSize * 0.6
   }
 
   if (player.jumpBufferTimer > 0 && player.coyoteTimer > 0) {
@@ -505,11 +508,13 @@ function updatePhysics(dt) {
   const moveLeft = (key("left") && !key("right")) || input.joystickX < -0.1
   const moveRight = (key("right") && !key("left")) || input.joystickX > 0.1
 
+  const scaledXInertia = player.xInertia * (player.tileSize / 64)
+
   if (moveLeft) {
     activeInput = true
     const analog = input.joystickX > 0.1 ? Math.abs(input.joystickX) : 1
     if (player.vx > -player.speed * analog) {
-      player.vx -= player.xInertia * analog * currentControl * dt
+      player.vx -= scaledXInertia * analog * currentControl * dt
     } else {
       player.vx = -player.speed * analog
     }
@@ -518,7 +523,7 @@ function updatePhysics(dt) {
     activeInput = true
     const analog = input.joystickX > 0.1 ? Math.abs(input.joystickX) : 1
     if (player.vx < player.speed * analog) {
-      player.vx += player.xInertia * analog * currentControl * dt
+      player.vx += scaledXInertia * analog * currentControl * dt
     } else {
       player.vx = player.speed * analog
     }
@@ -526,10 +531,10 @@ function updatePhysics(dt) {
 
   if (!activeInput) {
     if (player.vx < 0) {
-      player.vx += player.xInertia * 0.45 * dt
+      player.vx += scaledXInertia * 0.45 * dt
       if (player.vx > 0) player.vx = 0
     } else if (player.vx > 0) {
-      player.vx -= player.xInertia * 0.45 * dt
+      player.vx -= scaledXInertia * 0.45 * dt
       if (player.vx < 0) player.vx = 0
     }
     if (Math.abs(player.vx) < player.stopThreshold) {

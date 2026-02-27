@@ -149,6 +149,10 @@ export function mobile() {
   return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0)
 }
 
+export function needsSmallerLevel() {
+  return window.screen.width < 1500 && window.screen.height < 700
+}
+
 export function addEventListeners() {
 
   window.addEventListener("beforeunload", (e) => {

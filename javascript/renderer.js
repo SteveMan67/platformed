@@ -4,7 +4,7 @@ import { loadPlayerSprites } from "./file-utils.js";
 import { enemies } from "./platformer.js";
 import { inEditor, input, mode, key } from "./site.js";
 import { state } from "./state.js";
-import { addTileSelection } from "./ui.js";
+import { addTileSelection, needsSmallerLevel } from "./ui.js";
 const { player, editor } = state
 
 export function drawMinimap() {
@@ -142,21 +142,22 @@ export async function updateTileset(path) {
 }
 export function getCameraCoords() {
   let x, y
-  if (player.x > player.cam.x + (canvas.width * 0.75)) {
+  const cameraBoxLR = needsSmallerLevel() ? 0.15 : 0.25
+  if (player.x > player.cam.x + (canvas.width * (0.5 + cameraBoxLR))) {
     // moving right
-    x = player.x - (canvas.width * 0.75)
-  } else if (player.x < player.cam.x + (canvas.width * 0.25)) {
+    x = player.x - (canvas.width * (0.5 + cameraBoxLR))
+  } else if (player.x < player.cam.x + (canvas.width * (0.5 - cameraBoxLR))) {
     // moving left
-    x = player.x - (canvas.width * 0.25)
+    x = player.x - (canvas.width * (0.5 - cameraBoxLR))
   } else {
     x = player.cam.x
   }
   if (player.y > player.cam.y + (canvas.height * 0.5)) {
     // moving down
     y = player.y - (canvas.height * 0.5)
-  } else if (player.y < player.cam.y + (canvas.height * 0.25)) {
+  } else if (player.y < player.cam.y + (canvas.height * cameraBoxLR)) {
     // moving up
-    y = player.y - (canvas.height * 0.25)
+    y = player.y - (canvas.height * cameraBoxLR)
   } else {
     y = player.cam.y
   }
