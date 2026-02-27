@@ -69,6 +69,7 @@ export let rightClick = false
 export let rDown = false;
 export let spaceDown = false;
 export let lastIdx;
+let handledBySelection
 
 function addTrigger(tx, ty) {
   player.triggers.push({
@@ -156,6 +157,7 @@ function updateBottomBar(tx, ty) {
 }
 
 export function undo() {
+  console.log(editor.history)
   const latestChange = editor.history[editor.history.length - 1]
   if (!latestChange) return
   if (latestChange.type == "replaceBlocks") {
@@ -166,6 +168,8 @@ export function undo() {
       editor.map.tiles[change.idx] = (change.before << 4) + rotation
       calcAdjacentAdjacency(change.idx, change.before)
     }
+    editor.future.push(editor.history.pop())
+  } else {
     editor.future.push(editor.history.pop())
   }
 }
@@ -229,7 +233,7 @@ export function liftSelection() {
   editor.history.push(historyItem)
 }
 
-function calculateAdjacenciesForIndexes(idxList) {
+export function calculateAdjacenciesForIndexes(idxList) {
   const uniqueIndexes = [...new Set(idxList)]
   for (const idx of idxList) {
     const tileId = editor.map.tiles[idx] >> 4
@@ -357,9 +361,9 @@ export function levelEditorLoop(dt) {
   }
 
   if (input.down) {
-    let handledBySelection = false
 
     if (!mouseDown) {
+      let handledBySelection = false
       mouseDown = true
 
       if (selection.active && isHoveringSelection) {
@@ -392,6 +396,7 @@ export function levelEditorLoop(dt) {
       } else if (selection.active) {
         if (selection.hasFloatingTiles) stampSelection()
         selection.active = false
+        handledBySelection = true
       }
     } else {
       // dragging mouse around
