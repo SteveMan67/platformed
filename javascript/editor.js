@@ -183,6 +183,67 @@ export function redo() {
   }
 }
 
+export function liftSelection() {
+  const { selection, map, selectionLayer } = editor
+
+  const minX = Math.min(selection.startX, selection.endX)
+  const maxX = Math.max(selection.startY, selection.endY)
+  const minY = Math.min(selection.startY, selection.endY)
+  const maxY = Math.max(selection.startY, selection.endY)
+  const liftedTiles = []
+  for (let y = minY; y <= maxY; y++) {
+    for (let x = minX; x <= maxX; x++) {
+      const idx = y * map.w + x
+      const tile = map.tiles[idx]
+
+      if (tile !== 0) {
+        selectionLayer[idx] = tile
+
+        liftedTiles.push({ idx: idx, before: tile >> 4, after: 0 })
+
+        map.tiles[idx] = 0
+      }
+    }
+  }
+  const historyItem = {
+    type: "replaceBlocks",
+    lift: true,
+    replacedBlocks: liftedTiles
+  }
+  selection.hasFloatingTiles = true
+  editor.history.push(historyItem)
+}
+
+function stampSelection() {
+  const { selection, map, selectionLayer } = editor
+
+  const changedTiles = []
+  for (let y = 0; y < map.h; y++) {
+    for (let x = 0; x < map.w; x++) {
+      const idx = y * map.w + x
+      const tile = selectionLayer[idx]
+
+      const newX = x + selection.offsetX
+      const newY = y + selection.offsetY
+
+      if (newX >= 0 && newX < map.w && newY >= 0 && newY < map.w) {
+        const newIdx = newY * map.w + newX;
+        const beforeTile = map.tiles[newIdx] >> 4
+
+        map.tiles[newIdx] = tile
+        changedTiles.push({ idx: idx, before: beforeTile, after: tile >> 4 })
+      }
+      selectionLayer[idx] = 0
+    }
+  }
+  const historyItem = {
+    type: "replaceBlocks",
+    stamp: true,
+    replacedBlocks: changedTiles
+  }
+  editor.history.push(historyItem)
+}
+
 export function levelEditorLoop(dt) {
   let timeScale = dt * 60
   const { map, cam, tileSize, tileset } = editor
@@ -210,32 +271,88 @@ export function levelEditorLoop(dt) {
 
   updateBottomBar(tx, ty)
 
-  if (input.down) {
-    const idx = ty * map.w + tx
-    if (!mouseDown || differentTile) {
-      if (tx >= 0 && tx < map.w && ty >= 0 && ty < map.h) {
-        const beforeTile = editor.map.tiles[idx] >> 4
-        placeTile(tx, ty)
-        const afterTile = editor.map.tiles[idx] >> 4
-        if (beforeTile !== afterTile) {
-          if (!mouseDown && !differentTile) {
-            const entry = { type: "replaceBlocks", replacedBlocks: [] }
-            editor.history.push(entry)
-            const replacedBlock = { idx: idx, before: beforeTile, after: afterTile }
-            editor.history[editor.history.length - 1]?.replacedBlocks.push(replacedBlock)
+  const shiftDown = input.keys["Shift"]
+  if (shiftDown) {
+    if (input.down) {
+      if (!mouseDown) {
+        mouseDown = true
+
+        const { selection } = editor
+        const minX = Math.min(selection.startX, selection.endX) + selection.offsetX
+        const maxX = Math.max(selection.startX, selection.endX) + selection.offsetX
+        const minY = Math.min(selection.startY, selection.endY) + selection.offsetY
+        const maxY = Math.min(selection.startY, selection.endY) + selection.offsetY
+
+        if (selection.active && tx >= minX && tx <= maxX && ty >= minY && ty <= maxX) {
+          if (!selection.hasFloatingTiles) {
+            liftSelection()
           }
+          selection.isDragging = true
+          selection.dragStartX = tx;
+          selection.dragStartY = ty;
+          selection.initialOffsetX = selection.offsetX
+          selection.initialOffsetY = selection.offsetY
+        } else {
+          if (selection.hasFloatingTiles) {
+            stampSelection()
+          }
+          selection.active = true
+          selection.isDragging = false
+          selection.hasFloatingTiles = false
+          selection.offsetX = 0
+          selection.offsetY = 0
+          selection.startX = tx
+          selection.startY = ty
+          selection.endX = tx + 1
+          selection.endY = ty + 1
+        }
+      } else {
+        const { selection } = editor
+        if (selection.isDragging) {
+          selection.offsetX = selection.initialOffsetX + (tx - selection.dragStartX)
+          selection.offsetY = selection.initialOffsetY + (ty - selection.dragStartY)
+        } else if (selection.active && !selection.hasFloatingTiles) {
+          selection.endX = tx
+          selection.endY = ty
         }
       }
-      mouseDown = true
-      differentTile = false
+    } else if (mouseDown) {
+      mouseDown = false
+      editor.selection.isDragging = false
     }
-    // so the user can drag
-    if (lastIdx !== idx) {
-      differentTile = true
+
+  } else {
+
+    if (editor.selection.hasFloatingTiles && !input.down) {
+      stampSelection()
     }
-  } else if (mouseDown == true) {
-    console.log(editor.history)
-    mouseDown = false
+    if (input.down) {
+      const idx = ty * map.w + tx
+      if (!mouseDown || differentTile) {
+        if (tx >= 0 && tx < map.w && ty >= 0 && ty < map.h) {
+          const beforeTile = editor.map.tiles[idx] >> 4
+          placeTile(tx, ty)
+          const afterTile = editor.map.tiles[idx] >> 4
+          if (beforeTile !== afterTile) {
+            if (!mouseDown && !differentTile) {
+              const entry = { type: "replaceBlocks", replacedBlocks: [] }
+              editor.history.push(entry)
+              const replacedBlock = { idx: idx, before: beforeTile, after: afterTile }
+              editor.history[editor.history.length - 1]?.replacedBlocks.push(replacedBlock)
+            }
+          }
+        }
+        mouseDown = true
+        differentTile = false
+      }
+      // so the user can drag
+      if (lastIdx !== idx) {
+        differentTile = true
+      }
+    } else if (mouseDown == true) {
+      console.log(editor.history)
+      mouseDown = false
+    }
   }
 
   if (input.rightClick) {
@@ -288,6 +405,23 @@ export function levelEditorLoop(dt) {
   ctx.fillRect(0, 0, canvas.width, canvas.height)
 
   drawMap()
+
+  if (editor.selection.active) {
+    ctx.strokeStyle = 'white'
+    ctx.setLineDash([5, 5])
+    ctx.lineWidth = 2
+
+    const startX = Math.min(editor.selection.startX, editor.selection.endX) + editor.selection.offsetX
+    const startY = Math.min(editor.selection.startY, editor.selection.endY) + editor.selection.offsetY
+    const width = Math.abs(editor.selection.endX - editor.selection.startX) + 1
+    const height = Math.abs(editor.selection.endY - editor.selection.startY) + 1
+
+    const scrX = (startX * tileSize) - cam.x
+    const scrY = (startY * tileSize) - cam.y
+
+    ctx.strokeRect(scrX, scrY, width * tileSize, height * tileSize)
+    ctx.setLineDash([])
+  }
 
   const cursorScrX = (tx * tileSize) - cam.x
   const cursorScrY = (ty * tileSize) - cam.y

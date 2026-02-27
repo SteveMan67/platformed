@@ -80,6 +80,48 @@ export function drawMap(tileSize = editor.tileSize, cam = editor.cam) {
       }
     }
   }
+
+  if (editor.selection.hasFloatingTiles) {
+    for (let y = 0; y < editor.map.h; y++) {
+      for (let x = 0; x < editor.map.w; x++) {
+        const raw = editor.selectionLayer[y * editor.map.w + x]
+        if (raw === 0) continue
+
+        const tileId = raw >> 4
+        const renderX = x + editor.selection.offsetX
+        const renderY = y + editor.selection.offsetY
+
+        const scrX = Math.floor((renderX * tileSize) - cam.x)
+        const scrY = Math.floor((renderY * tileSize) - cam.y)
+        const selectedTile = editor.tileset[tileId];
+        let showTile = true;
+        if (editor.tileset[tileId] && editor.tileset[tileId].mechanics && editor.tileset[tileId].mechanics.includes("hidden") && mode == 'play') {
+          showTile = false;
+        }
+        if (editor.tileset[tileId] && editor.tileset[tileId].mechanics && editor.tileset[tileId].mechanics.includes("swapTrigger1") && player.toggledTile && mode == 'play') {
+          showTile = false
+        }
+        if (editor.tileset[tileId] && editor.tileset[tileId].mechanics && editor.tileset[tileId].mechanics.includes("swapTrigger2") && !player.toggledTile && mode == 'play') {
+          showTile = false
+        }
+        if (player.collectedCoinList.includes(y * editor.map.w + x) && mode === 'play') {
+          showTile = false;
+        }
+        if (selectedTile && selectedTile.type == 'enemy' && mode == 'play') {
+          showTile = false;
+        }
+        if (selectedTile && selectedTile.type == 'adjacency' && showTile) {
+          ctx.drawImage(selectedTile.images[raw & 15], scrX, scrY, tileSize, tileSize);
+        } else if (selectedTile && selectedTile.type == "rotation" && showTile) {
+          ctx.drawImage(selectedTile.images[raw & 15], scrX, scrY, tileSize, tileSize);
+        } else if (selectedTile && selectedTile.type == 'standalone' && showTile) {
+          ctx.drawImage(selectedTile.image, scrX, scrY, tileSize, tileSize);
+        } else if (selectedTile && selectedTile.type == 'enemy' && showTile) {
+          ctx.drawImage(selectedTile.image, scrX, scrY, tileSize, tileSize);
+        }
+      }
+    }
+  }
 }
 
 export const canvas = document.querySelector("canvas");
