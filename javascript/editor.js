@@ -69,6 +69,8 @@ export let rightClick = false
 export let rDown = false;
 export let spaceDown = false;
 export let lastIdx;
+let handledBySelection = false
+let undidSelection = false
 
 function addTrigger(tx, ty) {
   player.triggers.push({
@@ -156,6 +158,7 @@ function updateBottomBar(tx, ty) {
 }
 
 export function undo() {
+  console.log(editor.history)
   const latestChange = editor.history[editor.history.length - 1]
   if (!latestChange) return
   if (latestChange.type == "replaceBlocks") {
@@ -166,6 +169,8 @@ export function undo() {
       editor.map.tiles[change.idx] = (change.before << 4) + rotation
       calcAdjacentAdjacency(change.idx, change.before)
     }
+    editor.future.push(editor.history.pop())
+  } else {
     editor.future.push(editor.history.pop())
   }
 }
@@ -227,9 +232,10 @@ export function liftSelection() {
   }
   selection.hasFloatingTiles = true
   editor.history.push(historyItem)
+  drawMinimap()
 }
 
-function calculateAdjacenciesForIndexes(idxList) {
+export function calculateAdjacenciesForIndexes(idxList) {
   const uniqueIndexes = [...new Set(idxList)]
   for (const idx of idxList) {
     const tileId = editor.map.tiles[idx] >> 4
@@ -291,6 +297,7 @@ function stampSelection() {
   selection.active = false
   editor.selectionLayer = new Uint16Array(editor.map.w * editor.map.h)
   editor.history.push(historyItem)
+  drawMinimap()
 }
 
 export function levelEditorLoop(dt) {
@@ -357,10 +364,11 @@ export function levelEditorLoop(dt) {
   }
 
   if (input.down) {
-    let handledBySelection = false
+    handledBySelection = false
 
     if (!mouseDown) {
       mouseDown = true
+      undidSelection = false
 
       if (selection.active && isHoveringSelection) {
         // hovering over selection, don't require shift key
@@ -392,6 +400,8 @@ export function levelEditorLoop(dt) {
       } else if (selection.active) {
         if (selection.hasFloatingTiles) stampSelection()
         selection.active = false
+        handledBySelection = true
+        undidSelection = true
       }
     } else {
       // dragging mouse around
@@ -419,7 +429,7 @@ export function levelEditorLoop(dt) {
       }
     }
 
-    if (!handledBySelection && !shiftDown) {
+    if (!handledBySelection && !shiftDown && !undidSelection) {
       const idx = ty * map.w + tx
       if (!mouseDown || differentTile) {
         if (tx >= 0 && tx < map.w && ty >= 0 && ty < map.h) {
