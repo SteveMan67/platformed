@@ -69,7 +69,8 @@ export let rightClick = false
 export let rDown = false;
 export let spaceDown = false;
 export let lastIdx;
-let handledBySelection
+let handledBySelection = false
+let undidSelection = false
 
 function addTrigger(tx, ty) {
   player.triggers.push({
@@ -231,6 +232,7 @@ export function liftSelection() {
   }
   selection.hasFloatingTiles = true
   editor.history.push(historyItem)
+  drawMinimap()
 }
 
 export function calculateAdjacenciesForIndexes(idxList) {
@@ -295,6 +297,7 @@ function stampSelection() {
   selection.active = false
   editor.selectionLayer = new Uint16Array(editor.map.w * editor.map.h)
   editor.history.push(historyItem)
+  drawMinimap()
 }
 
 export function levelEditorLoop(dt) {
@@ -361,10 +364,11 @@ export function levelEditorLoop(dt) {
   }
 
   if (input.down) {
+    handledBySelection = false
 
     if (!mouseDown) {
-      let handledBySelection = false
       mouseDown = true
+      undidSelection = false
 
       if (selection.active && isHoveringSelection) {
         // hovering over selection, don't require shift key
@@ -397,6 +401,7 @@ export function levelEditorLoop(dt) {
         if (selection.hasFloatingTiles) stampSelection()
         selection.active = false
         handledBySelection = true
+        undidSelection = true
       }
     } else {
       // dragging mouse around
@@ -424,7 +429,7 @@ export function levelEditorLoop(dt) {
       }
     }
 
-    if (!handledBySelection && !shiftDown) {
+    if (!handledBySelection && !shiftDown && !undidSelection) {
       const idx = ty * map.w + tx
       if (!mouseDown || differentTile) {
         if (tx >= 0 && tx < map.w && ty >= 0 && ty < map.h) {

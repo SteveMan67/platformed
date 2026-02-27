@@ -492,6 +492,39 @@ export function addEventListeners() {
       input.click()
     } else if (e.key.toLowerCase == 'r') {
       killPlayer()
+    } else if (e.key == 'f' && editor.selection.active) {
+      const { selection } = editor
+      // fill selection
+
+      const minX = Math.min(selection.startX, selection.endX)
+      const maxX = Math.max(selection.startX, selection.endX)
+      const minY = Math.min(selection.startY, selection.endY)
+      const maxY = Math.max(selection.startY, selection.endY)
+
+      const changedIndexes = []
+      const changedBlocks = []
+      for (let y = minY; y <= maxY; y++) {
+        for (let x = minX; x <= maxX; x++) {
+          const idx = y * editor.map.w + x
+          let beforeTile
+          if (selection.hasFloatingTiles) {
+            beforeTile = editor.selectionLayer[idx] >> 4
+            editor.selectionLayer[idx] = editor.selectedTile << 4
+          } else {
+            beforeTile = editor.map.tiles[idx] >> 4
+            editor.map.tiles[idx] = editor.selectedTile << 4
+          }
+          changedBlocks.push({ idx: idx, before: beforeTile, after: editor.selectedTile >> 4 })
+          changedIndexes.push(idx)
+        }
+      }
+      calculateAdjacenciesForIndexes(changedIndexes)
+      const historyEntry = {
+        type: "replaceBlocks",
+        replacedBlocks: changedBlocks
+      }
+      editor.history.push(historyEntry)
+      selection.active = false
     }
     if ((e.ctrlKey || e.metaKey) && e.code == "KeyZ") {
       console.log("undo")
