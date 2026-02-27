@@ -456,7 +456,6 @@ export function addEventListeners() {
     } else if (e.key.toLowerCase == 'r') {
       killPlayer()
     }
-    console.log(e)
     if ((e.ctrlKey || e.metaKey) && e.code == "KeyZ") {
       console.log("undo")
       if (e.shiftKey) {

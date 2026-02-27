@@ -54,15 +54,14 @@ export function calculateAdjacencies(tiles, w, h, tileset = editor.tileset) {
 }
 
 export function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles, tileset = editor.tileset, w = editor.width, h = editor.height) {
-  // calculate the adjacency for a given tile when it's placed
-  // bug: walls other than the top and bottom don't work
+  // calculate the adjacency for a given tile 
   let variant = 0
 
   tileId = (typeof tileId == 'number') ? tileId : tiles[tileIdx] >> 4
   if (tileId == 0) return 0
 
   if (tileset[tileId] && tileset[tileId].type == 'rotation') {
-    return tileId << 4
+    return tiles[tileIdx]
   }
 
   const getNeighborId = (idx) => {

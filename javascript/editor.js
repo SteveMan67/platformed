@@ -162,7 +162,8 @@ export function undo() {
     if (!latestChange.replacedBlocks) return
     for (const change of latestChange.replacedBlocks) {
       if (change.after == undefined || change.before == undefined || change.idx == undefined) continue
-      editor.map.tiles[change.idx] = change.before << 4
+      const rotation = change.rotation ? change.rotation : 0
+      editor.map.tiles[change.idx] = (change.before << 4) + rotation
       calcAdjacentAdjacency(change.idx, change.before)
     }
     editor.future.push(editor.history.pop())
@@ -187,7 +188,7 @@ export function liftSelection() {
   const { selection, map, selectionLayer } = editor
 
   const minX = Math.min(selection.startX, selection.endX)
-  const maxX = Math.max(selection.startY, selection.endY)
+  const maxX = Math.max(selection.startX, selection.endX)
   const minY = Math.min(selection.startY, selection.endY)
   const maxY = Math.max(selection.startY, selection.endY)
   const liftedTiles = []
@@ -198,8 +199,8 @@ export function liftSelection() {
 
       if (tile !== 0) {
         selectionLayer[idx] = tile
-
-        liftedTiles.push({ idx: idx, before: tile >> 4, after: 0 })
+        const rotation = editor.tileset[tile >> 4] && editor.tileset[tile >> 4].type == "rotation" ? tile & 3 : 0
+        liftedTiles.push({ idx: idx, before: tile >> 4, after: 0, rotation: rotation })
 
         map.tiles[idx] = 0
       }
@@ -214,10 +215,19 @@ export function liftSelection() {
   editor.history.push(historyItem)
 }
 
+function calculateAdjacenciesForIndexes(idxList) {
+  const uniqueIndexes = [...new Set(idxList)]
+  for (const idx of idxList) {
+    const tileId = editor.map.tiles[idx] >> 4
+    calcAdjacentAdjacency(idx, tileId)
+  }
+}
+
 function stampSelection() {
   const { selection, map, selectionLayer } = editor
 
   const changedTiles = []
+  const changedIndexes = []
   for (let y = 0; y < map.h; y++) {
     for (let x = 0; x < map.w; x++) {
       const idx = y * map.w + x
@@ -232,16 +242,23 @@ function stampSelection() {
 
         if (selectionLayer[idx] !== 0) {
           map.tiles[newIdx] = tile
-          changedTiles.push({ idx: newIdx, before: beforeTile, after: tile >> 4 })
+          changedIndexes.push(newIdx)
+          changedIndexes.push(idx)
+          const rotation = editor.tileset[tile >> 4] && editor.tileset[tile >> 4].type == "rotation" ? tile & 3 : 0
+          changedTiles.push({ idx: newIdx, before: beforeTile, after: tile >> 4, rotation: rotation })
         }
       }
       selectionLayer[idx] = 0
     }
   }
+  calculateAdjacenciesForIndexes(changedIndexes)
   const historyItem = {
     type: "replaceBlocks",
     replacedBlocks: changedTiles
   }
+  selection.hasFloatingTiles = false
+  selection.active = false
+  editor.selectionLayer = new Uint16Array(editor.map.w * editor.map.h)
   editor.history.push(historyItem)
 }
 
@@ -273,62 +290,68 @@ export function levelEditorLoop(dt) {
   updateBottomBar(tx, ty)
 
   const shiftDown = input.keys["Shift"]
-  if (shiftDown) {
-    if (input.down) {
-      if (!mouseDown) {
-        mouseDown = true
+  const { selection } = editor
 
-        const { selection } = editor
-        const minX = Math.min(selection.startX, selection.endX) + selection.offsetX
-        const maxX = Math.max(selection.startX, selection.endX) + selection.offsetX
-        const minY = Math.min(selection.startY, selection.endY) + selection.offsetY
-        const maxY = Math.min(selection.startY, selection.endY) + selection.offsetY
-        console.log(minX, maxX, minY, maxY)
+  let isHoveringSelection = false
+  if (selection.active) {
+    const minX = Math.min(selection.startX, selection.endX) + selection.offsetX
+    const maxX = Math.max(selection.startX, selection.endX) + selection.offsetX
+    const minY = Math.min(selection.startY, selection.endY) + selection.offsetY
+    const maxY = Math.max(selection.startY, selection.endY) + selection.offsetY
+    isHoveringSelection = tx >= minX && tx <= maxX && ty >= minY && ty <= maxY
+  }
 
-        if (selection.active && tx >= minX && tx <= maxX && ty >= minY && ty <= maxY) {
-          if (!selection.hasFloatingTiles) {
-            liftSelection()
-          }
-          selection.isDragging = true
-          selection.dragStartX = tx;
-          selection.dragStartY = ty;
-          selection.initialOffsetX = selection.offsetX
-          selection.initialOffsetY = selection.offsetY
-        } else {
-          if (selection.hasFloatingTiles) {
-            stampSelection()
-          }
-          selection.active = true
-          selection.isDragging = false
-          selection.hasFloatingTiles = false
-          selection.offsetX = 0
-          selection.offsetY = 0
-          selection.startX = tx
-          selection.startY = ty
-          selection.endX = tx + 1
-          selection.endY = ty + 1
+  if (input.down) {
+    let handledBySelection = false
+
+    if (!mouseDown) {
+      mouseDown = true
+
+      if (selection.active && isHoveringSelection) {
+        // hovering over selection, don't require shift key
+        if (!selection.hasFloatingTiles) {
+          liftSelection()
         }
-      } else {
-        const { selection } = editor
-        if (selection.isDragging) {
-          selection.offsetX = selection.initialOffsetX + (tx - selection.dragStartX)
-          selection.offsetY = selection.initialOffsetY + (ty - selection.dragStartY)
-        } else if (selection.active && !selection.hasFloatingTiles) {
-          selection.endX = tx
-          selection.endY = ty
+        selection.isDragging = true
+        selection.dragStartX = tx;
+        selection.dragStartY = ty;
+        selection.initialOffsetX = selection.offsetX
+        selection.initialOffsetY = selection.offsetY
+        handledBySelection = true
+
+      } else if (shiftDown) {
+        // selecting, draw new box
+        if (selection.hasFloatingTiles) {
+          stampSelection()
         }
+        selection.active = true
+        selection.isDragging = false
+        selection.hasFloatingTiles = false
+        selection.offsetX = 0
+        selection.offsetY = 0
+        selection.startX = tx
+        selection.startY = ty
+        selection.endX = tx
+        selection.endY = ty
+        handledBySelection = true
+      } else if (selection.active) {
+        if (selection.hasFloatingTiles) stampSelection()
+        selection.active = false
       }
-    } else if (mouseDown) {
-      mouseDown = false
-      editor.selection.isDragging = false
+    } else {
+      // dragging mouse around
+      if (selection.isDragging) {
+        selection.offsetX = selection.initialOffsetX + (tx - selection.dragStartX)
+        selection.offsetY = selection.initialOffsetY + (ty - selection.dragStartY)
+        handledBySelection = true
+      } else if (selection.active && !selection.hasFloatingTiles) {
+        selection.endX = tx
+        selection.endY = ty
+        handledBySelection = true
+      }
     }
 
-  } else {
-
-    if (editor.selection.hasFloatingTiles && !input.down) {
-      stampSelection()
-    }
-    if (input.down) {
+    if (!handledBySelection && !shiftDown) {
       const idx = ty * map.w + tx
       if (!mouseDown || differentTile) {
         if (tx >= 0 && tx < map.w && ty >= 0 && ty < map.h) {
@@ -351,10 +374,12 @@ export function levelEditorLoop(dt) {
       if (lastIdx !== idx) {
         differentTile = true
       }
-    } else if (mouseDown == true) {
-      console.log(editor.history)
-      mouseDown = false
     }
+  } else if (mouseDown) {
+    if (editor.selection.isDragging) {
+      editor.selection.isDragging = false
+    }
+    mouseDown = false
   }
 
   if (input.rightClick) {
