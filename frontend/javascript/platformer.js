@@ -181,7 +181,7 @@ export function updatePhysicsConstants() {
   player.w = player.tileSize
   player.h = player.tileSize
   player.hitboxW = 0.8 * player.tileSize
-  player.hitboxH = 0.8 * player.tileSize
+  player.hitboxH = 0.95 * player.tileSize
   player.stopThreshold = 0.4 * ratio
 }
 
@@ -569,7 +569,7 @@ function updatePhysics(dt) {
       player.grounded = true
       player.coyoteTimer = player.coyoteTime
     } else if (player.vy < 0) {
-      player.y = (Math.floor(player.y / player.tileSize) + 1) * player.tileSize + 0.01
+      player.y = ((Math.floor((player.y + offY) / player.tileSize) + 1) * player.tileSize) - offY + 0.01
     }
     player.vy = 0
   } else {
@@ -614,7 +614,7 @@ function updatePhysics(dt) {
       player.lastWallSide = 0
       player.wallCoyoteTimer = 0
       player.airControl = true
-      limitControl(20, 0.0)
+      limitControl(40, 0.0)
       playSound("/assets/audio/jump.wav", 0.1)
     } else if (player.wallJump == "up") {
       player.vx = player.lastWallSide == -1 ? player.speed * 1.2 : -player.speed * 1.2
