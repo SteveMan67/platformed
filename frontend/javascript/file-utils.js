@@ -1,7 +1,8 @@
 import { uploadLevel } from "./api.js";
-import { calculateAdjacencies } from "./platformer.js";
+import { calculateAdjacencies, initPlatformer, updatePhysicsConstants } from "./platformer.js";
 import { updateTileset } from "./renderer.js";
 import { state } from "./state.js"
+import { needsSmallerLevel } from "./ui.js";
 
 const { user, player, editor } = state
 
@@ -26,7 +27,14 @@ export async function loadMapFromData(json) {
     player.bouncePadHeight = json.bouncePadHeight;
   }
   if (json.zoom) {
-    player.tileSize = json.zoom;
+    if (needsSmallerLevel()) {
+      console.log(json.zoom)
+      player.tileSize = Math.round(Math.max(json.zoom / 1.5, 40))
+      updatePhysicsConstants()
+    }
+  } else if (needsSmallerLevel()) {
+    player.tileSize = 45
+    updatePhysicsConstants()
   }
   if (json.tilesetPath) {
     await updateTileset(json.tilesetPath)
