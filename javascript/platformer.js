@@ -475,7 +475,6 @@ function updatePhysics(dt) {
   if (key("up") || input.jumpButton) {
     if (!lastJumpInput) {
       player.jumpBufferTimer = player.jumpBuffer;
-      player.wallCoyoteTimer = 0
       lastJumpInput = true;
       isJumping = true;
     }
@@ -607,20 +606,22 @@ function updatePhysics(dt) {
   if (player.grounded) limitControl(0, 1)
 
   // walljump
-  if (!player.grounded && player.wallJump !== "none" && key("any") && player.jumpBufferTimer !== 0 && !player.wallCoyoteTimer == 0) {
+  if (!player.grounded && player.wallJump !== "none" && key("any") && player.jumpBufferTimer > 0 && player.wallCoyoteTimer > 0) {
 
     if (player.wallJump == "off") {
-      if (player.lastWallSide == 1 && (key("up") || input.jumpButton)) {
+      if (player.lastWallSide == 1 && (key("right") || key("up") || input.jumpButton)) {
         player.vx = -player.speed
-      } else if (player.lastWallSide == -1 && key("up") || input.jumpButton) {
+        player.x -= 2.1
+      } else if (player.lastWallSide == -1 && (key("left") || key("up") || input.jumpButton)) {
         player.vx = player.speed
+        player.x += 2.1
       }
       player.vy = -player.jump
       player.jumpBufferTimer = 0
       player.lastWallSide = 0
       player.wallCoyoteTimer = 0
       player.airControl = true
-      limitControl(40, 0.0)
+      limitControl(22, 0.0)
       playSound("/assets/audio/jump.wav", 0.1)
     } else if (player.wallJump == "up") {
       player.vx = player.lastWallSide == -1 ? player.speed * 1.2 : -player.speed * 1.2
