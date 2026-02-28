@@ -374,7 +374,6 @@ export function addEventListeners() {
 
   let lastWheelTime = 0
   document.addEventListener('wheel', (e) => {
-    console.log(e)
     if (e.ctrlKey || e.metaKey) {
       e.preventDefault()
       // zoom in and out, ctrl+scroll

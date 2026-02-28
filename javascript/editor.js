@@ -6,7 +6,7 @@ import { toggleTriggerDialog } from "./ui.js"
 const { editor, player } = state
 
 export function zoomMap(zoomDirectionIsIn, amount) {
-  const currentZoom = editor.tileSize
+  const oldTileSize = editor.tileSize
   let newZoom = editor.tileSize
   if (zoomDirectionIsIn) {
     newZoom += amount
@@ -16,9 +16,13 @@ export function zoomMap(zoomDirectionIsIn, amount) {
   const smallestDimension = canvas.width > canvas.height ? "height" : "width"
   const wh = smallestDimension == "height" ? canvas.height : canvas.width
   const twh = smallestDimension == "height" ? editor.map.h : editor.map.w
-  console.log(wh, twh)
 
   newZoom = Math.round(Math.max(wh / twh, Math.min(newZoom, 100)))
+
+  const scaleRatio = newZoom / oldTileSize
+
+  editor.cam.x = (input.x + editor.cam.x) * scaleRatio - input.x
+  editor.cam.y = (input.y + editor.cam.y) * scaleRatio - input.y
   editor.tileSize = newZoom
   drawMinimap()
 }
