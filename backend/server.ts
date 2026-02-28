@@ -223,6 +223,11 @@ const server = Bun.serve({
 
         const returnedJson = level[0]
         returnedJson.owned = returnedJson.owner == authentication?.user || false
+
+        const username = await sql`select username from levels where id = ${returnedJson.owner}`
+        if (username[0]) {
+          returnedJson.username = username[0].username
+        }
         return new Response(JSON.stringify(returnedJson), withCors({ headers: { "Content-Type": "application/json" } }, CORS))
       } else {
         return new Response(JSON.stringify({ error: "Must specify a level id with the levelId parameter" }), withCors({ status: 404, headers: { "Content-Type": "application/json" } }, CORS))
