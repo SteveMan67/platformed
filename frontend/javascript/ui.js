@@ -374,6 +374,16 @@ export function addEventListeners() {
 
   let lastWheelTime = 0
   document.addEventListener('wheel', (e) => {
+    console.log(e)
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault()
+      // zoom in and out, ctrl+scroll
+      if (e.deltaY < 0) {
+        zoomMap(true, 5)
+      } else if (e.deltaY > 0) {
+        zoomMap(false, 5)
+      }
+    }
     const now = Date.now()
     if (now - lastWheelTime < 150) return
     if (e.deltaY < 0) {
@@ -383,7 +393,7 @@ export function addEventListeners() {
       scrollCategoryTiles(false)
       lastWheelTime = now
     }
-  })
+  }, { passive: false })
 
   window.addEventListener('resize', () => {
     updateCanvasSize()
@@ -391,11 +401,11 @@ export function addEventListeners() {
   })
 
   zoomIn.addEventListener('click', () => {
-    zoomMap(false)
+    zoomMap(true, 10)
   })
 
   zoomOut.addEventListener('click', () => {
-    zoomMap(true)
+    zoomMap(false, 10)
   })
 
   play.addEventListener('click', () => {
