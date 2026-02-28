@@ -107,7 +107,6 @@ export function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles, ti
 export function calcAdjacentAdjacency(idx, tile = editor.selectedTile, tiles = editor.map.tiles) {
   if (editor.tileset[tile] && !(editor.tileset[tile].triggerAdjacency)) {
     tiles[idx] = tile << 4
-    return
   }
   const centerVal = calculateAdjacency(idx, tile, tiles)
   tiles[idx] = centerVal
@@ -534,25 +533,6 @@ function updatePhysics(dt) {
       if (player.vx < targetVx) player.vx = targetVx
     }
   }
-
-  // if (moveLeft) {
-  //   activeInput = true
-  //   const analog = input.joystickX > 0.1 ? Math.abs(input.joystickX) : 1
-  //   if (player.vx > -player.speed * analog) {
-  //     player.vx -= scaledXInertia * analog * currentControl * dt
-  //   } else {
-  //     player.vx = -player.speed * analog
-  //   }
-  // }
-  // if (moveRight) {
-  //   activeInput = true
-  //   const analog = input.joystickX > 0.1 ? Math.abs(input.joystickX) : 1
-  //   if (player.vx < player.speed * analog) {
-  //     player.vx += scaledXInertia * analog * currentControl * dt
-  //   } else {
-  //     player.vx = player.speed * analog
-  //   }
-  // }
 
   if (!activeInput) {
     if (player.vx < 0) {
