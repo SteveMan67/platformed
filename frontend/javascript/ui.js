@@ -130,7 +130,6 @@ function getOptionHTML(stepData) {
   }
   if (stepData.type == "updateBlock") {
     let tileOptions = ''
-    console.log(stepData)
     for (const tile of editor.tileset) {
       tileOptions += `<option value=${tile.id} ${tile.id == stepData.block ? 'selected' : ''}>${tile.name}</option>`
     }
@@ -569,6 +568,32 @@ export function addEventListeners() {
 
 }
 
+
+export function pollGamepad() {
+  const gamepads = navigator.getGamepads ? navigator.getGamepads() : []
+  if (!gamepads) return
+
+  const gp = gamepads[0]
+  if (!gp) return
+
+  input.keys[" "] = gp.buttons[0]?.pressed
+  const deadzone = 0.05
+  const outerDeadzone = 0.95
+  let rawX = gp.axes[0]
+
+  if (Math.abs(rawX) > deadzone) {
+    let normalized = Math.sign(rawX) * ((Math.abs(rawX) - deadzone) / (1 - deadzone))
+    if (Math.abs(normalized) > outerDeadzone) {
+      input.joystickX = Math.sign(normalized)
+    } else {
+      input.joystickX = normalized
+    }
+    input.joystickX = Math.sign(rawX) * ((Math.abs(rawX) - deadzone) / (1 - deadzone))
+  } else {
+    input.joystickX = 0
+  }
+
+}
 
 export function setInputEventListeners() {
   const menuElement = document.querySelector(".overlay")

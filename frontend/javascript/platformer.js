@@ -1,4 +1,4 @@
-import { toggleEditorUI, sortByCategory, needsSmallerLevel } from "./ui.js"
+import { toggleEditorUI, sortByCategory, needsSmallerLevel, pollGamepad } from "./ui.js"
 import { canvas, ctx, drawEnemies, drawMap, drawPlayer, getCameraCoords } from "./renderer.js"
 import { endLevel, key, playSound, input, mode } from "./site.js"
 import { state } from "./state.js"
@@ -104,15 +104,19 @@ export function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles, ti
 
 }
 
-export function calcAdjacentAdjacency(centerTileIdx, tile = editor.selectedTile, tiles = editor.map.tiles) {
-  const centerVal = calculateAdjacency(centerTileIdx, tile, tiles)
-  tiles[centerTileIdx] = centerVal
+export function calcAdjacentAdjacency(idx, tile = editor.selectedTile, tiles = editor.map.tiles) {
+  if (editor.tileset[tile] && !(editor.tileset[tile].triggerAdjacency)) {
+    tiles[idx] = tile << 4
+    return
+  }
+  const centerVal = calculateAdjacency(idx, tile, tiles)
+  tiles[idx] = centerVal
   const w = editor.width
   const neighbors = []
-  if (centerTileIdx - w >= 0) neighbors.push(centerTileIdx - w)
-  if ((centerTileIdx % w) < w - 1 && centerTileIdx + 1 < tiles.length) neighbors.push(centerTileIdx + 1)
-  if ((centerTileIdx % w) > 0 && centerTileIdx - 1 >= 0) neighbors.push(centerTileIdx - 1)
-  if (centerTileIdx + w < tiles.length) neighbors.push(centerTileIdx + w)
+  if (idx - w >= 0) neighbors.push(idx - w)
+  if ((idx % w) < w - 1 && idx + 1 < tiles.length) neighbors.push(idx + 1)
+  if ((idx % w) > 0 && idx - 1 >= 0) neighbors.push(idx - 1)
+  if (idx + w < tiles.length) neighbors.push(idx + w)
 
   neighbors.forEach(n => {
     const tileId = tiles[n] >> 4
@@ -296,6 +300,7 @@ function handleTriggers(tx, ty) {
     }
     if (step.type == "updateBlock") {
       if (step.x == undefined || step.y == undefined || step.block == undefined) return
+      console.log(step)
       const idx = step.y * editor.width + step.x
       calcAdjacentAdjacency(idx, step.block, player.tiles)
     }
@@ -710,6 +715,7 @@ function updateEnemyPhysics(dt) {
 }
 
 export function platformerLoop(dt) {
+  pollGamepad()
   let timeScale = dt * 60
 
   player.dissipations.forEach(dissipation => {
