@@ -66,7 +66,7 @@ export function initEditor() {
 export let mouseDown = false;
 let differentTile = false
 export let rightClick = false
-export let rDown = false;
+let rDown = false;
 export let spaceDown = false;
 export let lastIdx;
 let handledBySelection = false
@@ -476,7 +476,47 @@ export function levelEditorLoop(dt) {
     rightClick = false
   }
 
-  if (input.keys['r']) {
+  if (input.keys['r'] && selection.active && !rDown) {
+    const minX = Math.min(selection.startX, selection.endX)
+    const maxX = Math.max(selection.startX, selection.endX)
+    const minY = Math.min(selection.startY, selection.endY)
+    const maxY = Math.max(selection.startY, selection.endY)
+
+    const changedBlocks = []
+    for (let y = minY; y <= maxY; y++) {
+      for (let x = minX; x <= maxX; x++) {
+        const idx = y * editor.map.w + x
+        let beforeTile
+        let beforeRotation = 0
+        let afterRotation = 0
+        if (selection.hasFloatingTiles) {
+          const raw = editor.selectionLayer[idx]
+          if (raw !== 0 && editor.tileset[raw >> 4] && editor.tileset[raw >> 4] && editor.tileset[raw >> 4].type == "rotation") {
+            beforeRotation = raw & 3
+            afterRotation = ((raw & 3) + 1) % 4
+            editor.selectionLayer[idx] = (editor.selectionLayer[idx] >> 4 << 4) + afterRotation
+            changedBlocks.push({ idx: idx, beforeRotation: beforeRotation, afterRotation: afterRotation })
+          }
+        } else {
+          const raw = editor.map.tiles[idx]
+          changedBlocks.push({ idx: idx, before: beforeTile, after: editor.selectedTile >> 4 })
+          if (raw !== 0 && editor.tileset[raw >> 4] && editor.tileset[raw >> 4] && editor.tileset[raw >> 4].type == "rotation") {
+            beforeRotation = raw & 3
+            afterRotation = ((raw & 3) + 1) % 4
+            editor.map.tiles[idx] = (editor.map.tiles[idx] >> 4 << 4) + afterRotation
+            changedBlocks.push({ idx: idx, beforeRotation: beforeRotation, afterRotation: afterRotation })
+          }
+        }
+      }
+    }
+    const historyEntry = {
+      type: "replaceBlocks",
+      replacedBlocks: changedBlocks
+    }
+    editor.history.push(historyEntry)
+    drawMinimap()
+    rDown = true
+  } else if (input.keys["r"]) {
     const idx = ty * map.w + tx
     if (!rDown) {
       if (tx >= 0 && tx < map.w && ty >= 0 && ty < map.h) {

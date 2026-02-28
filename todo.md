@@ -4,8 +4,4 @@
   - add `ctrl+<scroll>`
 - Trackpad moving around
   - two fingers move to move around the map
-
-## Selection Stuff
-- Add fill feature 
-  - `f` when `selection.active` is true
-- Delete all with backspace or del
+- Gamepad support

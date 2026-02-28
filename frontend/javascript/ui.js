@@ -473,6 +473,7 @@ export function addEventListeners() {
         }
         editor.history.push(historyEntry)
         selection.active = false
+        drawMinimap()
       } else {
         toggleErase()
       }
@@ -524,7 +525,7 @@ export function addEventListeners() {
         replacedBlocks: changedBlocks
       }
       editor.history.push(historyEntry)
-      selection.active = false
+      drawMinimap()
     }
     if ((e.ctrlKey || e.metaKey) && e.code == "KeyZ") {
       console.log("undo")
