@@ -35,9 +35,7 @@ async function addLevels(levels) {
         </div>
       </div>
       <div class="tags-and-plays">
-        <div class="tags">
-          ${tagsHtml}
-        </div>
+        <p class="username">${level.username}</p>
         <div class="plays">
           <p class="plays-finishes"><span class="plays">${level.total_plays}</span>/<span class="finishes">${level.finished_plays}</span>
           </p>
