@@ -4,6 +4,7 @@ import { state } from "./state.js"
 import { canvas, drawMinimap, updateCanvasSize, updateTileset } from "./renderer.js"
 import { toggleErase, changeSelectedTile, zoomMap, scrollCategoryTiles, undo, redo, calculateAdjacenciesForIndexes } from "/javascript/editor.js"
 import { killPlayer } from "./platformer.js"
+import { stampSelection } from "./editor.js"
 const { editor, player } = state
 
 export function toggleEditorUI(on) {
@@ -163,7 +164,7 @@ export function addEventListeners() {
   })
 
   // page event listeners
-  const menuElement = document.querySelector(".menu")
+  const menuElement = document.querySelector(".overlay")
   const eraserButton = document.querySelector('.eraser')
   const saveButton = document.querySelector('.save')
   const importButton = document.querySelector('.import')
@@ -286,7 +287,7 @@ export function addEventListeners() {
         const rotationEl = stepEl.querySelector('.rotation-amount')
         stepData.x = xInput ? Number(xInput.value) : 0
         stepData.y = yInput ? Number(yInput.value) : 0
-        stepData.rotation = rotationEl ? Number(rotationEl.value) : 1
+        stepData.beforeRotation = rotationEl ? Number(rotationEl.value) : 1
       }
       if (type == "updateBlock") {
         const xInput = stepEl.querySelector('.block-x')
@@ -434,6 +435,24 @@ export function addEventListeners() {
 
   eraserButton.addEventListener('click', () => {
     toggleErase()
+  })
+  document.addEventListener('keydown', (e) => {
+    if (e.key == "Escape") {
+      const { selection } = editor
+
+      if (selection.active) {
+        if (selection.hasFloatingTiles) {
+          stampSelection()
+        }
+
+        selection.active = false
+        editor.dirty = true
+      }
+
+      if (menuElement.style.display != '' || menuElement.style.display == "none") {
+        menuElement.style.display = "none"
+      }
+    }
   })
   document.addEventListener('keypress', (e) => {
     if (menuElement && menuElement.style.display != '' && menuElement.style.display != "none") return
