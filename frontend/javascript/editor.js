@@ -440,7 +440,6 @@ export function levelEditorLoop(dt) {
         handledBySelection = true
       }
     }
-    console.log(`after selection handling, isFirstClick: ${isFirstClick}`)
 
     if (!handledBySelection && !shiftDown && !undidSelection) {
       const idx = ty * map.w + tx
@@ -449,11 +448,8 @@ export function levelEditorLoop(dt) {
           const beforeTile = editor.map.tiles[idx] >> 4
           placeTile(tx, ty)
           const afterTile = editor.map.tiles[idx] >> 4
-          console.log(beforeTile, afterTile)
           if (beforeTile !== afterTile) {
-            console.log(`inside placement loop: isFirstClick: ${isFirstClick}`)
             if (isFirstClick) {
-              console.log("hello")
               const entry = { type: "replaceBlocks", replacedBlocks: [] }
               editor.history.push(entry)
               const replacedBlock = { idx: idx, before: beforeTile, after: afterTile }
