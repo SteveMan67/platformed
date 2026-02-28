@@ -40,6 +40,7 @@ function addEditButton(owned, levelId) {
 }
 
 const levelName = document.querySelector(".name")
+const username = document.querySelector(".username")
 const approvalPercentage = document.querySelector(".approval-percentage")
 const description = document.querySelector(".description")
 const plays = document.querySelector(".plays")
@@ -146,6 +147,7 @@ getLevel(levelNum).then(level => {
     window.location.href = "/"
   } else {
     levelName.innerHTML = level.name
+    username.innerText = level.username
     approvalPercentage.innerHTML = `${Math.floor(level.approval_percentage)}%`
     description.innerHTML = level.description
     plays.innerHTML = level.total_plays

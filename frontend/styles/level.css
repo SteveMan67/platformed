@@ -150,8 +150,19 @@ canvas {
   margin: 0;
 }
 
+.name-wrapper {
+  display: flex;
+  align-items: center;
+}
+
 .name {
   font-size: 30px;
+}
+
+.name-wrapper p {
+  margin: 0;
+  margin-left: 15px;
+  font-size: 25px
 }
 
 .info p,

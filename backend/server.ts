@@ -224,7 +224,7 @@ const server = Bun.serve({
         const returnedJson = level[0]
         returnedJson.owned = returnedJson.owner == authentication?.user || false
 
-        const username = await sql`select username from levels where id = ${returnedJson.owner}`
+        const username = await sql`select username from users where id = ${returnedJson.owner}`
         if (username[0]) {
           returnedJson.username = username[0].username
         }
