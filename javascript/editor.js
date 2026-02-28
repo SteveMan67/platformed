@@ -164,9 +164,13 @@ export function undo() {
   if (latestChange.type == "replaceBlocks") {
     if (!latestChange.replacedBlocks) return
     for (const change of latestChange.replacedBlocks) {
-      if (change.after == undefined || change.before == undefined || change.idx == undefined) continue
-      const rotation = change.rotation ? change.rotation : 0
-      editor.map.tiles[change.idx] = (change.before << 4) + rotation
+      if (change.idx == undefined) continue
+      if (change.before) {
+        editor.map.tiles[change.idx] = (change.before << 4)
+      }
+      if (change.beforeRotation) {
+        editor.map.tiles[change.idx] = (editor.map.tiles[change.idx] >> 4 << 4) + change.beforeRotation
+      }
       calcAdjacentAdjacency(change.idx, change.before)
     }
     editor.future.push(editor.history.pop())
@@ -243,7 +247,7 @@ export function calculateAdjacenciesForIndexes(idxList) {
   }
 }
 
-function stampSelection() {
+export function stampSelection() {
   const { selection, map, selectionLayer } = editor
 
   const changedTiles = []
