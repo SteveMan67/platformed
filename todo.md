@@ -1,7 +1,7 @@
 # **High Priority**
-- fix zooming
-  - limit min zoom to editor height
-  - add `ctrl+<scroll>`
 - Trackpad moving around
   - two fingers move to move around the map
-- Gamepad support
+- walljump quickly floats up wall
+- change my levels to login on level page
+- fix rotation trigger not working for some reason
+

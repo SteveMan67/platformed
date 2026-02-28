@@ -159,8 +159,8 @@ function updateBottomBar(tx, ty) {
 }
 
 export function undo() {
-  console.log(editor.history)
   const latestChange = editor.history[editor.history.length - 1]
+  console.log(latestChange)
   if (!latestChange) return
   if (latestChange.type == "replaceBlocks") {
     if (!latestChange.replacedBlocks) return
@@ -186,10 +186,17 @@ export function redo() {
   if (latest.type == "replaceBlocks") {
     if (!latest.replacedBlocks) return
     for (const change of latest.replacedBlocks) {
-      if (change.after == undefined || change.before == undefined || change.idx == undefined) continue
-      editor.map.tiles[change.idx] = change.after << 4
+      if (change.idx == undefined) continue
+      if (change.after) {
+        editor.map.tiles[change.idx] = change.after << 4
+      }
+      if (change.afterRotation) {
+        editor.map.tiles[change.idx] = (editor.map.tiles[change.idx] >> 4 << 4) + change.beforeRotation
+      }
       calcAdjacentAdjacency(change.idx, change.after)
     }
+    editor.history.push(editor.future.pop())
+  } else {
     editor.history.push(editor.future.pop())
   }
 }
@@ -370,7 +377,7 @@ export function levelEditorLoop(dt) {
 
   if (input.down) {
     handledBySelection = false
-
+    const isFirstClick = !mouseDown
     if (!mouseDown) {
       mouseDown = true
       undidSelection = false
@@ -433,18 +440,25 @@ export function levelEditorLoop(dt) {
         handledBySelection = true
       }
     }
+    console.log(`after selection handling, isFirstClick: ${isFirstClick}`)
 
     if (!handledBySelection && !shiftDown && !undidSelection) {
       const idx = ty * map.w + tx
-      if (!mouseDown || differentTile) {
+      if (isFirstClick || differentTile) {
         if (tx >= 0 && tx < map.w && ty >= 0 && ty < map.h) {
           const beforeTile = editor.map.tiles[idx] >> 4
           placeTile(tx, ty)
           const afterTile = editor.map.tiles[idx] >> 4
+          console.log(beforeTile, afterTile)
           if (beforeTile !== afterTile) {
-            if (!mouseDown && !differentTile) {
+            console.log(`inside placement loop: isFirstClick: ${isFirstClick}`)
+            if (isFirstClick) {
+              console.log("hello")
               const entry = { type: "replaceBlocks", replacedBlocks: [] }
               editor.history.push(entry)
+              const replacedBlock = { idx: idx, before: beforeTile, after: afterTile }
+              editor.history[editor.history.length - 1]?.replacedBlocks.push(replacedBlock)
+            } else if (isFirstClick || differentTile) {
               const replacedBlock = { idx: idx, before: beforeTile, after: afterTile }
               editor.history[editor.history.length - 1]?.replacedBlocks.push(replacedBlock)
             }
