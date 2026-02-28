@@ -5,25 +5,22 @@ import { state } from "./state.js"
 import { toggleTriggerDialog } from "./ui.js"
 const { editor, player } = state
 
-export function zoomMap(zoomDirectionIsIn) {
+export function zoomMap(zoomDirectionIsIn, amount) {
   const currentZoom = editor.tileSize
   let newZoom = editor.tileSize
-  const zooms = [16, 25, 32, 40, 60, 80, 100]
-  const currentZoomIndex = zooms.indexOf(currentZoom)
   if (zoomDirectionIsIn) {
-    if (currentZoomIndex !== 0) {
-      newZoom = zooms[currentZoomIndex - 1]
-    } else {
-      newZoom = currentZoom
-    }
+    newZoom += amount
   } else {
-    if (currentZoomIndex < zooms.length - 1) {
-      newZoom = zooms[currentZoomIndex + 1]
-    } else {
-      newZoom = currentZoom
-    }
+    newZoom -= amount
   }
+  const smallestDimension = canvas.width > canvas.height ? "height" : "width"
+  const wh = smallestDimension == "height" ? canvas.height : canvas.width
+  const twh = smallestDimension == "height" ? editor.map.h : editor.map.w
+  console.log(wh, twh)
+
+  newZoom = Math.round(Math.max(wh / twh, Math.min(newZoom, 100)))
   editor.tileSize = newZoom
+  drawMinimap()
 }
 
 export function toggleErase() {
@@ -327,7 +324,7 @@ export function levelEditorLoop(dt) {
 
   const shiftDown = input.keys["Shift"]
 
-  if (shiftDown || editor.selection.isDragging) {
+  if (shiftDown || editor.selection.isDragging || editor.selection.active) {
     const sideThreshold = 50
     const movementSpeed = 15
     if (input.x < sideThreshold) {
