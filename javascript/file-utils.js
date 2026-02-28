@@ -19,10 +19,10 @@ export async function importMap(e) {
 }
 
 export async function loadMapFromData(json) {
-  player.jumpHeight = json.jumpHeight;
-  player.jumpWidth = json.jumpWidth;
-  player.yInertia = json.yInertia;
-  player.xInertia = json.xInertia;
+  player.jumpHeight = json.jumpHeight ?? 2.5;
+  player.jumpWidth = json.jumpWidth ?? 7;
+  player.yInertia = json.yInertia ?? 1;
+  player.xInertia = json.xInertia ?? 1.5;
   if (json.bouncePadHeight) {
     player.bouncePadHeight = json.bouncePadHeight;
   }

@@ -180,6 +180,8 @@ export function updatePhysicsConstants() {
   player.speed = getJumpSpeed(player.jumpWidth - 1, player.jump, player.yInertia, player.tileSize)
   player.x = editor.playerSpawn.x * player.tileSize
   player.y = editor.playerSpawn.y * player.tileSize
+  player.vy = 0
+  player.vx = 0
   player.w = player.tileSize
   player.h = player.tileSize
   player.hitboxW = 0.8 * player.tileSize
@@ -195,6 +197,7 @@ export function initPlatformer() {
   player.collectedCoinList = []
   updatePhysicsConstants()
   scanLevelOnPlay()
+  console.log(player.x, player.y)
 }
 
 export function killPlayer() {
@@ -354,7 +357,7 @@ function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
     }
   }
   if (mechanics.includes("checkpoint")) {
-    if (player.lastCheckpointSpawn.x != tx && player.lastCheckpointSpawn.ty != ty) {
+    if (player.lastCheckpointSpawn.x != tx && player.lastCheckpointSpawn.y != ty) {
       playSound("/assets/audio/checkpoint.wav")
     }
     player.lastCheckpointSpawn = { x: tx, y: ty }
@@ -775,8 +778,6 @@ export function platformerLoop(dt) {
   }
   drawEnemies(timeScale)
 }
-
-let once = true
 
 function logCurrentMapAsJSON() {
   console.log(createMap(editor.map.w, editor.map.h, Array.from(editor.map.tiles)))
