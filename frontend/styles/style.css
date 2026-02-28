@@ -301,6 +301,8 @@ i::before {
   width: min(700px, 90vw);
   user-select: none;
   font-weight: 500;
+  display: flex;
+  flex-direction: column;
 }
 
 .trigger-dialog {
@@ -729,10 +731,15 @@ input[type="radio"] {
   font-family: "Fredoka", sans-serif;
 }
 
+.tab-content {
+  height: 100%;
+  overflow-y: scroll;
+  scrollbar-width: none;
+}
+
 .tab {
   display: none;
-  max-height: 100%;
-
+  margin: 0 20px;
 }
 
 .menu-content input[type="radio"]:nth-of-type(1):checked~.tab-content .tab:nth-of-type(1),
