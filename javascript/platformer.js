@@ -509,29 +509,50 @@ function updatePhysics(dt) {
   const currentControl = jumpControl * player.controlMultiplier
   let activeInput = false
 
-  const moveLeft = (key("left") && !key("right")) || input.joystickX < -0.1
-  const moveRight = (key("right") && !key("left")) || input.joystickX > 0.1
-
   const scaledXInertia = player.xInertia * (player.tileSize / 64)
 
-  if (moveLeft) {
+  let targetVx = 0
+
+  if (Math.abs(input.joystickX)) {
     activeInput = true
-    const analog = input.joystickX > 0.1 ? Math.abs(input.joystickX) : 1
-    if (player.vx > -player.speed * analog) {
-      player.vx -= scaledXInertia * analog * currentControl * dt
-    } else {
-      player.vx = -player.speed * analog
+    targetVx = player.speed * input.joystickX
+  } else if (key("left") && !key("right")) {
+    activeInput = true
+    targetVx = -player.speed
+  } else if (key("right") && !key("left")) {
+    activeInput = true
+    targetVx = player.speed
+  }
+
+  if (activeInput) {
+    if (player.vx < targetVx) {
+      player.vx += scaledXInertia * currentControl * dt
+      if (player.vx > targetVx) player.vx = targetVx
+    }
+    else if (player.vx > targetVx) {
+      player.vx -= scaledXInertia * currentControl * dt
+      if (player.vx < targetVx) player.vx = targetVx
     }
   }
-  if (moveRight) {
-    activeInput = true
-    const analog = input.joystickX > 0.1 ? Math.abs(input.joystickX) : 1
-    if (player.vx < player.speed * analog) {
-      player.vx += scaledXInertia * analog * currentControl * dt
-    } else {
-      player.vx = player.speed * analog
-    }
-  }
+
+  // if (moveLeft) {
+  //   activeInput = true
+  //   const analog = input.joystickX > 0.1 ? Math.abs(input.joystickX) : 1
+  //   if (player.vx > -player.speed * analog) {
+  //     player.vx -= scaledXInertia * analog * currentControl * dt
+  //   } else {
+  //     player.vx = -player.speed * analog
+  //   }
+  // }
+  // if (moveRight) {
+  //   activeInput = true
+  //   const analog = input.joystickX > 0.1 ? Math.abs(input.joystickX) : 1
+  //   if (player.vx < player.speed * analog) {
+  //     player.vx += scaledXInertia * analog * currentControl * dt
+  //   } else {
+  //     player.vx = player.speed * analog
+  //   }
+  // }
 
   if (!activeInput) {
     if (player.vx < 0) {
