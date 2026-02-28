@@ -518,7 +518,7 @@ export function addEventListeners() {
       })
       input.value = ''
       input.click()
-    } else if (e.key.toLowerCase == 'r') {
+    } else if (e.key == 'r') {
       killPlayer()
     } else if (e.key == 'f' && editor.selection.active) {
       const { selection } = editor

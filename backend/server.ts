@@ -154,7 +154,6 @@ const server = Bun.serve({
         return new Response("Login successful", withCors({ status: 200, headers: headers }, CORS))
 
       } catch (e) {
-        ``
         console.error(e)
         return new Response("Bad Request", withCors({ status: 400 }, CORS))
       }
@@ -256,8 +255,22 @@ const server = Bun.serve({
         ${sortBySQL}
         limit 50 offset ${(page - 1) * 50}
         `
+
+      const usernames = new Map()
+
+      for (const level of levels) {
+        if (usernames.has(level.owner)) {
+          level.username = usernames.get(level.owner)
+        } else {
+          const username = await sql`select username from users where id = ${level.owner}`
+          usernames.set(level.owner, username[0] ? username[0].username : '')
+          level.username = username[0] ? username[0].username : ''
+        }
+      }
+
       return new Response(JSON.stringify(levels), withCors({ headers: { "Content-Type": "application/json" } }, CORS))
     }
+
     if (pathname.startsWith("/api/search")) {
       const page = Number(url.searchParams.get("page")) || 1
       const search = url.searchParams.get("search") || ""
@@ -267,6 +280,19 @@ const server = Bun.serve({
         WHERE public = true AND name ILIKE ${'%' + search + '%'}
         limit 50 offset ${(Number(page - 1) * 50)}
         `
+
+        const usernames = new Map()
+        for (const level of levels) {
+          if (usernames.has(level.owner)) {
+            level.username = usernames.get(level.owner)
+          } else {
+            const username = await sql`select username from users where id = ${level.owner}`
+            usernames.set(level.owner, username[0] ? username[0].username : '')
+            level.username = username[0] ? username[0].username : ''
+          }
+        }
+
+
         return new Response(JSON.stringify(levels), {
           headers: {
             "Content-Type": "application/json"
