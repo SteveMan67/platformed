@@ -20,6 +20,30 @@ body {
     "bottom-bar sidebar";
 }
 
+.hidden {
+  display: none;
+}
+
+.saving {
+  display: flex;
+  flex-direction: row;
+}
+
+.loading {
+  height: 18sx;
+  aspect-ratio: 1;
+  border-top: 1px solid rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .grid-uihidden {
   grid-template-columns: 1fr 0px;
   grid-template-rows: 80px 1fr 0px;
