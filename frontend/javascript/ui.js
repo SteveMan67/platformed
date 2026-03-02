@@ -372,6 +372,7 @@ export function addEventListeners() {
   })
 
   canvas.addEventListener('wheel', (e) => {
+    console.log(e)
     e.preventDefault()
 
     if (e.ctrlKey) {
@@ -393,15 +394,6 @@ export function addEventListeners() {
 
   let lastWheelTime = 0
   document.addEventListener('wheel', (e) => {
-    if (e.ctrlKey || e.metaKey) {
-      e.preventDefault()
-      // zoom in and out, ctrl+scroll
-      if (e.deltaY < 0) {
-        zoomMap(true, 5)
-      } else if (e.deltaY > 0) {
-        zoomMap(false, 5)
-      }
-    }
     const now = Date.now()
     if (now - lastWheelTime < 150) return
     if (e.deltaY < 0) {

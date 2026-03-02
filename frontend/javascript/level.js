@@ -59,7 +59,7 @@ let joystickActive = false
 let startX = 0
 let startY = 0
 
-joystickHitbox.addEventListener("touchstart", (e) => {
+joystickHitbox?.addEventListener("touchstart", (e) => {
   e.preventDefault()
   joystickActive = true
   startX = e.targetTouches[0].screenX
@@ -68,7 +68,7 @@ joystickHitbox.addEventListener("touchstart", (e) => {
 })
 
 
-joystickHitbox.addEventListener("touchmove", (e) => {
+joystickHitbox?.addEventListener("touchmove", (e) => {
   e.preventDefault()
   if (!joystickActive) return
   const maxDistance = 50
