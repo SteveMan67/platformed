@@ -51,6 +51,8 @@ export const state = {
       x: 0,
       y: 0
     },
+    tx: 0,
+    ty: 0,
     level: { id: null, owner: null },
     dirty: false,
     currentRotation: 0,

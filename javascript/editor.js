@@ -335,7 +335,16 @@ export function levelEditorLoop(dt) {
 
   const shiftDown = input.keys["Shift"]
 
-  if (shiftDown || editor.selection.isDragging || editor.selection.active) {
+  const { selection } = editor
+
+  const minX = Math.min(selection.startX, selection.endX) + selection.offsetX
+  const maxX = Math.max(selection.startX, selection.endX) + selection.offsetX
+  const minY = Math.min(selection.startY, selection.endY) + selection.offsetY
+  const maxY = Math.max(selection.startY, selection.endY) + selection.offsetY
+  const isHoveringSelection = editor.tx >= minX && editor.tx <= maxX && editor.ty >= minY && editor.ty <= maxY
+
+
+  if (shiftDown || editor.selection.isDragging || editor.selection.active && isHoveringSelection  ) {
     const sideThreshold = 50
     const movementSpeed = 15
     if (input.x < sideThreshold) {
@@ -360,20 +369,12 @@ export function levelEditorLoop(dt) {
   const worldY = input.y + cam.y
   const tx = Math.floor(worldX / tileSize)
   const ty = Math.floor(worldY / tileSize)
+  editor.tx = tx
+  editor.ty = ty
 
 
   updateBottomBar(tx, ty)
 
-  const { selection } = editor
-
-  let isHoveringSelection = false
-  if (selection.active) {
-    const minX = Math.min(selection.startX, selection.endX) + selection.offsetX
-    const maxX = Math.max(selection.startX, selection.endX) + selection.offsetX
-    const minY = Math.min(selection.startY, selection.endY) + selection.offsetY
-    const maxY = Math.max(selection.startY, selection.endY) + selection.offsetY
-    isHoveringSelection = tx >= minX && tx <= maxX && ty >= minY && ty <= maxY
-  }
 
   if (input.down) {
     handledBySelection = false
@@ -421,11 +422,6 @@ export function levelEditorLoop(dt) {
         // moving the selection around
         const rawOffsetX = selection.initialOffsetX + (tx - selection.dragStartX)
         const rawOffsetY = selection.initialOffsetY + (ty - selection.dragStartY)
-
-        const minX = Math.min(selection.startX, selection.endX)
-        const maxX = Math.max(selection.startX, selection.endX)
-        const minY = Math.min(selection.startY, selection.endY)
-        const maxY = Math.max(selection.startY, selection.endY)
 
         selection.offsetX = Math.max(-minX, Math.min(rawOffsetX, map.w - 1 - maxX))
         selection.offsetY = Math.max(-minY, Math.min(rawOffsetY, map.h - 1 - maxY))

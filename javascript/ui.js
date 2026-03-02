@@ -372,7 +372,6 @@ export function addEventListeners() {
   })
 
   canvas.addEventListener('wheel', (e) => {
-    console.log(e)
     e.preventDefault()
 
     if (e.ctrlKey) {
