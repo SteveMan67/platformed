@@ -526,42 +526,7 @@ function updatePhysics(dt) {
     targetVx = player.speed
   }
 
-  if (activeInput) {
-    const inputDir = Math.sign(targetVx)
-    const velDir = Math.sign(player.vx)
-
-    if (inputDir !== 0 && inputDir === velDir) {
-      // if we're pressing the same way as we're going
-      if (Math.abs(player.vx) < Math.abs(targetVx)) {
-        player.vx += inputDir * scaledXInertia * currentControl * dt
-        if (Math.abs(player.vx) > Math.abs(targetVx)) player.vx = targetVx
-      } else if (player.grounded && Math.abs(player.vx) > Math.abs(targetVx)) {
-        // don't allow the player to travel faster than player.speed if they're touching the ground
-        player.vx = targetVx
-      } else if (!player.grounded && Math.abs(player.vx) > Math.abs(targetVx)) {
-        // treat it the same as if right/left aren't pressed
-        if (player.vx < 0) {
-          player.vx += scaledXInertia * 0.45 * dt
-          if (player.vx > 0) player.vx = 0
-        } else if (player.vx > 0) {
-          player.vx -= scaledXInertia * 0.45 * dt
-          if (player.vx < 0) player.vx = 0
-        }
-      }
-    } else {
-      // if we're not pressing the same way we're going
-      if (player.vx < targetVx) {
-        player.vx += scaledXInertia * 0.45 * dt
-        if (player.vx > targetVx) player.vx = targetVx
-      } else if (player.vx > targetVx) {
-        player.vx -= scaledXInertia * 0.45 * dt
-        if (player.vx < targetVx) player.vx = targetVx
-      }
-    }
-  }
-
-  if (!activeInput) {
-    // if we're not pressing right or left
+  function slowDown() {
     if (player.vx < 0) {
       player.vx += scaledXInertia * 0.45 * dt
       if (player.vx > 0) player.vx = 0
@@ -569,9 +534,15 @@ function updatePhysics(dt) {
       player.vx -= scaledXInertia * 0.45 * dt
       if (player.vx < 0) player.vx = 0
     }
-    if (Math.abs(player.vx) < player.stopThreshold) {
-      player.vx = 0
-    }
+  }
+
+  const inputDir = Math.sign(targetVx)
+  const velDir = Math.sign(player.vx)
+
+  if (Math.abs(player.vx) < Math.abs(targetVx)) {
+    player.vx += inputDir * scaledXInertia * currentControl * dt
+  } else {
+    slowDown()
   }
 
   const offX = (player.w - player.hitboxW) / 2
@@ -648,7 +619,7 @@ function updatePhysics(dt) {
       player.lastWallSide = 0
       player.wallCoyoteTimer = 0
       player.airControl = true
-      limitControl(22, 0.0)
+      limitControl(23.5, 0.0)
       playSound("/assets/audio/jump.wav", 0.1)
     } else if (player.wallJump == "up") {
       player.vx = player.lastWallSide == -1 ? player.speed * 1.2 : -player.speed * 1.2
