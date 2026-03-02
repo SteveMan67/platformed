@@ -473,7 +473,7 @@ function updatePhysics(dt) {
   if (player.coyoteTimer > 0) player.coyoteTimer -= dt
   if (player.jumpBufferTimer > 0) player.jumpBufferTimer -= dt
 
-  //determine whether jump was just pressed down
+  // determine whether jump was just pressed down
   let isJumping = false;
   if (key("up") || input.jumpButton) {
     if (!lastJumpInput) {
@@ -527,17 +527,29 @@ function updatePhysics(dt) {
   }
 
   if (activeInput) {
-    if (player.vx < targetVx) {
-      player.vx += scaledXInertia * currentControl * dt
-      if (player.vx > targetVx) player.vx = targetVx
-    }
-    else if (player.vx > targetVx) {
-      player.vx -= scaledXInertia * currentControl * dt
-      if (player.vx < targetVx) player.vx = targetVx
+    const inputDir = Math.sign(targetVx)
+    const velDir = Math.sign(player.vx)
+
+    if (inputDir !== 0 && inputDir === velDir) {
+      if (Math.abs(player.vx) < Math.abs(targetVx)) {
+        player.vx += inputDir * scaledXInertia * currentControl * dt
+        if (Math.abs(player.vx) > Math.abs(targetVx)) player.vx = targetVx
+      } else if (player.grounded && Math.abs(player.vx) > Math.abs(targetVx)) {
+        // don't allow the player to travel faster than player.speed if they're touching the ground
+        player.vx = targetVx
+      }
+    } else {
+      if (player.vx < targetVx) {
+        player.vx += scaledXInertia * currentControl * dt
+        if (player.vx > targetVx) player.vx = targetVx
+      } else if (player.vx > targetVx) {
+        player.vx -= scaledXInertia * currentControl * dt
+        if (player.vx < targetVx) player.vx = targetVx
+      }
     }
   }
 
-  if (!activeInput) {
+  if (!activeInput && player.grounded) {
     if (player.vx < 0) {
       player.vx += scaledXInertia * 0.45 * dt
       if (player.vx > 0) player.vx = 0

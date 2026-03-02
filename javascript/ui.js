@@ -373,9 +373,9 @@ export function addEventListeners() {
 
   canvas.addEventListener('wheel', (e) => {
     e.preventDefault()
-    e.stopPropagation()
 
     if (e.ctrlKey) {
+      e.stopPropagation()
       let zoomAmount = Math.max(1, Math.round(Math.abs(e.deltaY) * 0.1))
       if (e.deltaY < 0) {
         zoomMap(true, zoomAmount)
