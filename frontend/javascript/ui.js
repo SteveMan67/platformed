@@ -371,6 +371,26 @@ export function addEventListeners() {
     })
   })
 
+  canvas.addEventListener('wheel', (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (e.ctrlKey) {
+      let zoomAmount = Math.max(1, Math.round(Math.abs(e.deltaY) * 0.1))
+      if (e.deltaY < 0) {
+        zoomMap(true, zoomAmount)
+      } else if (e.deltaY > 0) {
+        zoomMap(false, zoomAmount)
+      }
+    } else {
+      const sensitivity = 1.5
+
+      editor.cam.x += e.deltaX * sensitivity
+      editor.cam.y += e.deltaY * sensitivity
+    }
+    drawMinimap()
+  }, { passive: false })
+
   let lastWheelTime = 0
   document.addEventListener('wheel', (e) => {
     if (e.ctrlKey || e.metaKey) {

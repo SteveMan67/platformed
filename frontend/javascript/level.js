@@ -15,6 +15,7 @@ async function getLevel(level = 1) {
   }
 }
 
+
 function addEditButton(owned, levelId) {
   const b = document.createElement('a')
   b.href = `/editor/${levelId}`
@@ -140,6 +141,17 @@ try {
 } catch {
   levelNum = -1
 }
+
+fetch(`${serverUrl}/api/me`)
+  .then(res => {
+    if (!res.ok) {
+      const link = document.querySelector(".link-button.my-levels")
+      console.log(link)
+      link.href = `/login?redirect=${encodeURIComponent(`level/${levelNum}`)}`
+      link.innerText = "Sign In"
+    }
+  })
+
 
 getLevel(levelNum).then(level => {
   console.log(level)
