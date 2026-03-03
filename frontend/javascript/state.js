@@ -47,6 +47,7 @@ export const state = {
     dissipations: [],
   },
   editor: {
+    showTriggerHighlights: true,
     cam: {
       x: 0,
       y: 0
@@ -86,6 +87,6 @@ export const state = {
       isDragging: false,
       hasFloatingTiles: false,
       triggers: []
-    }
+    },
   },
 };
