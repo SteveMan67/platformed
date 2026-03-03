@@ -150,7 +150,7 @@ export function mobile() {
 }
 
 export function needsSmallerLevel() {
-  return window.screen.width < 1500 && window.screen.height < 700
+  return canvas.width < 900 && canvas.height < (player.tileSize * 15)
 }
 
 export function addEventListeners() {

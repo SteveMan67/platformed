@@ -35,7 +35,7 @@ body .game {
   user-select: none;
 }
 
-.fullscreen {
+body .game.fullscreen {
   position: fixed;
   z-index: 10;
   top: 0;

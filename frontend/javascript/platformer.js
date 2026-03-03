@@ -347,12 +347,16 @@ function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
       const bounceTile = tiles[idx]
       if ((bounceTile & 15) == 0) {
         player.vy = -getJumpHeight(player.bouncePadHeight, player.yInertia, player.tileSize)
+        limitControl(20, 0)
       } else if ((bounceTile & 15) == 1) {
         player.vx = -getJumpHeight(player.bouncePadHeight, player.xInertia, player.tileSize)
+        limitControl(20, 0)
       } else if ((bounceTile & 15) == 2) {
         player.vy = getJumpHeight(player.bouncePadHeight, player.yInertia, player.tileSize)
+        limitControl(20, 0)
       } else if ((bounceTile & 15) == 3) {
         player.vx = getJumpHeight(player.bouncePadHeight, player.xInertia, player.tileSize)
+        limitControl(20, 0)
       }
     }
   }
@@ -534,12 +538,14 @@ function updatePhysics(dt) {
       player.vx -= scaledXInertia * 0.45 * dt
       if (player.vx < 0) player.vx = 0
     }
+    if (Math.abs(player.vx) < player.stopThreshold) {
+      player.vx = 0
+    }
   }
 
   const inputDir = Math.sign(targetVx)
-  const velDir = Math.sign(player.vx)
 
-  if (Math.abs(player.vx) < Math.abs(targetVx)) {
+  if (Math.abs(player.vx) < Math.abs(targetVx) || Math.abs(player.vx) === Math.abs(targetVx)) {
     player.vx += inputDir * scaledXInertia * currentControl * dt
   } else {
     slowDown()
