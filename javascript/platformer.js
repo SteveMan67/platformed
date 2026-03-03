@@ -297,13 +297,11 @@ function handleTriggers(tx, ty) {
       teleportPlayer(step.x, step.y)
     }
     if (step.type == "rotate") {
-      console.log(step)
       if (!step.x || !step.y || !step.beforeRotation) return
       rotateTile(step.x, step.y, step.beforeRotation)
     }
     if (step.type == "updateBlock") {
       if (step.x == undefined || step.y == undefined || step.block == undefined) return
-      console.log(step)
       const idx = step.y * editor.width + step.x
       calcAdjacentAdjacency(idx, step.block, player.tiles)
     }
