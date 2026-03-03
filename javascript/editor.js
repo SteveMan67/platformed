@@ -344,7 +344,7 @@ export function levelEditorLoop(dt) {
   const isHoveringSelection = editor.tx >= minX && editor.tx <= maxX && editor.ty >= minY && editor.ty <= maxY
 
 
-  if (shiftDown || editor.selection.isDragging || editor.selection.active && isHoveringSelection  ) {
+  if (editor.selection.active && isHoveringSelection) {
     const sideThreshold = 50
     const movementSpeed = 15
     if (input.x < sideThreshold) {
@@ -394,6 +394,7 @@ export function levelEditorLoop(dt) {
         selection.initialOffsetX = selection.offsetX
         selection.initialOffsetY = selection.offsetY
         handledBySelection = true
+        console.log("hello")
 
       } else if (shiftDown) {
         // selecting, draw new box
@@ -420,11 +421,17 @@ export function levelEditorLoop(dt) {
       // dragging mouse around
       if (selection.isDragging) {
         // moving the selection around
+        editor.dirty = true
         const rawOffsetX = selection.initialOffsetX + (tx - selection.dragStartX)
         const rawOffsetY = selection.initialOffsetY + (ty - selection.dragStartY)
 
-        selection.offsetX = Math.max(-minX, Math.min(rawOffsetX, map.w - 1 - maxX))
-        selection.offsetY = Math.max(-minY, Math.min(rawOffsetY, map.h - 1 - maxY))
+        const baseMinX = Math.min(selection.startX, selection.endX)
+        const baseMaxX = Math.max(selection.startX, selection.endX)
+        const baseMinY = Math.min(selection.startY, selection.endY)
+        const baseMaxY = Math.max(selection.startY, selection.endY)
+
+        selection.offsetX = Math.max(-baseMinX, Math.min(rawOffsetX, map.w - 1 - baseMaxX))
+        selection.offsetY = Math.max(-baseMinY, Math.min(rawOffsetY, map.h - 1 - baseMaxY))
 
         drawMinimap()
         handledBySelection = true
