@@ -538,12 +538,14 @@ function updatePhysics(dt) {
       player.vx -= scaledXInertia * 0.45 * dt
       if (player.vx < 0) player.vx = 0
     }
+    if (Math.abs(player.vx) < player.stopThreshold) {
+      player.vx = 0
+    }
   }
 
   const inputDir = Math.sign(targetVx)
-  const velDir = Math.sign(player.vx)
 
-  if (Math.abs(player.vx) < Math.abs(targetVx)) {
+  if (Math.abs(player.vx) < Math.abs(targetVx) || Math.abs(player.vx) === Math.abs(targetVx)) {
     player.vx += inputDir * scaledXInertia * currentControl * dt
   } else {
     slowDown()
