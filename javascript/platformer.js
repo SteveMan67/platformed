@@ -347,16 +347,12 @@ function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
       const bounceTile = tiles[idx]
       if ((bounceTile & 15) == 0) {
         player.vy = -getJumpHeight(player.bouncePadHeight, player.yInertia, player.tileSize)
-        limitControl(20, 0)
       } else if ((bounceTile & 15) == 1) {
         player.vx = -getJumpHeight(player.bouncePadHeight, player.xInertia, player.tileSize)
-        limitControl(20, 0)
       } else if ((bounceTile & 15) == 2) {
         player.vy = getJumpHeight(player.bouncePadHeight, player.yInertia, player.tileSize)
-        limitControl(20, 0)
       } else if ((bounceTile & 15) == 3) {
         player.vx = getJumpHeight(player.bouncePadHeight, player.xInertia, player.tileSize)
-        limitControl(20, 0)
       }
     }
   }
