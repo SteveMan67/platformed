@@ -105,7 +105,6 @@ export function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles, ti
 }
 
 export function calcAdjacentAdjacency(idx, tile = editor.selectedTile, tiles = editor.map.tiles) {
-  console.log("calculating")
   if (editor.tileset[tile] && !(editor.tileset[tile].triggerAdjacency)) {
     tiles[idx] = tile << 4
   }

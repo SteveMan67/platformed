@@ -2,7 +2,6 @@
 - if the user isn't signed in, make ux so they can save their level
 - allow resizing of the level (I already have a function for that)
 - drag triggers around
-- only allow one start flag in selection fill
 - fix tile not switching back after erase / undefined error associated with it
 - fix trigger not going away after delteted
 - add delay to trigger

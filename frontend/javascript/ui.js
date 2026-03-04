@@ -503,9 +503,17 @@ export function addEventListeners() {
             if (selection.hasFloatingTiles) {
               beforeTile = editor.selectionLayer[idx] >> 4
               editor.selectionLayer[idx] = 0
+              if (editor.limitedPlacedTiles.includes(beforeTile)) {
+                const index = editor.limitedPlacedTiles.findIndex(f => f === beforeTile)
+                editor.limitedPlacedTiles.shift(index, 1)
+              }
             } else {
               beforeTile = editor.map.tiles[idx] >> 4
               editor.map.tiles[idx] = 0
+              if (editor.limitedPlacedTiles.includes(beforeTile)) {
+                const index = editor.limitedPlacedTiles.findIndex(f => f === beforeTile)
+                editor.limitedPlacedTiles.shift(index, 1)
+              }
             }
             if (beforeTile !== 0) {
               changedBlocks.push({ idx: idx, before: beforeTile, after: 0 })
@@ -557,10 +565,32 @@ export function addEventListeners() {
           let beforeTile
           if (selection.hasFloatingTiles) {
             beforeTile = editor.selectionLayer[idx] >> 4
-            editor.selectionLayer[idx] = editor.selectedTile << 4
+            if (!editor.limitedPlacedTiles.includes(editor.selectedTile)) {
+              editor.selectionLayer[idx] = editor.selectedTile << 4
+              if (editor.tileset[editor.selectedTile] && editor.tileset[editor.selectedTile].mechanics && editor.tileset[editor.selectedTile].mechanics.includes("onePerLevel")) {
+                editor.limitedPlacedTiles.push(editor.selectedTile)
+              }
+            }
+            if (editor.tileset[beforeTile] && editor.tileset[beforeTile].mechanics && editor.tileset[beforeTile].mechanics.includes("onePerLevel")) {
+              const index = editor.limitedPlacedTiles.findIndex(f => f === beforeTile)
+              if (index !== -1) {
+                editor.limitedPlacedTiles.splice(index, 1)
+              }
+            }
           } else {
             beforeTile = editor.map.tiles[idx] >> 4
-            editor.map.tiles[idx] = editor.selectedTile << 4
+            if (!editor.limitedPlacedTiles.includes(editor.selectedTile)) {
+              editor.map.tiles[idx] = editor.selectedTile << 4
+              if (editor.tileset[editor.selectedTile] && editor.tileset[editor.selectedTile].mechanics && editor.tileset[editor.selectedTile].mechanics.includes("onePerLevel")) {
+                editor.limitedPlacedTiles.push(editor.selectedTile)
+              }
+            }
+            if (editor.tileset[beforeTile] && editor.tileset[beforeTile].mechanics && editor.tileset[beforeTile].mechanics.includes("onePerLevel") && editor.selectedTile !== beforeTile) {
+              const index = editor.limitedPlacedTiles.findIndex(f => f === beforeTile)
+              if (index !== -1) {
+                editor.limitedPlacedTiles.splice(index, 1)
+              }
+            }
           }
           changedBlocks.push({ idx: idx, before: beforeTile, after: editor.selectedTile >> 4 })
           changedIndexes.push(idx)
