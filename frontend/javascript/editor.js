@@ -29,7 +29,7 @@ export function zoomMap(zoomDirectionIsIn, amount) {
 
 export function toggleErase() {
   if (editor.selectedTile == 0) {
-    editor.selectedTile = editor.lastSelectedTiles[1]
+    editor.selectedTile = editor.lastSelectedTiles[1] ?? 1
   } else {
     editor.selectedTile = 0
   }
@@ -56,6 +56,12 @@ export function scrollCategoryTiles(up) {
   if (currentSelectedTiles.length !== 0) {
     // sorry
     editor.selectedTile = !up ? Number(currentSelectedTiles[(currentSelectedTiles.indexOf(currentSelectedTiles.find(f => f.dataset.tile == String(editor.selectedTile))) + 1) % currentSelectedTiles.length].dataset.tile) : Number(currentSelectedTiles[(currentSelectedTiles.indexOf(currentSelectedTiles.find(f => f.dataset.tile == String(editor.selectedTile))) - 1 + currentSelectedTiles.length) % currentSelectedTiles.length].dataset.tile)
+    editor.lastSelectedTiles.shift()
+    editor.lastSelectedTiles.push(editor.selectedTile ?? 1)
+
+    if (editor.selectedTile == undefined) {
+      editor.selectedTile = 1
+    }
   }
 }
 

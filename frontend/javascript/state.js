@@ -45,6 +45,7 @@ export const state = {
     controlMultiplier: 1,
     hasKeyboard: true,
     dissipations: [],
+    triggerTimeouts: []
   },
   editor: {
     showTriggerHighlights: true,
