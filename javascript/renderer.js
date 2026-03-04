@@ -135,9 +135,7 @@ export function drawMap(tileSize = editor.tileSize, cam = editor.cam) {
               ctx.strokeStyle = trigger.color
             } else {
               const hue = Math.floor(Math.random() * 360)
-              console.log(hue)
               trigger.color = `hsl(${hue}, 100%, 50%)`
-              console.log(trigger.color)
               ctx.strokeStyle = trigger.color
             }
             needsTriggerHighlight = true

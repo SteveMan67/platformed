@@ -575,7 +575,6 @@ export function addEventListeners() {
       drawMinimap()
     }
     if ((e.ctrlKey || e.metaKey) && e.code == "KeyZ") {
-      console.log("undo")
       if (e.shiftKey) {
         e.preventDefault()
         redo()

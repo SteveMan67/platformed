@@ -197,7 +197,6 @@ export function initPlatformer() {
   player.collectedCoinList = []
   updatePhysicsConstants()
   scanLevelOnPlay()
-  console.log(player.x, player.y)
 }
 
 export function killPlayer() {
@@ -237,7 +236,6 @@ function checkPixelCollsion(tile, tx, ty, px, py, pw, ph) {
       } else {
         img = tile.images[0]
       }
-      console.log(img, img.width, img.height)
     } else {
       img = tile.image
     }
