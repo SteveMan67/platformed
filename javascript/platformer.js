@@ -195,6 +195,7 @@ export function initPlatformer() {
   player.toggledTile = true
   player.lastCheckpointSpawn = { x: 0, y: 0 }
   player.collectedCoinList = []
+  player.triggerTimeouts = []
   updatePhysicsConstants()
   scanLevelOnPlay()
 }
@@ -286,24 +287,45 @@ function handleTriggers(tx, ty) {
   if (!trigger) return
   player.standingOnTrigger = true
 
-  for (const step of trigger.execute) {
-    if (step.type == "toggleBlocks") {
-      player.toggledTile = !player.toggledTile
-    }
-    if (step.type == "teleport") {
-      if (!step.x || !step.y) continue
-      teleportPlayer(step.x, step.y)
-    }
-    if (step.type == "rotate") {
-      if (!step.x || !step.y || !step.beforeRotation) return
-      rotateTile(step.x, step.y, step.beforeRotation)
-    }
-    if (step.type == "updateBlock") {
-      if (step.x == undefined || step.y == undefined || step.block == undefined) return
-      const idx = step.y * editor.width + step.x
-      calcAdjacentAdjacency(idx, step.block, player.tiles)
+  const executeTriggerSteps = (trigger, startIndex = 0) => {
+    for (let i = startIndex; i < trigger.execute.length; i++) {
+      const step = trigger.execute[i]
+      if (!step) return
+      if (step.type == "toggleBlocks") {
+        player.toggledTile = !player.toggledTile
+        continue
+      }
+      if (step.type == "teleport") {
+        if (step.x == undefined || step.y == undefined) continue
+        teleportPlayer(step.x, step.y)
+        continue
+      }
+      if (step.type == "rotate") {
+        if (!step.x || !step.y || !step.beforeRotation) return
+        rotateTile(step.x, step.y, step.beforeRotation)
+        continue
+      }
+      if (step.type == "updateBlock") {
+        if (step.x == undefined || step.y == undefined || step.block == undefined) return
+        const idx = step.y * editor.width + step.x
+        calcAdjacentAdjacency(idx, step.block, player.tiles)
+        continue
+      }
+      if (step.type == "delay") {
+        if (step.time === undefined) continue
+        const ms = step.time
+
+        const tid = setTimeout(() => {
+          const index = player.triggerTimeouts.indexOf(tid)
+          if (index !== -1) player.triggerTimeouts.splice(index, 1)
+          executeTriggerSteps(trigger, i + 1)
+        }, ms)
+        player.triggerTimeouts.push(tid)
+        return
+      }
     }
   }
+  executeTriggerSteps(trigger, 0)
 }
 
 function teleportPlayer(tx, ty) {

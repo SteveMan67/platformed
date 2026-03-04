@@ -101,6 +101,7 @@ function addStepToUI(stepData) {
         <option value="teleport" ${stepData.type === "teleport" ? 'selected' : ''}>Teleport</option>
         <option value="rotate" ${stepData.type === "rotate" ? 'selected' : ''}>Rotate Block</option>
         <option value="updateBlock" ${stepData.type === "updateBlock" ? 'selected' : ''}>Change Block</option>
+        <option value="delay" ${stepData.type === "delay" ? 'selected' : ''}>Delay</option>
       </select>
     </div>
     <div class="options">
@@ -139,6 +140,12 @@ function getOptionHTML(stepData) {
       <select class="block">
         ${tileOptions}
       </select>
+    `
+  }
+  if (stepData.type == "delay") {
+    console.log(stepData)
+    html += `
+      ms <input type="number" class="ms" value="${stepData.time || 500}" min="0">
     `
   }
   html += `<img src="/assets/icons/delete.svg" alt="delete" class="delete-step">`
@@ -304,6 +311,10 @@ export function addEventListeners() {
         stepData.y = xInput ? Number(yInput.value) : null
         stepData.block = blockEl ? Number(blockEl.value) : null
       }
+      if (type == "delay") {
+        const ms = stepEl.querySelector(".ms")
+        stepData.time = ms.value ?? 500
+      }
       newExecuteArray.push(stepData)
     })
     activeTrigger.execute = newExecuteArray
@@ -369,7 +380,6 @@ export function addEventListeners() {
       if (tileCount !== 0) category.classList.add('active')
     })
     window.addEventListener('keypress', (e) => {
-      console.log(getComputedStyle(menuElement).display === "none")
       if (e.key == String(((Array.from(categories).indexOf(category)) * -1) + categories.length) && getComputedStyle(menuElement).display === "none") {
         categories.forEach(cat => {
           cat.classList.remove('active')
@@ -505,14 +515,14 @@ export function addEventListeners() {
               editor.selectionLayer[idx] = 0
               if (editor.limitedPlacedTiles.includes(beforeTile)) {
                 const index = editor.limitedPlacedTiles.findIndex(f => f === beforeTile)
-                editor.limitedPlacedTiles.shift(index, 1)
+                editor.limitedPlacedTiles.splice(index, 1)
               }
             } else {
               beforeTile = editor.map.tiles[idx] >> 4
               editor.map.tiles[idx] = 0
               if (editor.limitedPlacedTiles.includes(beforeTile)) {
                 const index = editor.limitedPlacedTiles.findIndex(f => f === beforeTile)
-                editor.limitedPlacedTiles.shift(index, 1)
+                editor.limitedPlacedTiles.splice(index, 1)
               }
             }
             if (beforeTile !== 0) {
