@@ -128,6 +128,7 @@ export function placeTile(tx, ty) {
     calcAdjacentAdjacency(idx, editor.selectedTile)
   } else if (tile.type == "rotation" && !tileLimitPlaced) {
     editor.map.tiles[idx] = (editor.selectedTile * 16) + editor.currentRotation
+    calcAdjacentAdjacency(idx, editor.selectedTile)
   } else if (tile.type == "empty") {
     calcAdjacentAdjacency(idx, selected)
   } else if (!tileLimitPlaced) {
