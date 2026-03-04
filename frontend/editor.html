@@ -130,10 +130,22 @@
         <div id="new">
           <img src="/assets/icons/plus.svg" alt="add step">
         </div>
-        <div class="apply">
-          <p>apply</p>
-        </div>
+        <input type="text" class="submit apply" value="apply">
       </div>
+      <script>
+        document.addEventListener('keydown', (e) => {
+          if (e.key !== "Enter") return
+          const overlay = document.querySelector(".overlay")
+          const dialog = document.querySelector(".trigger-dialog")
+          if (getComputedStyle(overlay).display !== 'none') {
+            const button = dialog.querySelector(".submit")
+            if (button) {
+              e.preventDefault()
+              button.click()
+            }
+          }
+        })
+      </script>
     </div>
     <div class="menu-content">
       <input type="radio" name="tabs" id="tab1">

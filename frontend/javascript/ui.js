@@ -369,7 +369,8 @@ export function addEventListeners() {
       if (tileCount !== 0) category.classList.add('active')
     })
     window.addEventListener('keypress', (e) => {
-      if (e.key == String(((Array.from(categories).indexOf(category)) * -1) + categories.length)) {
+      console.log(getComputedStyle(menuElement).display === "none")
+      if (e.key == String(((Array.from(categories).indexOf(category)) * -1) + categories.length) && getComputedStyle(menuElement).display === "none") {
         categories.forEach(cat => {
           cat.classList.remove('active')
         })
@@ -380,6 +381,7 @@ export function addEventListeners() {
   })
 
   canvas.addEventListener('wheel', (e) => {
+    if (input.keys["Shift"] || input.keys["Alt"]) return
     e.preventDefault()
 
     if (e.ctrlKey) {
@@ -392,7 +394,6 @@ export function addEventListeners() {
       }
     } else {
       const sensitivity = 1.5
-
       editor.cam.x += e.deltaX * sensitivity
       editor.cam.y += e.deltaY * sensitivity
     }
@@ -402,7 +403,7 @@ export function addEventListeners() {
   let lastWheelTime = 0
   document.addEventListener('wheel', (e) => {
     const now = Date.now()
-    if (now - lastWheelTime < 150) return
+    if (now - lastWheelTime < 150 || !input.keys["Shift"]) return
     if (e.deltaY < 0) {
       scrollCategoryTiles(true)
       lastWheelTime = now

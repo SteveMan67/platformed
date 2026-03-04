@@ -495,13 +495,22 @@ input::-webkit-inner-spin-button {
 .buttons .apply {
   background-color: black;
   color: #C29A62;
+  outline: none;
+  border: none;
+  border-radius: 500px;
+  font-family: "Fredoka", sans-serif;
+  font-size: 20px;
+  height: 25px;
+  aspect-ratio: 10 / 3;
 }
 
-.buttons>div {
+.buttons>* {
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
   aspect-ratio: 10 / 3;
+  width: 90px;
   height: 25px;
   border: 3px solid black;
   border-radius: 20px;
