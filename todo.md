@@ -5,7 +5,7 @@
 - fix trigger not going away after delteted
 - add dissipation animation
 - only highlight selected trigger (if any) and have different colors for different operations
-- add instant option for teleport trigger
+- rotate block isn't working
 
 # Finishing Touches
 - convert tiles to spritesheet
