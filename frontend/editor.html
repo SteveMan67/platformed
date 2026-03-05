@@ -19,6 +19,7 @@
   <script type="module" src="/javascript/site.js" defer></script>
   <script type="module" src="/javascript/load-editor-level.js" defer></script>
   <link rel="stylesheet" href="/styles/style.css">
+  <link rel="stylesheet" href="/styles/login.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
@@ -32,6 +33,12 @@
       <div class="actions">
         <!-- <img src="/assets/icons/undo.svg">
         <img src="/assets/icons/redo.svg"> -->
+
+        <div class="save-utils">
+          <p class="save-info"></p>
+          <div class="saving hidden">Saving...</div>
+          <div class="loading hidden"></div>
+        </div>
         <img class="save" src="/assets/icons/save.svg">
         <img class="import" src="/assets/icons/import.svg">
         <img class="play" src="/assets/icons/play_nofill.svg" alt="">
@@ -90,11 +97,6 @@
         <p>|</p>
         <p>tileId:</p>
         <p class="selected-tile-id">16</p>
-        <div class="saving hidden">
-          <p class="saving-divider">|</p>
-          <div class="loading"></div>
-          <p class="saving-text">saving...</p>
-        </div>
       </div>
       <div class="right-info">
         <p>x:</p>
@@ -146,6 +148,18 @@
           }
         })
       </script>
+    </div>
+    <div class="login hidden">
+      <h1>login</h1>
+      <form action="">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password">
+        <div class="form-button">
+          <input id="submit" type="submit" value="Log in">
+        </div>
+      </form>
     </div>
     <div class="menu-content">
       <input type="radio" name="tabs" id="tab1">

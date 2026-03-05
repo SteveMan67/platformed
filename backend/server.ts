@@ -151,7 +151,7 @@ const server = Bun.serve({
         headers.append("Set-Cookie", `session-id=${sessionId[0].id}; Path=/; SameSite=Lax; MaxAge=${60 * 60 * 24 * 14}`)
         headers.append("Set-Cookie", `token=${uuid}; Path=/; SameSite=Lax; MaxAge=${60 * 60 * 24 * 14}`)
 
-        return new Response("Login successful", withCors({ status: 200, headers: headers }, CORS))
+        return new Response(JSON.stringify({ id: user.id }), withCors({ status: 200, headers: headers }, CORS))
 
       } catch (e) {
         console.error(e)

@@ -5,7 +5,7 @@ import { canvas, drawMinimap, updateCanvasSize, updateTileset } from "./renderer
 import { toggleErase, changeSelectedTile, zoomMap, scrollCategoryTiles, undo, redo, calculateAdjacenciesForIndexes } from "/javascript/editor.js"
 import { killPlayer } from "./platformer.js"
 import { stampSelection } from "./editor.js"
-const { editor, player } = state
+const { user, editor, player } = state
 
 export function toggleEditorUI(on) {
   const grid = document.querySelector(".grid")
@@ -196,6 +196,44 @@ export function addEventListeners() {
   const minimapToggle = document.getElementById("show-minimap")
   const triggerHighlightToggle = document.getElementById("trigger-highlight")
   const minimap = document.querySelector(".minimap")
+
+  const username = document.querySelector(".login #username")
+  const password = document.querySelector(".login #password")
+  const login = document.querySelector(".login")
+  const loginSubmit = document.querySelector(".login #submit")
+  const loginForm = document.querySelector(".login form")
+  const overlay = document.querySelector(".overlay")
+
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault()
+
+    const form = e.target
+    if (form.username.value && form.password.value) {
+      console.log("hello")
+      const payload = {
+        username: form.username.value,
+        password: form.password.value
+      }
+
+      const serverUrl = window.location.origin
+      const url = `${serverUrl}/api/login`
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": 'applicatoin/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload)
+      })
+
+      if (res.ok) {
+        overlay.style.display = "none"
+        login.classList.remove("hidden")
+        const json = await res.json()
+        console.log(json)
+        user.id = json.id
+        updateMap()
+      }
+    }
+  })
 
   triggerHighlightToggle.addEventListener("input", (e) => {
     if (triggerHighlightToggle.checked) {
@@ -456,6 +494,7 @@ export function addEventListeners() {
   })
 
   saveButton.addEventListener("click", () => {
+    console.log("Hello?")
     updateMap()
   })
 
