@@ -364,8 +364,18 @@ export function splitStripImages(tileset) {
 }
 
 export async function updateMap() {
-  if (!user) {
-    alert("Please log in to save levels (you can save as json and upload later if you wish to save progress)")
+  console.log(user)
+  if (!user || user.id == null) {
+    // need to show a log prompt 
+    const overlay = document.querySelector(".overlay")
+    const login = document.querySelector(".login")
+    const menu = document.querySelector(".menu-content")
+    const trigger = document.querySelector(".trigger-dialog")
+    overlay.style.display = "flex"
+    login.classList.remove("hidden")
+    menu.style.display = "none"
+    trigger.style.display = "none"
+
     return
   }
 
@@ -380,7 +390,10 @@ export async function updateMap() {
     payload.data = createMap()
 
     const saving = document.querySelector(".saving")
+    const loading = document.querySelector(".loading")
     saving.classList.remove("hidden")
+    loading.classList.remove("hidden")
+
 
     fetch(`${serverUrl}/api/edit`, {
       method: "PATCH",
@@ -388,7 +401,14 @@ export async function updateMap() {
       credentials: "include",
       body: JSON.stringify(payload),
     }).then(res => {
-      saving.classList.add("hidden")
+      loading.classList.add("hidden")
+      if (res.ok) {
+        saving.innerText = "Saved"
+        setTimeout(() => {
+          saving.innerText = "Saving..."
+          saving.classList.add("hidden")
+        }, 1500)
+      }
     })
   } else {
     const levelId = await uploadLevel([

@@ -57,6 +57,7 @@ loginForm.addEventListener("submit", async (e) => {
     if (res.ok) {
       console.log("request ok")
       window.location.href = redirectUrl ? redirectUrl : "/"
+
     } else {
       const text = await res.text()
       getErrorText(res)
