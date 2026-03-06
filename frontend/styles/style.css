@@ -374,6 +374,9 @@ i::before {
   grid-template-columns: 30px 1fr 30px;
   margin-top: 20px;
   align-items: stretch;
+  max-height: min(800px, 60vh);
+  overflow-y: scroll;
+  scrollbar-width: none;
 }
 
 .arrow {
@@ -517,6 +520,7 @@ input::-webkit-inner-spin-button {
   font-size: 20px;
   height: 25px;
   aspect-ratio: 10 / 3;
+  cursor: pointer;
 }
 
 .buttons>* {

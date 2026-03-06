@@ -401,7 +401,6 @@ export function levelEditorLoop(dt) {
         selection.initialOffsetX = selection.offsetX
         selection.initialOffsetY = selection.offsetY
         handledBySelection = true
-        console.log("hello")
 
       } else if (shiftDown) {
         // selecting, draw new box
