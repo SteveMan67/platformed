@@ -25,19 +25,17 @@ function isStrip(img) {
   }
 }
 
-function getMechanics(idx) {
-  const tiles = mode == "play" ? player.tiles : editor.map.tiles
-  let outList = []
-  if (idx >= 0 && idx < (editor.width * editor.height)) {
-    const tilesetItem = editor.tileset[tiles[idx] >> 4]
-    if (tilesetItem.id == 0 || !tilesetItem.mechanics) return outList
-    outList = [...tilesetItem.mechanics]
-    return outList
-  } else {
-    return outList
-  }
+export function mechanicsHas(tileId, mechanic) {
+  return editor.tileset[tileId] && editor.tileset[tileId].mechanics && editor.tileset[tileId].mechanics.includes(mechanic)
 }
 
+export function typeIs(tileId, type) {
+  return editor.tileset[tileId] && editor.tileset[tileId].type == type
+}
+
+export function triggersAdjacency(tileId) {
+  return editor.tileset[tileId] && editor.tileset[tileId].triggerAdjacency
+}
 export function calculateAdjacencies(tiles, w, h, tileset = editor.tileset) {
   let out = []
   // calculate all the adjacencies in a given level
@@ -107,15 +105,15 @@ export function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles, ti
 export function calcAdjacentAdjacency(idx, tile = editor.selectedTile, tiles = editor.map.tiles) {
   let beforeRotation = 0
   const tileId = tiles[idx] >> 4
-  if (editor.tileset[tileId] && editor.tileset[tileId].type == "rotation") {
+  if (typeIs(tileId, "rotation")) {
     beforeRotation = tiles[idx] & 3
   }
-  if (editor.tileset[tile] && !(editor.tileset[tile].triggerAdjacency)) {
+  if (triggersAdjacency(tile)) {
     tiles[idx] = tile << 4
   }
   const centerVal = calculateAdjacency(idx, tile, tiles)
 
-  if (editor.tileset[tileId] && editor.tileset[tileId].type == "rotation") {
+  if (typeIs(tileId, "rotation")) {
     tiles[idx] = (centerVal >> 2 << 2) + beforeRotation
   } else {
     tiles[idx] = centerVal
@@ -130,7 +128,7 @@ export function calcAdjacentAdjacency(idx, tile = editor.selectedTile, tiles = e
 
   neighbors.forEach(n => {
     const tileId = tiles[n] >> 4
-    if (tileId !== 0 && editor.tileset[tileId].type == 'adjacency') {
+    if (tileId !== 0 && typeIs(tileId, 'adjacency')) {
       tiles[n] = calculateAdjacency(n, tileId, tiles)
     }
   })
@@ -166,7 +164,7 @@ function scanLevelOnPlay() {
   for (let i = 0; i < tiles.length; i++) {
     const raw = tiles[i]
     const tileId = raw >> 4
-    if (tileId != 0 && editor.tileset[tileId] && editor.tileset[tileId].type == "enemy") {
+    if (tileId != 0 && typeIs(tileId, "enemy")) {
       const ty = Math.floor(i / editor.map.w)
       const tx = i % editor.map.w
       const worldY = ty * player.tileSize
@@ -359,7 +357,7 @@ function rotateTile(tx, ty, amount) {
   const raw = player.tiles[idx]
   const rotation = raw & 3
   const newRotation = (rotation + amount) % 4
-  if (editor.tileset[raw >> 4].type == "rotation") {
+  if (typeIs(raw >> 4, "rotation")) {
     player.tiles[idx] = (raw >> 4 << 4) + newRotation
   }
 }
@@ -449,31 +447,31 @@ function checkCollision(dt, x, y, w, h, simulate = false) {
       if (player.x !== oldX || player.y !== oldY) return false
       if (tileId !== 0) {
         const tile = editor.tileset[tileId]
-        if (tile && tile.mechanics && tile.mechanics.includes("trigger")) {
+        if (mechanicsHas(tileId, "trigger")) {
           touchingTrigger = true
         }
-        if (tile && tile.mechanics && tile.mechanics.includes("killOnTouch")) {
+        if (mechanicsHas(tileId, "killOnTouch")) {
           continue
         }
-        if (tile && tile.mechanics && tile.mechanics.includes("hidden")) {
+        if (mechanicsHas(tileId, "hidden")) {
           continue
         }
-        if (tile && tile.mechanics && tile.mechanics.includes("bouncePad")) {
+        if (mechanicsHas(tileId, "bouncePad")) {
           continue
         }
-        if (tile && tile.mechanics && tile.mechanics.includes("noCollision")) {
+        if (mechanicsHas(tileId, "noCollision")) {
           continue
         }
-        if (tile && tile.mechanics && tile.mechanics.includes("pixelCollision")) {
+        if (mechanicsHas(tileId, "pixelCollision")) {
           return checkPixelCollsion(tiles[idx], px, py, x, y, w, h)
         }
-        if (tile && tile.mechanics && tile.mechanics.includes("swapTrigger1") && player.toggledTile) {
+        if (mechanicsHas(tileId, "swapTrigger1") && player.toggledTile) {
           continue
         }
-        if (tile && tile.mechanics && tile.mechanics.includes("swapTrigger2") && !player.toggledTile) {
+        if (mechanicsHas(tileId, "swapTrigger2") && !player.toggledTile) {
           continue
         }
-        if (tile && tile.mechanics && tile.mechanics.includes("dissipate")) {
+        if (mechanicsHas(tileId, "dissipate")) {
           const dissipation = player.dissipations.find(d => d.tileIdx === idx)
           if (dissipation && dissipation.timer <= dissipation.timeToDissipate && dissipation.timer > 0) {
             continue

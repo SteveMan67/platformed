@@ -1,4 +1,4 @@
-import { calcAdjacentAdjacency, calculateAdjacency, enemies } from "./platformer.js"
+import { calcAdjacentAdjacency, calculateAdjacency, enemies, mechanicsHas, typeIs } from "./platformer.js"
 import { canvas, ctx, drawMap, drawMinimap } from "./renderer.js"
 import { input, key } from "./site.js"
 import { state } from "./state.js"
@@ -98,31 +98,28 @@ export function placeTile(tx, ty) {
   }
   const idx = ty * editor.map.w + tx
   const selected = editor.selectedTile
-  const tile = editor.tileset[selected]
 
   const underCursor = editor.map.tiles[idx] >> 4
 
-  if (editor.tileset[underCursor] && editor.tileset[underCursor].mechanics && editor.tileset[underCursor].mechanics.includes("trigger")) {
+  if (mechanicsHas(underCursor, "trigger")) {
     const trigger = player.triggers.findIndex(f => f.x == tx && f.y == ty)
     if (trigger !== -1) {
       player.triggers.slice(trigger, 1)
     }
   }
 
-  if (tile && tile.mechanics) {
-    if (tile.mechanics.includes("spawn") && !editor.limitedPlacedTiles.includes(selected)) {
-      editor.playerSpawn = { x: tx, y: ty }
-      console.log(editor.playerSpawn)
-    }
-    if (tile.mechanics.includes("end") && !editor.limitedPlacedTiles.includes(selected)) {
-      editor.end = { x: tx, y: ty }
-    }
-    if (tile.mechanics.includes("onePerLevel") && !editor.limitedPlacedTiles.includes(selected)) {
-      editor.limitedPlacedTiles.push(selected)
-    }
-    if (tile.mechanics.includes("trigger")) {
-      addTrigger(tx, ty)
-    }
+  if (typeIs(selected, "spawn") && !editor.limitedPlacedTiles.includes(selected)) {
+    editor.playerSpawn = { x: tx, y: ty }
+    console.log(editor.playerSpawn)
+  }
+  if (typeIs(selected, "end") && !editor.limitedPlacedTiles.includes(selected)) {
+    editor.end = { x: tx, y: ty }
+  }
+  if (typeIs(selected, "onePerLevel") && !editor.limitedPlacedTiles.includes(selected)) {
+    editor.limitedPlacedTiles.push(selected)
+  }
+  if (typeIs(selected, "trigger")) {
+    addTrigger(tx, ty)
   }
 
   if (editor.limitedPlacedTiles.includes(editor.map.tiles[idx] >> 4) && editor.map.tiles[idx] >> 4 !== selected) {
@@ -130,12 +127,12 @@ export function placeTile(tx, ty) {
   }
 
 
-  if (tile.type == "adjacency" && !tileLimitPlaced) {
+  if (typeIs(selected, "adjacency") && !tileLimitPlaced) {
     calcAdjacentAdjacency(idx, editor.selectedTile)
-  } else if (tile.type == "rotation" && !tileLimitPlaced) {
+  } else if (typeIs(selected, "rotation") && !tileLimitPlaced) {
     calcAdjacentAdjacency(idx, editor.selectedTile)
     editor.map.tiles[idx] = (editor.selectedTile * 16) + editor.currentRotation
-  } else if (tile.type == "empty") {
+  } else if (typeIs(selected, "empty")) {
     calcAdjacentAdjacency(idx, selected)
   } else if (!tileLimitPlaced) {
     calcAdjacentAdjacency(idx, selected)
@@ -237,7 +234,7 @@ export function liftSelection() {
 
       if (tile !== 0) {
         selectionLayer[idx] = tile
-        const rotation = editor.tileset[tile >> 4] && editor.tileset[tile >> 4].type == "rotation" ? tile & 3 : 0
+        const rotation = typeIs(tile >> 4, "rotation") ? tile & 3 : 0
         liftedTiles.push({ idx: idx, before: tile >> 4, after: 0, rotation: rotation })
 
         map.tiles[idx] = 0
@@ -283,7 +280,7 @@ export function stampSelection() {
           map.tiles[newIdx] = tile
           changedIndexes.push(newIdx)
           changedIndexes.push(idx)
-          const rotation = editor.tileset[tile >> 4] && editor.tileset[tile >> 4].type == "rotation" ? tile & 3 : 0
+          const rotation = mechanicsHas(tile >> 4, "rotation") ? tile & 3 : 0
           changedTiles.push({ idx: newIdx, before: beforeTile, after: tile >> 4, rotation: rotation })
         }
       }
@@ -490,7 +487,7 @@ export function levelEditorLoop(dt) {
       if (tx >= 0 && tx < map.w && ty >= 0 && ty < map.h) {
         const raw = editor.map.tiles[idx]
         const tileId = raw >> 4
-        if (editor.tileset[tileId] && editor.tileset[tileId].mechanics && editor.tileset[tileId].mechanics.includes("trigger")) {
+        if (mechanicsHas(tileId, "trigger")) {
           toggleTriggerDialog(true, tx, ty)
         }
       }
@@ -515,7 +512,7 @@ export function levelEditorLoop(dt) {
         let afterRotation = 0
         if (selection.hasFloatingTiles) {
           const raw = editor.selectionLayer[idx]
-          if (raw !== 0 && editor.tileset[raw >> 4] && editor.tileset[raw >> 4] && editor.tileset[raw >> 4].type == "rotation") {
+          if (raw !== 0 && typeIs(raw >> 4, "rotatoin")) {
             beforeRotation = raw & 3
             afterRotation = ((raw & 3) + 1) % 4
             editor.selectionLayer[idx] = (editor.selectionLayer[idx] >> 4 << 4) + afterRotation
@@ -524,7 +521,7 @@ export function levelEditorLoop(dt) {
         } else {
           const raw = editor.map.tiles[idx]
           changedBlocks.push({ idx: idx, before: beforeTile, after: editor.selectedTile >> 4 })
-          if (raw !== 0 && editor.tileset[raw >> 4] && editor.tileset[raw >> 4] && editor.tileset[raw >> 4].type == "rotation") {
+          if (raw !== 0 && typeIs(raw >> 4, "rotation")) {
             beforeRotation = raw & 3
             afterRotation = ((raw & 3) + 1) % 4
             editor.map.tiles[idx] = (editor.map.tiles[idx] >> 4 << 4) + afterRotation

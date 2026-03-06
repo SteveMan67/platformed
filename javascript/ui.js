@@ -3,7 +3,7 @@ import { mode, setMode, input } from "./site.js"
 import { state } from "./state.js"
 import { canvas, drawMinimap, updateCanvasSize, updateTileset } from "./renderer.js"
 import { toggleErase, changeSelectedTile, zoomMap, scrollCategoryTiles, undo, redo, calculateAdjacenciesForIndexes } from "/javascript/editor.js"
-import { killPlayer } from "./platformer.js"
+import { killPlayer, mechanicsHas, typeIs } from "./platformer.js"
 import { stampSelection } from "./editor.js"
 const { user, editor, player } = state
 
@@ -618,11 +618,11 @@ export function addEventListeners() {
             beforeTile = editor.selectionLayer[idx] >> 4
             if (!editor.limitedPlacedTiles.includes(editor.selectedTile)) {
               editor.selectionLayer[idx] = editor.selectedTile << 4
-              if (editor.tileset[editor.selectedTile] && editor.tileset[editor.selectedTile].mechanics && editor.tileset[editor.selectedTile].mechanics.includes("onePerLevel")) {
+              if (mechanicsHas(editor.selectedTile, "onePerLevel")) {
                 editor.limitedPlacedTiles.push(editor.selectedTile)
               }
             }
-            if (editor.tileset[beforeTile] && editor.tileset[beforeTile].mechanics && editor.tileset[beforeTile].mechanics.includes("onePerLevel")) {
+            if (mechanicsHas(editor.selectedTile, "onePerLevel")) {
               const index = editor.limitedPlacedTiles.findIndex(f => f === beforeTile)
               if (index !== -1) {
                 editor.limitedPlacedTiles.splice(index, 1)
@@ -632,11 +632,11 @@ export function addEventListeners() {
             beforeTile = editor.map.tiles[idx] >> 4
             if (!editor.limitedPlacedTiles.includes(editor.selectedTile)) {
               editor.map.tiles[idx] = editor.selectedTile << 4
-              if (editor.tileset[editor.selectedTile] && editor.tileset[editor.selectedTile].mechanics && editor.tileset[editor.selectedTile].mechanics.includes("onePerLevel")) {
+              if (mechanicsHas(editor.selectedTile, "onePerLevel")) {
                 editor.limitedPlacedTiles.push(editor.selectedTile)
               }
             }
-            if (editor.tileset[beforeTile] && editor.tileset[beforeTile].mechanics && editor.tileset[beforeTile].mechanics.includes("onePerLevel") && editor.selectedTile !== beforeTile) {
+            if (mechanicsHas(editor.selectedTile, "onePerLevel") && editor.selectedTile !== beforeTile) {
               const index = editor.limitedPlacedTiles.findIndex(f => f === beforeTile)
               if (index !== -1) {
                 editor.limitedPlacedTiles.splice(index, 1)
@@ -767,7 +767,7 @@ export function addTileSelection() {
       let img = document.createElement('img')
       img.classList.add('tile-select')
       let src
-      if (editor.tileset[i].type == 'rotation' || editor.tileset[i].type == 'adjacency') {
+      if (typeIs(i, 'rotation') || typeIs(i, 'adjacency')) {
         const c = editor.tileset[i].images[0]
         if (c instanceof HTMLCanvasElement) {
           if (c.toBlob) {

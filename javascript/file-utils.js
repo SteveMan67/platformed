@@ -1,5 +1,5 @@
 import { uploadLevel } from "./api.js";
-import { calculateAdjacencies, initPlatformer, updatePhysicsConstants } from "./platformer.js";
+import { calculateAdjacencies, initPlatformer, mechanicsHas, typeIs, updatePhysicsConstants } from "./platformer.js";
 import { updateTileset } from "./renderer.js";
 import { state } from "./state.js"
 import { needsSmallerLevel } from "./ui.js";
@@ -63,10 +63,10 @@ export async function loadMapFromData(json) {
   rawTileLayer = calculateAdjacencies(rawTileLayer, json.width, json.height);
 
   for (let i = 0; i < rawTileLayer.length; i++) {
-    if (editor.tileset[rawTileLayer[i] >> 4] && editor.tileset[rawTileLayer[i] >> 4].type == "rotation") {
+    if (typeIs(rawTileLayer[i] >> 4, "rotation")) {
       rawTileLayer[i] += rawRotationLayer[i];
     }
-    if (editor.tileset[rawTileLayer[i] >> 4] && editor.tileset[rawTileLayer[i] >> 4].mechanics && editor.tileset[rawTileLayer[i] >> 4].mechanics.includes("spawn")) {
+    if (mechanicsHas(rawTileLayer[i] >> 4, "spawn")) {
       editor.playerSpawn.y = Math.floor(i / json.width);
       editor.playerSpawn.x = i % json.width;
     }
@@ -108,7 +108,7 @@ export function loadMap(path) {
       }
       rawTileLayer = rawTileLayer.map(id => id << 4)
       for (let i = 0; i < rawTileLayer.length; i++) {
-        if (editor.tileset[rawTileLayer[i] >> 4].type == "rotation") {
+        if (typeIs(rawTileLayer[i] >> 4)) {
           rawTileLayer[i] = rawTileLayer[i] + rawRotationLayer[i]
         }
       }
@@ -176,7 +176,7 @@ export function createMap(width = editor.map.w, height = editor.map.h, data = Ar
   // encode layer with 2 bits of rotation data, 0-3 and run length encode it
   let rotationList = []
   for (let i = 0; i < data.length; i++) {
-    if (editor.tileset[data[i] >> 4].type == "rotation") {
+    if (typeIs(data[i] >> 4, "rotation")) {
       rotationList.push(data[i] & 3)
     } else {
       rotationList.push(0)
