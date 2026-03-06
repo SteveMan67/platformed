@@ -133,8 +133,8 @@ export function placeTile(tx, ty) {
   if (tile.type == "adjacency" && !tileLimitPlaced) {
     calcAdjacentAdjacency(idx, editor.selectedTile)
   } else if (tile.type == "rotation" && !tileLimitPlaced) {
-    editor.map.tiles[idx] = (editor.selectedTile * 16) + editor.currentRotation
     calcAdjacentAdjacency(idx, editor.selectedTile)
+    editor.map.tiles[idx] = (editor.selectedTile * 16) + editor.currentRotation
   } else if (tile.type == "empty") {
     calcAdjacentAdjacency(idx, selected)
   } else if (!tileLimitPlaced) {
@@ -401,7 +401,6 @@ export function levelEditorLoop(dt) {
         selection.initialOffsetX = selection.offsetX
         selection.initialOffsetY = selection.offsetY
         handledBySelection = true
-        console.log("hello")
 
       } else if (shiftDown) {
         // selecting, draw new box

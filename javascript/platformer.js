@@ -105,11 +105,22 @@ export function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles, ti
 }
 
 export function calcAdjacentAdjacency(idx, tile = editor.selectedTile, tiles = editor.map.tiles) {
+  let beforeRotation = 0
+  const tileId = tiles[idx] >> 4
+  if (editor.tileset[tileId] && editor.tileset[tileId].type == "rotation") {
+    beforeRotation = tiles[idx] & 3
+  }
   if (editor.tileset[tile] && !(editor.tileset[tile].triggerAdjacency)) {
     tiles[idx] = tile << 4
   }
   const centerVal = calculateAdjacency(idx, tile, tiles)
-  tiles[idx] = centerVal
+
+  if (editor.tileset[tileId] && editor.tileset[tileId].type == "rotation") {
+    tiles[idx] = (centerVal >> 2 << 2) + beforeRotation
+  } else {
+    tiles[idx] = centerVal
+  }
+
   const w = editor.width
   const neighbors = []
   if (idx - w >= 0) neighbors.push(idx - w)
