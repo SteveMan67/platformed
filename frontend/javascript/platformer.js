@@ -36,6 +36,10 @@ export function typeIs(tileId, type) {
 export function triggersAdjacency(tileId) {
   return editor.tileset[tileId] && editor.tileset[tileId].triggerAdjacency
 }
+
+/**
+ * Calculates adjacencies for the whole level
+ */
 export function calculateAdjacencies(tiles, w, h, tileset = editor.tileset) {
   let out = []
   // calculate all the adjacencies in a given level
@@ -51,6 +55,9 @@ export function calculateAdjacencies(tiles, w, h, tileset = editor.tileset) {
   return out
 }
 
+/**
+ * Calculates an adjacency for a specific tile
+ */
 export function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles, tileset = editor.tileset, w = editor.width, h = editor.height) {
   // calculate the adjacency for a given tile 
   let variant = 0
@@ -102,6 +109,13 @@ export function calculateAdjacency(tileIdx, tileId, tiles = editor.map.tiles, ti
 
 }
 
+/**
+ * Calculates the adjacency and 4 surrounding adjacencies for a tile
+ * @param {number} idx - The index of the tile
+ * @param {number} tile - The tileId of the tile
+ * @param {Uint16Array} tiles - what tileset to use
+ * @returns The raw center tile
+ */
 export function calcAdjacentAdjacency(idx, tile = editor.selectedTile, tiles = editor.map.tiles) {
   let beforeRotation = 0
   const tileId = tiles[idx] >> 4
@@ -136,6 +150,13 @@ export function calcAdjacentAdjacency(idx, tile = editor.selectedTile, tiles = e
   return centerVal
 }
 
+/**
+ * 
+ * @param {number} heightInTiles - how high the jump should be
+ * @param {number} yInertia - the yIntertia value
+ * @param {number} tileSize - the tileSize in pixels
+ * @returns the jump height value needed for that jump height
+ */
 function getJumpHeight(heightInTiles, yInertia, tileSize) {
   const gravity = ((0.7 * yInertia) + 0.5) * (tileSize / 64)
   const heightInPixels = heightInTiles * tileSize
