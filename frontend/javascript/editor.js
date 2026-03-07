@@ -21,8 +21,6 @@ export function zoomMap(zoomDirectionIsIn, amount) {
   const smallestDimension = editor.width / canvas.width > editor.height / canvas.height ? "height" : "width"
   const wh = smallestDimension == "height" ? canvas.height : canvas.width
   const twh = smallestDimension == "height" ? editor.map.h : editor.map.w
-  console.log(wh, twh)
-  console.log(wh / twh)
 
   newZoom = Math.ceil(Math.max(wh / twh, Math.min(newZoom, 100)))
 
@@ -122,14 +120,14 @@ export function placeTile(tx, ty) {
       player.triggers.splice(trigger, 1)
     }
   }
-  if (typeIs(selected, "spawn") && !tileLimitPlaced) {
+  if (mechanicsHas(selected, "spawn") && !tileLimitPlaced) {
     editor.playerSpawn = { x: tx, y: ty }
     console.log(editor.playerSpawn)
   }
-  if (typeIs(selected, "end") && !tileLimitPlaced) {
+  if (mechanicsHas(selected, "end") && !tileLimitPlaced) {
     editor.end = { x: tx, y: ty }
   }
-  if (typeIs(selected, "onePerLevel") && !tileLimitPlaced) {
+  if (mechanicsHas(selected, "onePerLevel") && !tileLimitPlaced) {
     editor.limitedPlacedTiles.push(selected)
   }
   if (mechanicsHas(selected, "trigger")) {
