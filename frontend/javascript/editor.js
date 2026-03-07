@@ -18,11 +18,13 @@ export function zoomMap(zoomDirectionIsIn, amount) {
   } else {
     newZoom -= amount
   }
-  const smallestDimension = canvas.width > canvas.height ? "height" : "width"
+  const smallestDimension = editor.width / canvas.width > editor.height / canvas.height ? "height" : "width"
   const wh = smallestDimension == "height" ? canvas.height : canvas.width
   const twh = smallestDimension == "height" ? editor.map.h : editor.map.w
+  console.log(wh, twh)
+  console.log(wh / twh)
 
-  newZoom = Math.round(Math.max(wh / twh, Math.min(newZoom, 100)))
+  newZoom = Math.ceil(Math.max(wh / twh, Math.min(newZoom, 100)))
 
   const scaleRatio = newZoom / oldTileSize
 
