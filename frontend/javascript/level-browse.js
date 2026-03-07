@@ -180,44 +180,51 @@ const tilesetMap = new Map()
 const imgMap = new Map()
 
 async function loadTileset(tilesetPath) {
+  console.log(tilesetPath)
   if (tilesetMap.has(tilesetPath)) return tilesetMap.get(tilesetPath)
-  const res = await fetch(tilesetPath)
-  const rawJson = await res.json()
-  const tilesetJson = rawJson.tiles
-  const tileset = {}
-  const path = rawJson.path
 
-  const promises = tilesetJson.map(async (def) => {
-    const img = new Image()
-    img.src = path + def.file
-    await new Promise(resolve => {
-      img.onload = resolve
-      img.onerror = resolve
-    })
+  const fetchPromise = (async () => {
 
-    tileset[def.id] = { ...def, triggerAdjacency: def.triggerAdjacency, image: img, images: [] }
+    const res = await fetch(tilesetPath)
+    const rawJson = await res.json()
+    const tilesetJson = rawJson.tiles
+    const tileset = {}
+    const path = rawJson.path
 
-    if (def.type == "adjacency" || def.type == "rotation") {
-      const w = img.naturalHeight
-      if (w > 0) {
-        const count = Math.floor(img.naturalWidth / w)
-        for (let i = 0; i < count; i++) {
-          const canvas = document.createElement('canvas')
-          canvas.width = w
-          canvas.height = w
-          const ctx = canvas.getContext('2d')
-          ctx.drawImage(img, i * w, 0, w, w, 0, 0, w, w)
+    const promises = tilesetJson.map(async (def) => {
+      const img = new Image()
+      img.src = path + def.file
+      await new Promise(resolve => {
+        img.onload = resolve
+        img.onerror = resolve
+      })
 
-          const sliceImg = new Image()
-          sliceImg.src = canvas.toDataURL()
-          tileset[def.id].images[i] = sliceImg
+      tileset[def.id] = { ...def, triggerAdjacency: def.triggerAdjacency, image: img, images: [] }
+
+      if (def.type == "adjacency" || def.type == "rotation") {
+        const w = img.naturalHeight
+        if (w > 0) {
+          const count = Math.floor(img.naturalWidth / w)
+          for (let i = 0; i < count; i++) {
+            const canvas = document.createElement('canvas')
+            canvas.width = w
+            canvas.height = w
+            const ctx = canvas.getContext('2d')
+            ctx.drawImage(img, i * w, 0, w, w, 0, 0, w, w)
+
+            const sliceImg = new Image()
+            sliceImg.src = canvas.toDataURL()
+            tileset[def.id].images[i] = sliceImg
+          }
         }
       }
-    }
-  })
-  await Promise.all(promises)
-  tilesetMap.set(tilesetPath, tileset)
-  return tileset
+    })
+    await Promise.all(promises)
+    return tileset
+  })();
+  tilesetMap.set(tilesetPath, fetchPromise)
+  console.log(tilesetMap.has(tilesetPath))
+  return fetchPromise
 }
 
 export async function renderLevelPreview(canvas, levelData) {
