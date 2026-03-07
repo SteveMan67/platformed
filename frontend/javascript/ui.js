@@ -4,7 +4,7 @@ import { state } from "./state.js"
 import { canvas, drawMinimap, updateCanvasSize, updateTileset } from "./renderer.js"
 import { toggleErase, changeSelectedTile, zoomMap, scrollCategoryTiles, undo, redo, calculateAdjacenciesForIndexes } from "/javascript/editor.js"
 import { killPlayer, mechanicsHas, typeIs } from "./platformer.js"
-import { stampSelection } from "./editor.js"
+import { stampSelection, updateLevelSize } from "./editor.js"
 const { user, editor, player } = state
 
 export function toggleEditorUI(on) {
@@ -190,6 +190,7 @@ export function addEventListeners() {
   const zoomSlider = document.getElementById('zoom-level-input')
   const walljumpInput = document.getElementById('walljump-input')
   const tilesetInput = document.getElementById('tileset-input')
+  const resizeLevel = document.querySelector(".resize")
 
   const stepsContainer = document.querySelector('.steps')
   const applyButton = document.querySelector('.apply')
@@ -380,6 +381,29 @@ export function addEventListeners() {
 
   document.querySelector('#new').addEventListener('click', () => {
     addStepToUI({ type: 'toggleBlocks' })
+  })
+
+  resizeLevel.addEventListener("click", () => {
+    console.log("hi")
+    const heightEl = document.querySelector(".resize-wrapper .height")
+    const widthEl = document.querySelector(".resize-wrapper .width")
+    const width = Number(widthEl.value)
+    const height = Number(heightEl.value)
+
+    if (height > 100 || height < 10 || width > 200 || width < 10) {
+      alert("invalid level size")
+      return
+    }
+    if (height < editor.height || width < editor.width) {
+      console.log(height, editor.height, width, editor.width)
+      console.log(height < editor.height, width < editor.width)
+      if (confirm("This might erase level data. Continue?")) {
+        updateLevelSize(width, height)
+      }
+    } else {
+      updateLevelSize(width, height)
+    }
+
   })
 
   tilesetInput.addEventListener("input", () => {
