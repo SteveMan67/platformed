@@ -350,6 +350,16 @@ function handleTriggers(tx, ty) {
           }
         }
 
+        if (!isTrue) {
+          let skipTo
+          for (let x = i; i < trigger.execute.length; i++) {
+            if (trigger.execute[x].type === "else" || trigger.execute[x].type === "end") {
+              skipTo = x
+              executeTriggerSteps(trigger, x)
+              return
+            }
+          }
+        }
       }
       if (step.type == "updateBlock") {
         if (step.x == undefined || step.y == undefined || step.block == undefined) return

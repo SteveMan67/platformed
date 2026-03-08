@@ -19,7 +19,6 @@ function getCondition(tokens, lineNumber) {
 }
 
 export async function readTriggerScript(script) {
-  script = await loadScript()
   const lines = script.split(/\r?\n/)
 
   const execute = []
@@ -28,8 +27,13 @@ export async function readTriggerScript(script) {
   while (i < lines.length) {
     const line = lines[i]
 
+    if (line === "") {
+      i++
+      continue
+    }
     let tokens = line.split(/\s+/)
     tokens = tokens.map(f => f = f.toUpperCase())
+    console.log(tokens)
     const command = tokens[0]
 
     let step
@@ -84,14 +88,20 @@ export async function readTriggerScript(script) {
         const operatorIndex = condition.findIndex(f => f === "IS")
         if (operatorIndex === -1) {
           throw new Error(`Syntax Error on line ${i}`)
-          return
         }
 
         step.condition.operator = condition[operatorIndex]
         step.condition.property = condition[operatorIndex + 1]
-        step.condition.value = step.condition.subject === "TYPE" ? condition[operatorIndex + 2] : parseInt(condition[operatorIndex + 2], 10)
+        step.condition.value = step.condition.property === "TYPE" ? condition[operatorIndex + 2] : parseInt(condition[operatorIndex + 2], 10)
+
+        if (step.condition.operator === undefined || step.condition.property === undefined || step.condition.value === undefined) {
+          throw new Error(`Syntax Error on line ${i}`)
+        }
+        execute.push(step)
         break
       case 'ELSE':
+        step = { type: 'else' }
+        execute.push(step)
         break
       case 'END':
         step = { type: 'end' }

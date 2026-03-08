@@ -363,6 +363,55 @@ i::before {
   flex-direction: column;
 }
 
+.trigger-top {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.trigger-script {
+  width: min(500px, 90vw);
+  height: min(700px, 80vh);
+  background-color: #C29A62;
+  border-radius: 20px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.trigger-script p {
+  font-size: 30px;
+}
+
+.trigger-script textarea {
+  width: 100%;
+  height: 100%;
+  border: 3px solid black;
+  border-radius: 5px;
+  background-color: transparent;
+  outline: none;
+  font-size: 20px;
+  font-family: monospace;
+}
+
+.trigger-script .apply {
+  justify-self: right;
+}
+
+button {
+  line-height: 20px;
+  padding: 5px 15px;
+  border: none;
+  outline: none;
+  font-size: 20px;
+  background-color: black;
+  color: #C29A62;
+  font-family: "Fredoka", sans-serif;
+  border-radius: 500px;
+}
+
 .trigger-dialog p {
   margin: 0;
   font-size: 35px;

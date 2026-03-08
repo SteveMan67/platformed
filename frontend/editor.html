@@ -111,8 +111,21 @@
     <div class="background"
       onclick="document.querySelector('.overlay').style.display = 'none'; document.querySelector('.menu-content').style.display = 'none'; document.querySelector('.trigger-dialog').style.display = 'none'">
     </div>
+    <div class="trigger-script hidden">
+      <div class="trigger-top">
+        <p>Edit with Trigger Script</p>
+      </div>
+      <div class="error"></div>
+      <textarea name="triggerScript" id="triggerScript"></textarea>
+      <div class="buttons">
+        <input type="submit" class="submit apply" value="apply">
+      </div>
+    </div>
     <div class="trigger-dialog">
-      <p>Edit Trigger</p>
+      <div class="trigger-top">
+        <p>Edit Trigger</p>
+        <button class="trigger-script-edit">Edit with TriggerScript</button>
+      </div>
       <div class="steps-wrapper">
         <div class="arrow"></div>
         <div class="steps">
@@ -139,8 +152,8 @@
           if (e.key !== "Enter") return
           const overlay = document.querySelector(".overlay")
           const dialog = document.querySelector(".trigger-dialog")
-          if (getComputedStyle(overlay).display !== 'none') {
-            const button = dialog.querySelector(".submit")
+          if (getComputedStyle(dialog).display !== 'none') {
+            const button = dialog.querySelector(".trigger-dialog .submit")
             if (button) {
               e.preventDefault()
               button.click()
