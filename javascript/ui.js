@@ -5,6 +5,7 @@ import { canvas, drawMinimap, updateCanvasSize, updateTileset } from "./renderer
 import { toggleErase, changeSelectedTile, zoomMap, scrollCategoryTiles, undo, redo, calculateAdjacenciesForIndexes } from "/javascript/editor.js"
 import { killPlayer, mechanicsHas, typeIs } from "./platformer.js"
 import { stampSelection, updateLevelSize } from "./editor.js"
+import { readTriggerScript } from "./trigger-script.js"
 const { user, editor, player } = state
 
 export function toggleEditorUI(on) {
@@ -236,8 +237,14 @@ export function addEventListeners() {
   const tilesetInput = document.getElementById('tileset-input')
   const resizeLevel = document.querySelector(".resize")
 
+  const triggerDialog = document.querySelector(".trigger-dialog")
   const stepsContainer = document.querySelector('.steps')
-  const applyButton = document.querySelector('.apply')
+  const applyTrigger = document.querySelector('.trigger-dialog .apply')
+  const editWithTS = document.querySelector(".trigger-script-edit")
+  const tsTextarea = document.querySelector(".trigger-script textarea")
+  const tsDialog = document.querySelector(".trigger-script")
+  const applyTS = document.querySelector(".trigger-script .apply")
+  const tsError = document.querySelector(".trigger-script .error")
   let mousedown = false
   const minimapToggle = document.getElementById("show-minimap")
   const triggerHighlightToggle = document.getElementById("trigger-highlight")
@@ -278,6 +285,25 @@ export function addEventListeners() {
         user.id = json.id
         updateMap()
       }
+    }
+  })
+
+  console.log(tsDialog)
+  editWithTS.addEventListener("click", (e) => {
+    triggerDialog.style.display = 'none'
+    tsDialog.classList.remove("hidden")
+  })
+
+  applyTS.addEventListener("click", async () => {
+    const text = tsTextarea.value
+
+    try {
+      const execute = await readTriggerScript(text)
+      activeTrigger.execute = execute
+      tsDialog.classList.add("hidden")
+    } catch (e) {
+      console.log(e)
+      tsError.innerText = e
     }
   })
 
@@ -363,7 +389,7 @@ export function addEventListeners() {
     moveMinimap(e)
   })
 
-  applyButton.addEventListener('click', (e) => {
+  applyTrigger.addEventListener('click', (e) => {
     console.log("1")
     if (!activeTrigger) return
     console.log("2")

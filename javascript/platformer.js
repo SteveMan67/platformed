@@ -329,8 +329,7 @@ function handleTriggers(tx, ty) {
         }
       }
       if (step.type == 'if') {
-        if (step.ifStatement === undefined || step.is) return
-
+        if (step.condition === undefined) return
         const cond = step.condition
         let isTrue = false
 
@@ -343,6 +342,7 @@ function handleTriggers(tx, ty) {
             }
             if (cond.property === "TILEID") {
               isTrue = player.tiles[idx] >> 4 === cond.value
+              console.log(isTrue)
             }
             if (cond.property === "ROTATION") {
               isTrue = player.tiles[idx] & 3 === cond.value
@@ -350,6 +350,16 @@ function handleTriggers(tx, ty) {
           }
         }
 
+        if (!isTrue) {
+          let skipTo
+          for (let x = i; i < trigger.execute.length; i++) {
+            if (trigger.execute[x].type === "else" || trigger.execute[x].type === "end") {
+              skipTo = x
+              executeTriggerSteps(trigger, x)
+              return
+            }
+          }
+        }
       }
       if (step.type == "updateBlock") {
         if (step.x == undefined || step.y == undefined || step.block == undefined) return
