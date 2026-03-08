@@ -312,7 +312,44 @@ function handleTriggers(tx, ty) {
       if (step.type == "rotate") {
         if (!step.x || !step.y || !step.beforeRotation) return
         rotateTile(step.x, step.y, step.beforeRotation)
+
         continue
+      }
+      if (step.type == "change") {
+        if (step.x == undefined || step.y == undefined) return
+        if (step.rotate !== undefined) {
+          rotateTile(step.x, step.y, step.rotate)
+        }
+        if (step.rotation !== undefined) {
+          rotateTile(step.x, step.y, step.rotate)
+        }
+        if (step.block !== undefined) {
+          const idx = step.y * editor.width + step.x
+          calcAdjacentAdjacency(idx, step.block, player.tiles)
+        }
+      }
+      if (step.type == 'if') {
+        if (step.ifStatement === undefined || step.is) return
+
+        const cond = step.condition
+        let isTrue = false
+
+        if (cond.subject === "BLOCK") {
+          const idx = cond.y * editor.map.w + cond.x
+          if (cond.operator === "IS") {
+
+            if (cond.property === "TYPE") {
+              isTrue = typeIs(player.tiles[idx] >> 4, cond.value)
+            }
+            if (cond.property === "TILEID") {
+              isTrue = player.tiles[idx] >> 4 === cond.value
+            }
+            if (cond.property === "ROTATION") {
+              isTrue = player.tiles[idx] & 3 === cond.value
+            }
+          }
+        }
+
       }
       if (step.type == "updateBlock") {
         if (step.x == undefined || step.y == undefined || step.block == undefined) return
