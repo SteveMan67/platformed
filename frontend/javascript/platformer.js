@@ -321,6 +321,7 @@ function handleTriggers(tx, ty) {
     for (let i = startIndex; i < trigger.execute.length; i++) {
       const step = trigger.execute[i]
       if (!step) return
+      console.log(`step ${i} is type ${step.type}`)
       if (step.type == "toggleBlocks") {
         player.toggledTile = !player.toggledTile
         continue
@@ -363,18 +364,18 @@ function handleTriggers(tx, ty) {
             }
             if (cond.property === "TILEID") {
               isTrue = player.tiles[idx] >> 4 === cond.value
-              console.log(isTrue)
             }
             if (cond.property === "ROTATION") {
               isTrue = player.tiles[idx] & 3 === cond.value
             }
           }
         }
-
+        console.log(isTrue)
         if (!isTrue) {
           // skip to the end or the else statement
-          for (let x = i; i < trigger.execute.length; i++) {
+          for (let x = i; x < trigger.execute.length; x++) {
             if (trigger.execute[x].type === "else" || trigger.execute[x].type === "end") {
+              console.log(trigger.execute[x])
               executeTriggerSteps(trigger, x)
               return
             }
@@ -384,10 +385,12 @@ function handleTriggers(tx, ty) {
         }
       }
       if (step.type == "else") {
+        console.log(player.skipElse)
         if (player.skipElse) {
           // if condition was true, skip this one
-          for (let x = i; i < trigger.execute.length; i++) {
+          for (let x = i; x < trigger.execute.length; x++) {
             if (trigger.execute[x].type === "end") {
+              console.log("skipping else statement")
               executeTriggerSteps(trigger, x)
               return
             }

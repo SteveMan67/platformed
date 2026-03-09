@@ -1,5 +1,5 @@
 if block 2 9 is tileid 1 then
-change 2 9 block 1
-else 
 change 2 9 block 0
+else 
+change 2 9 block 1
 end
