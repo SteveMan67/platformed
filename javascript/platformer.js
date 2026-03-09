@@ -312,6 +312,17 @@ function checkPixelCollsion(tile, tx, ty, px, py, pw, ph) {
   return false
 }
 
+function fillSelection(startX, startY, endX, endY, tileId) {
+  console.log(startX, startY, endX, endY, tileId)
+  for (let y = startY; y <= endY; y++) {
+    for (let x = startX; x <= endX; x++) {
+      const idx = y * editor.width + x
+      console.log(idx)
+      calcAdjacentAdjacency(idx, tileId, player.tiles)
+    }
+  }
+}
+
 function handleTriggers(tx, ty) {
   const trigger = player.triggers.find(f => f.x == tx && f.y == ty)
   if (!trigger) return
@@ -396,6 +407,15 @@ function handleTriggers(tx, ty) {
             }
           }
         }
+      }
+      if (step.type == "fill") {
+        if (step.startX === undefined || step.startY === undefined || step.endX === undefined || step.endY === undefined || step.block === undefined) return
+        const minX = Math.min(step.startX, step.endX)
+        const maxX = Math.max(step.startX, step.endX)
+        const minY = Math.min(step.startY, step.endY)
+        const maxY = Math.max(step.startY, step.endY)
+
+        fillSelection(minX, minY, maxX, maxY, step.block)
       }
       if (step.type == "end") {
         player.skipElse = false

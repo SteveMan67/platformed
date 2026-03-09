@@ -71,6 +71,21 @@ export async function readTriggerScript(script) {
         }
         if (step.block !== undefined || step.rotate !== undefined || step.rotation !== undefined) execute.push(step)
         break
+      case 'FILL':
+        const startX = parseInt(tokens[1], 10)
+        const startY = parseInt(tokens[2], 10)
+        const endX = parseInt(tokens[3], 10)
+        const endY = parseInt(tokens[4], 10)
+
+        step = { type: "fill", startX: startX, startY: startY, endY: endY, endX: endX }
+        const blockIndex = tokens.findIndex(f => f === "BLOCK")
+        if (blockIndex !== -1) {
+          step.block = parseInt(tokens[blockIndex + 1], 10)
+        } else {
+          throw new Error(`Unable to find block at line ${i}`)
+        }
+        execute.push(step)
+        break
       case 'IF':
         const condition = getCondition(tokens, i)
 
