@@ -372,15 +372,30 @@ function handleTriggers(tx, ty) {
         }
 
         if (!isTrue) {
-          let skipTo
+          // skip to the end or the else statement
           for (let x = i; i < trigger.execute.length; i++) {
             if (trigger.execute[x].type === "else" || trigger.execute[x].type === "end") {
-              skipTo = x
+              executeTriggerSteps(trigger, x)
+              return
+            }
+          }
+        } else {
+          player.skipElse = true
+        }
+      }
+      if (step.type == "else") {
+        if (player.skipElse) {
+          // if condition was true, skip this one
+          for (let x = i; i < trigger.execute.length; i++) {
+            if (trigger.execute[x].type === "end") {
               executeTriggerSteps(trigger, x)
               return
             }
           }
         }
+      }
+      if (step.type == "end") {
+        player.skipElse = false
       }
       if (step.type == "updateBlock") {
         if (step.x == undefined || step.y == undefined || step.block == undefined) return

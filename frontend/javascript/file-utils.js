@@ -2,7 +2,7 @@ import { uploadLevel } from "./api.js";
 import { calculateAdjacencies, initPlatformer, mechanicsHas, typeIs, updatePhysicsConstants } from "./platformer.js";
 import { updateTileset } from "./renderer.js";
 import { state } from "./state.js"
-import { needsSmallerLevel } from "./ui.js";
+import { needsSmallerLevel, openMenu } from "./ui.js";
 
 const { user, player, editor } = state
 
@@ -367,15 +367,7 @@ export async function updateMap() {
   console.log(user)
   if (!user || user.id == null) {
     // need to show a log prompt 
-    const overlay = document.querySelector(".overlay")
-    const login = document.querySelector(".login")
-    const menu = document.querySelector(".menu-content")
-    const trigger = document.querySelector(".trigger-dialog")
-    overlay.style.display = "flex"
-    login.classList.remove("hidden")
-    menu.style.display = "none"
-    trigger.style.display = "none"
-
+    openMenu("login")
     return
   }
 

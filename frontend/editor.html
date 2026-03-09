@@ -42,8 +42,7 @@
         <img class="save" src="/assets/icons/save.svg">
         <img class="import" src="/assets/icons/import.svg">
         <img class="play" src="/assets/icons/play_nofill.svg" alt="">
-        <img class="menu-button" src="/assets/icons/menu.svg"
-          onclick="document.querySelector('.menu-content').style.display = ''; document.querySelector('.overlay').style.display = 'flex'">
+        <img class="menu-button" src="/assets/icons/menu.svg">
       </div>
     </div>
     <div class="game">
@@ -107,11 +106,10 @@
       </div>
     </div>
   </div>
-  <div class="overlay">
-    <div class="background"
-      onclick="document.querySelector('.overlay').style.display = 'none'; document.querySelector('.menu-content').style.display = 'none'; document.querySelector('.trigger-dialog').style.display = 'none'">
+  <div class="overlay hidden">
+    <div class="background">
     </div>
-    <div class="trigger-script hidden">
+    <div class="trigger-script menu hidden">
       <div class="trigger-top">
         <p>Edit with Trigger Script</p>
       </div>
@@ -121,7 +119,7 @@
         <input type="submit" class="submit apply" value="apply">
       </div>
     </div>
-    <div class="trigger-dialog">
+    <div class="trigger-dialog menu hidden">
       <div class="trigger-top">
         <p>Edit Trigger</p>
         <button class="trigger-script-edit">Edit with TriggerScript</button>
@@ -162,7 +160,7 @@
         })
       </script>
     </div>
-    <div class="login hidden">
+    <div class="login menu hidden">
       <h1>login</h1>
       <form action="">
         <label for="username">Username</label>
@@ -174,7 +172,7 @@
         </div>
       </form>
     </div>
-    <div class="menu-content">
+    <div class="menu-content menu hidden">
       <input type="radio" name="tabs" id="tab1">
       <input type="radio" name="tabs" id="tab2" checked>
       <input type="radio" name="tabs" id="tab3">
@@ -187,8 +185,7 @@
           <li><label for="tab3">Share</label></li>
           <li><label for="tab4">Options</label></li>
           <li><label for="tab5">Help</label></li>
-          <li><img src="/assets/icons/close.svg" loading="lazy" class="close-button"
-              onclick="document.querySelector('.overlay').style.display = 'none'"></li>
+          <li><img src="/assets/icons/close.svg" loading="lazy" class="close-button"></li>
         </ul>
       </div>
       <div class="tab-content">

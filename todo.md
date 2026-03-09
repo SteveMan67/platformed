@@ -4,6 +4,7 @@
 - only highlight selected trigger (if any) and have different colors for different operations
 - add trigger limit
 - if/else in trigger
+- menu open/close function and use `.hidden` instead of `.style.display`
 - trigger detection
 - triggerScript
 
