@@ -528,7 +528,7 @@ export function addEventListeners() {
   })
 
   window.addEventListener('wheel', (e) => {
-    if (menuElement.style.display == "flex") return
+    if (menuElement.style.display == "flex" || input.keys["Shift"]) return
     e.preventDefault()
 
     if (e.ctrlKey) {
