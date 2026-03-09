@@ -130,3 +130,71 @@ export async function readTriggerScript(script) {
   console.log(execute)
   return execute
 }
+
+export function getTriggerScriptForLine(command) {
+  let line = ""
+  switch (command.type) {
+    case "teleport":
+      if (command.x === undefined || command.y === undefined) break
+      line = `TELEPORT ${command.x} ${command.y}`
+      break
+    case "rotate":
+      if (command.x === undefined || command.y === undefined || command.beforeRotation === undefined) break
+      line = `CHANGE ${command.x} ${command.y} ROTATE ${command.beforeRotation}`
+      break
+    case "change":
+      if (command.x === undefined || command.y === undefined) break
+      line = `CHANGE ${command.x} ${command.y}`
+      if (command.rotate !== undefined) {
+        line += ` ROTATE ${command.rotate}`
+      } else if (command.rotation !== undefined) {
+        line += ` ROTATION ${command.rotation}`
+      }
+      if (command.block !== undefined) {
+        line += ` BLOCK ${command.block}`
+      }
+      break
+    case "if":
+      if (command.condition === undefined) break
+      const { condition } = command
+      line = `IF`
+      if (condition.subject !== undefined && condition.x !== undefined && condition.y !== undefined) {
+        line += ` ${condition.subject} ${condition.x} ${condition.y}`
+      }
+      if (condition.operator !== undefined) {
+        line += ` ${condition.operator}`
+      }
+      if (condition.property !== undefined) {
+        line += ` ${condition.property}`
+      }
+      if (condition.value !== undefined) {
+        line += ` ${condition.value}`
+      }
+      line += " THEN"
+      break
+    case "end":
+      line = "END"
+      break
+    case "else":
+      line = "ELSE"
+      break
+    case "fill":
+      if (command.startX === undefined || command.startY === undefined || command.endX === undefined || command.endY === undefined || command.block === undefined) break
+      line = `FILL ${command.startX} ${command.startY} ${command.endX} ${command.endY} BLOCK ${command.block}`
+      break
+    case "delay":
+      if (command.ms === undefined) break
+      line = `DELAY ${command.ms}`
+      break
+  }
+  return line
+}
+
+export function compileToTriggerScript(execute) {
+  let out = ""
+  for (const step of execute) {
+    const line = getTriggerScriptForLine(step)
+    out += `${line}\n`
+  }
+  return out
+}

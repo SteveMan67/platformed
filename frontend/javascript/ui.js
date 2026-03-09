@@ -5,7 +5,7 @@ import { canvas, drawMinimap, updateCanvasSize, updateTileset } from "./renderer
 import { toggleErase, changeSelectedTile, zoomMap, scrollCategoryTiles, undo, redo, calculateAdjacenciesForIndexes } from "/javascript/editor.js"
 import { killPlayer, mechanicsHas, typeIs } from "./platformer.js"
 import { stampSelection, updateLevelSize } from "./editor.js"
-import { readTriggerScript } from "./trigger-script.js"
+import { compileToTriggerScript, getTriggerScriptForLine, readTriggerScript } from "./trigger-script.js"
 const { user, editor, player } = state
 
 export function openMenu(menuClass) {
@@ -137,8 +137,7 @@ function getOptionHTML(stepData) {
 
   if (stepData.type == "teleport") {
     html += `x <input type="number" class="number tp-x" value="${stepData.x || 0}" min="0" max="${editor.width}"> y <input type="number" class="number tp-y" value=${stepData.y || 0} min="0" max="${editor.height}"> instant <input type="checkbox" class="instant toggle" ${stepData.instant ? 'checked' : ''}>`
-  }
-  if (stepData.type == "rotate") {
+  } else if (stepData.type == "rotate") {
     html += `
     x <input type="number" class="number rotate-x" value="${stepData.x || 0}" min="0" max="${editor.width}">
     y <input type="number" class="number rotate-y" value=${stepData.y || 0} min="0" max="${editor.height}">
@@ -148,8 +147,7 @@ function getOptionHTML(stepData) {
       <option value="3" ${stepData.beforeRotation == 3 ? 'selected' : ''}>270</option>
     </select>
     `
-  }
-  if (stepData.type == "updateBlock") {
+  } else if (stepData.type == "updateBlock") {
     let tileOptions = ''
     for (const tile of editor.tileset) {
       tileOptions += `<option value=${tile.id} ${tile.id == stepData.block ? 'selected' : ''}>${tile.name}</option>`
@@ -161,13 +159,15 @@ function getOptionHTML(stepData) {
         ${tileOptions}
       </select>
     `
-  }
-  if (stepData.type == "delay") {
+  } else if (stepData.type == "delay") {
     console.log(stepData)
     html += `
       ms <input type="number" class="number ms" value="${stepData.time || 500}" min="0">
     `
+  } else {
+    html += getTriggerScriptForLine(stepData)
   }
+
   html += `<img src="/assets/icons/delete.svg" alt="delete" class="delete-step">`
   return html
 }
@@ -181,6 +181,7 @@ export function needsSmallerLevel() {
 }
 
 export function addEventListeners() {
+  console.log("setting event listeners")
 
   window.addEventListener("beforeunload", (e) => {
     if (editor.dirty) {
@@ -309,6 +310,7 @@ export function addEventListeners() {
 
   editWithTS.addEventListener("click", (e) => {
     openMenu("trigger-script")
+    tsTextarea.value = compileToTriggerScript(activeTrigger.execute)
   })
 
   tsTextarea.addEventListener("input", (e) => {
@@ -656,13 +658,13 @@ export function addEventListeners() {
         editor.dirty = true
       }
 
-      if (menuElement.classList.contains("hidden")) {
+      if (menuElement?.classList.contains("hidden")) {
         openMenu()
       }
     }
   })
   document.addEventListener('keypress', (e) => {
-    if (!menuElement.classList.contains("hidden")) return
+    if (!menuElement?.classList?.contains("hidden")) return
     if (e.key == 'e') {
       const { selection } = editor
       if (selection.active) {
@@ -842,7 +844,6 @@ export function setInputEventListeners() {
   })
 
   window.addEventListener('keydown', e => {
-    if (!menuElement.classList.contains("hidden")) return
     input.keys[e.key] = true
     if (e.key == 'w' || e.key == 'd' || e.key == 'a' || e.key == 'ArrowUp' || e.key == "ArrowLeft" || e.key == "") {
       // has keyboard
@@ -853,7 +854,6 @@ export function setInputEventListeners() {
     }
   })
   window.addEventListener('keyup', e => {
-    if (!menuElement.classList.contains("hidden")) return
     input.keys[e.key] = false
   })
 
@@ -874,13 +874,11 @@ export function setInputEventListeners() {
     }
   })
   canvas.addEventListener('mousedown', (e) => {
-    if (!menuElement.classList.contains("hidden")) return
     if (e.button == 0) {
       input.down = true
     }
   })
   window.addEventListener('mouseup', (e) => {
-    if (!menuElement.classList.contains("hidden")) return
     if (e.button == 0) {
       input.down = false
     }
