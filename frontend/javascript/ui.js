@@ -4,7 +4,8 @@ import { state } from "./state.js"
 import { canvas, drawMinimap, updateCanvasSize, updateTileset } from "./renderer.js"
 import { toggleErase, changeSelectedTile, zoomMap, scrollCategoryTiles, undo, redo, calculateAdjacenciesForIndexes } from "/javascript/editor.js"
 import { killPlayer, mechanicsHas, typeIs } from "./platformer.js"
-import { stampSelection } from "./editor.js"
+import { stampSelection, updateLevelSize } from "./editor.js"
+import { readTriggerScript } from "./trigger-script.js"
 const { user, editor, player } = state
 
 export function toggleEditorUI(on) {
@@ -70,6 +71,7 @@ export function toggleTriggerDialog(open, tx, ty) {
     triggerDialog.style.display = "flex"
 
     activeTrigger = player.triggers.find(f => f.x == tx && f.y == ty)
+    console.log(activeTrigger)
     if (activeTrigger && activeTrigger.execute) {
       addStepsToUI(activeTrigger.execute)
     }
@@ -116,12 +118,12 @@ function getOptionHTML(stepData) {
   let html = ''
 
   if (stepData.type == "teleport") {
-    html += `x <input type="number" class="tp-x" value="${stepData.x || 0}" min="0" max="${editor.width}"> y <input type="number" class="tp-y" value=${stepData.y || 0} min="0" max="${editor.height}"> instant <input type="checkbox" class="instant toggle" ${stepData.instant ? 'checked' : ''}>`
+    html += `x <input type="number" class="number tp-x" value="${stepData.x || 0}" min="0" max="${editor.width}"> y <input type="number" class="number tp-y" value=${stepData.y || 0} min="0" max="${editor.height}"> instant <input type="checkbox" class="instant toggle" ${stepData.instant ? 'checked' : ''}>`
   }
   if (stepData.type == "rotate") {
     html += `
-    x <input type="number" class="rotate-x" value="${stepData.x || 0}" min="0" max="${editor.width}">
-    y <input type="number" class="rotate-y" value=${stepData.y || 0} min="0" max="${editor.height}">
+    x <input type="number" class="number rotate-x" value="${stepData.x || 0}" min="0" max="${editor.width}">
+    y <input type="number" class="number rotate-y" value=${stepData.y || 0} min="0" max="${editor.height}">
     <select class="rotation-amount">
       <option value="1" ${stepData.beforeRotation == 1 ? 'selected' : ''}>90</option>
       <option value="2" ${stepData.beforeRotation == 2 ? 'selected' : ''}>180</option>
@@ -135,8 +137,8 @@ function getOptionHTML(stepData) {
       tileOptions += `<option value=${tile.id} ${tile.id == stepData.block ? 'selected' : ''}>${tile.name}</option>`
     }
     html += `
-      x <input type="number" class="block-x coord" value="${stepData.x || 0}" min="0" max="${editor.width}">
-      y <input type="number" class="block-y coord" value=${stepData.y || 0} min="0" max="${editor.height}">
+      x <input type="number" class="number block-x coord" value="${stepData.x || 0}" min="0" max="${editor.width}">
+      y <input type="number" class="number block-y coord" value=${stepData.y || 0} min="0" max="${editor.height}">
       <select class="block">
         ${tileOptions}
       </select>
@@ -145,7 +147,7 @@ function getOptionHTML(stepData) {
   if (stepData.type == "delay") {
     console.log(stepData)
     html += `
-      ms <input type="number" class="ms" value="${stepData.time || 500}" min="0">
+      ms <input type="number" class="number ms" value="${stepData.time || 500}" min="0">
     `
   }
   html += `<img src="/assets/icons/delete.svg" alt="delete" class="delete-step">`
@@ -169,6 +171,50 @@ export function addEventListeners() {
     }
   })
 
+  const linkEl = document.querySelector(".share-link .link")
+  const linkBox = document.querySelector(".share-link")
+
+  const url = window.location.href
+  const hasEditorId = /\/editor\/\d+/.test(url)
+  let out = url.replace(/^https?:\/\//, '').replace('/editor/', '/level/')
+  if (hasEditorId) {
+    linkEl.innerText = out
+  } else {
+    out = ''
+  }
+
+  linkBox.addEventListener("click", async () => {
+    if (out === '') return
+    const text = out
+    try {
+      await navigator.clipboard.writeText(text)
+      linkEl.innerText = 'Copied'
+      setTimeout(() => {
+        if (out !== '') linkEl.innerText = out
+      }, 1000)
+      return
+    } catch {
+
+    }
+
+    const ta = document.createElement('textarea')
+    ta.value = text
+    ta.style.position = 'fixed'
+    ta.style.left = '-9999px'
+    document.body.appendChild(ta)
+    ta.select()
+    try {
+      document.execCommand('copy')
+      linkEl.innerText = "Copied"
+      setTimeout(() => {
+        if (out !== '') linkEl.innerText = out
+      }, 1000)
+    } finally {
+      document.removeChild(ta)
+    }
+
+  })
+
   // page event listeners
   const menuElement = document.querySelector(".overlay")
   const eraserButton = document.querySelector('.eraser')
@@ -189,9 +235,16 @@ export function addEventListeners() {
   const zoomSlider = document.getElementById('zoom-level-input')
   const walljumpInput = document.getElementById('walljump-input')
   const tilesetInput = document.getElementById('tileset-input')
+  const resizeLevel = document.querySelector(".resize")
 
+  const triggerDialog = document.querySelector(".trigger-dialog")
   const stepsContainer = document.querySelector('.steps')
-  const applyButton = document.querySelector('.apply')
+  const applyTrigger = document.querySelector('.trigger-dialog .apply')
+  const editWithTS = document.querySelector(".trigger-script-edit")
+  const tsTextarea = document.querySelector(".trigger-script textarea")
+  const tsDialog = document.querySelector(".trigger-script")
+  const applyTS = document.querySelector(".trigger-script .apply")
+  const tsError = document.querySelector(".trigger-script .error")
   let mousedown = false
   const minimapToggle = document.getElementById("show-minimap")
   const triggerHighlightToggle = document.getElementById("trigger-highlight")
@@ -232,6 +285,25 @@ export function addEventListeners() {
         user.id = json.id
         updateMap()
       }
+    }
+  })
+
+  console.log(tsDialog)
+  editWithTS.addEventListener("click", (e) => {
+    triggerDialog.style.display = 'none'
+    tsDialog.classList.remove("hidden")
+  })
+
+  applyTS.addEventListener("click", async () => {
+    const text = tsTextarea.value
+
+    try {
+      const execute = await readTriggerScript(text)
+      activeTrigger.execute = execute
+      tsDialog.classList.add("hidden")
+    } catch (e) {
+      console.log(e)
+      tsError.innerText = e
     }
   })
 
@@ -317,8 +389,10 @@ export function addEventListeners() {
     moveMinimap(e)
   })
 
-  applyButton.addEventListener('click', (e) => {
+  applyTrigger.addEventListener('click', (e) => {
+    console.log("1")
     if (!activeTrigger) return
+    console.log("2")
 
     const newExecuteArray = []
     const stepElements = document.querySelectorAll('.steps .step')
@@ -379,6 +453,29 @@ export function addEventListeners() {
     addStepToUI({ type: 'toggleBlocks' })
   })
 
+  resizeLevel.addEventListener("click", () => {
+    console.log("hi")
+    const heightEl = document.querySelector(".resize-wrapper .height")
+    const widthEl = document.querySelector(".resize-wrapper .width")
+    const width = Number(widthEl.value)
+    const height = Number(heightEl.value)
+
+    if (height > 100 || height < 10 || width > 200 || width < 10) {
+      alert("invalid level size")
+      return
+    }
+    if (height < editor.height || width < editor.width) {
+      console.log(height, editor.height, width, editor.width)
+      console.log(height < editor.height, width < editor.width)
+      if (confirm("This might erase level data. Continue?")) {
+        updateLevelSize(width, height)
+      }
+    } else {
+      updateLevelSize(width, height)
+    }
+
+  })
+
   tilesetInput.addEventListener("input", () => {
     updateTileset(tilesetInput.value)
   })
@@ -431,6 +528,7 @@ export function addEventListeners() {
   })
 
   window.addEventListener('wheel', (e) => {
+    if (menuElement.style.display == "flex") return
     e.preventDefault()
 
     if (e.ctrlKey) {
@@ -704,6 +802,12 @@ export function setInputEventListeners() {
 
   window.addEventListener("contextmenu", (e) => {
     e.preventDefault()
+  })
+
+  canvas.addEventListener("touchstart", () => {
+    player.hasKeyboard = false
+    const mobileControls = document.querySelector('.mobile-contorls')
+    mobileControls?.classList.add("hidden")
   })
 
   window.addEventListener('keydown', e => {

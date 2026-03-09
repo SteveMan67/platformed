@@ -316,6 +316,9 @@ const server = Bun.serve({
         const createdAt = Date.now()
         const width = raw.data && raw.data.width ? raw.data.width : 100
         const height = raw.data && raw.data.height ? raw.data.height : 50
+        if (typeof width !== "number" || typeof height !== "number" || width > 200 || width < 10 || height < 10 || height > 100) {
+          return new Response("Invalid Level Size", { status: 400 })
+        }
         const owner = authentication.user
         let tags = raw.tags ? raw.tags : []
         tags = tags.map(f => cleanString(f))

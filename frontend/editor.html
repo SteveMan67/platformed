@@ -111,8 +111,21 @@
     <div class="background"
       onclick="document.querySelector('.overlay').style.display = 'none'; document.querySelector('.menu-content').style.display = 'none'; document.querySelector('.trigger-dialog').style.display = 'none'">
     </div>
+    <div class="trigger-script hidden">
+      <div class="trigger-top">
+        <p>Edit with Trigger Script</p>
+      </div>
+      <div class="error"></div>
+      <textarea name="triggerScript" id="triggerScript"></textarea>
+      <div class="buttons">
+        <input type="submit" class="submit apply" value="apply">
+      </div>
+    </div>
     <div class="trigger-dialog">
-      <p>Edit Trigger</p>
+      <div class="trigger-top">
+        <p>Edit Trigger</p>
+        <button class="trigger-script-edit">Edit with TriggerScript</button>
+      </div>
       <div class="steps-wrapper">
         <div class="arrow"></div>
         <div class="steps">
@@ -132,15 +145,15 @@
         <div id="new">
           <img src="/assets/icons/plus.svg" alt="add step">
         </div>
-        <input type="text" class="submit apply" value="apply">
+        <input type="submit" class="submit apply" value="apply">
       </div>
       <script>
         document.addEventListener('keydown', (e) => {
           if (e.key !== "Enter") return
           const overlay = document.querySelector(".overlay")
           const dialog = document.querySelector(".trigger-dialog")
-          if (getComputedStyle(overlay).display !== 'none') {
-            const button = dialog.querySelector(".submit")
+          if (getComputedStyle(dialog).display !== 'none') {
+            const button = dialog.querySelector(".trigger-dialog .submit")
             if (button) {
               e.preventDefault()
               button.click()
@@ -196,6 +209,16 @@
               <option value="/assets/medium.json" selected>16x16 blocky</option>
               <option value="/assets/large.json">32x32 Realistic</option>
             </select>
+          </div>
+          <div class="menu-item">
+            <label for="resize-level">Resize Level</label>
+            <div class="resize-wrapper">
+              height
+              <input type="number" class="number height" min="10" max="100" placeholder="50">
+              width
+              <input type="number" class="number width" min="10" max="200" placeholder="100">
+              <button class="resize">Resize</button>
+            </div>
           </div>
         </div>
         <!-- Physics -->
@@ -255,6 +278,11 @@
             <input type="button" value="Save as JSON" id="save-as-json">
           </div>
           <div class="menu-item">
+            <label for="">Share Link</label>
+            <div class="share-link">
+              <p class="link">Save to create a link</p>
+              <img src="/assets/icons/copy.svg" alt="">
+            </div>
           </div>
         </div>
         <!-- Options -->

@@ -18,11 +18,11 @@ export function zoomMap(zoomDirectionIsIn, amount) {
   } else {
     newZoom -= amount
   }
-  const smallestDimension = canvas.width > canvas.height ? "height" : "width"
+  const smallestDimension = editor.width / canvas.width > editor.height / canvas.height ? "height" : "width"
   const wh = smallestDimension == "height" ? canvas.height : canvas.width
   const twh = smallestDimension == "height" ? editor.map.h : editor.map.w
 
-  newZoom = Math.round(Math.max(wh / twh, Math.min(newZoom, 100)))
+  newZoom = Math.ceil(Math.max(wh / twh, Math.min(newZoom, 100)))
 
   const scaleRatio = newZoom / oldTileSize
 
@@ -120,17 +120,17 @@ export function placeTile(tx, ty) {
       player.triggers.splice(trigger, 1)
     }
   }
-  if (typeIs(selected, "spawn") && !tileLimitPlaced) {
+  if (mechanicsHas(selected, "spawn") && !tileLimitPlaced) {
     editor.playerSpawn = { x: tx, y: ty }
     console.log(editor.playerSpawn)
   }
-  if (typeIs(selected, "end") && !tileLimitPlaced) {
+  if (mechanicsHas(selected, "end") && !tileLimitPlaced) {
     editor.end = { x: tx, y: ty }
   }
-  if (typeIs(selected, "onePerLevel") && !tileLimitPlaced) {
+  if (mechanicsHas(selected, "onePerLevel") && !tileLimitPlaced) {
     editor.limitedPlacedTiles.push(selected)
   }
-  if (typeIs(selected, "trigger")) {
+  if (mechanicsHas(selected, "trigger")) {
     addTrigger(tx, ty)
   }
 
@@ -468,6 +468,22 @@ function handleInput(timeScale) {
       editor.selection.isDragging = false
     }
     mouseDown = false
+  }
+
+  if (input.rightClick) {
+    if (!rightClick) {
+      const idx = ty * map.w + tx
+      if (tx >= 0 && tx < map.w && ty >= 0 && ty < map.h) {
+        const raw = editor.map.tiles[idx]
+        const tileId = raw >> 4
+        if (mechanicsHas(tileId, "trigger")) {
+          toggleTriggerDialog(true, tx, ty)
+        }
+      }
+      rightClick = true
+    }
+  } else {
+    rightClick = false
   }
 
   if (input.keys['r'] && selection.active && !rDown) {

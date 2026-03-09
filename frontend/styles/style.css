@@ -363,6 +363,55 @@ i::before {
   flex-direction: column;
 }
 
+.trigger-top {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.trigger-script {
+  width: min(500px, 90vw);
+  height: min(700px, 80vh);
+  background-color: #C29A62;
+  border-radius: 20px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.trigger-script p {
+  font-size: 30px;
+}
+
+.trigger-script textarea {
+  width: 100%;
+  height: 100%;
+  border: 3px solid black;
+  border-radius: 5px;
+  background-color: transparent;
+  outline: none;
+  font-size: 20px;
+  font-family: monospace;
+}
+
+.trigger-script .apply {
+  justify-self: right;
+}
+
+button {
+  line-height: 20px;
+  padding: 5px 15px;
+  border: none;
+  outline: none;
+  font-size: 20px;
+  background-color: black;
+  color: #C29A62;
+  font-family: "Fredoka", sans-serif;
+  border-radius: 500px;
+}
+
 .trigger-dialog p {
   margin: 0;
   font-size: 35px;
@@ -473,7 +522,7 @@ div.step .options input.coord {
   font-size: 25px;
 }
 
-.step input[type="number"] {
+.number {
   height: calc(100% - 20px);
   max-width: 75px;
   margin: 10px;
@@ -486,6 +535,59 @@ div.step .options input.coord {
   border-radius: 10px;
   font-family: "Fredoka", sans-serif;
   appearance: textfield;
+}
+
+.menu-item .number {
+  appearance: unset;
+  border-radius: 15px;
+  font-size: 20px;
+  border: 3px solid black;
+}
+
+.menu-item {
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.menu-item label {
+  font-weight: 500;
+}
+
+.share-link {
+  border: 3px solid black;
+  background-color: #AF8758;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 15px 25px;
+  border-radius: 20px
+}
+
+.share-link .link {
+  margin: 0;
+  font-size: 20px;
+}
+
+.share-link img {
+  height: 35px;
+  aspect-ratio: 1;
+  margin-left: 15px;
+}
+
+.resize-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.resize-wrapper .resize {
+  border: none;
+  outline: none;
+  background: black;
+  color: #C29A62;
+  font-size: 20px;
+  border-radius: 15px;
+  padding: 5px 15px;
+  font-family: "Fredoka", sans-serif;
 }
 
 .step input::-webkit-outer-spin-button,

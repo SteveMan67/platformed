@@ -1,0 +1,10 @@
+TELEPORT 8 8 
+CHANGE 0 8 block 1
+IF block 1 9 is tileid 1
+delay 500
+teleport 4 4
+end
+if block 1 8 is tileid 1
+delay 500 
+teleport 4 4
+end
