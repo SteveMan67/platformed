@@ -561,7 +561,7 @@ export function addEventListeners() {
   })
 
   window.addEventListener('wheel', (e) => {
-    if (!overlay.classList.contains("hidden")) return
+    if (!overlay.classList.contains("hidden") || input.keys["shift"]) return
     e.preventDefault()
 
     if (e.ctrlKey) {
