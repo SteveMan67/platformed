@@ -1,14 +1,35 @@
 const loginForm = document.getElementById('login-form')
 const serverUrl = window.location.origin
 
-const url = new URLSearchParams(window.location)
+const url = new URLSearchParams(window.location.search)
 const redirectUrl = url.get('redirect')
+const code = url.get('code')
+console.log(code)
 
-try {
-  fetch(`${serverUrl}/api/ping`, { method: "POST" }).then(res => console.log(res.body))
-} catch {
-  alert("Failed to connect to server.")
+if (code) {
+  fetch(`${serverUrl}/api/oauth`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      code: code,
+      provider: "hack-club",
+      redirect_uri: `${window.location.origin}/login`
+    })
+  })
+    .then(res => {
+      console.log(res)
+      if (res.ok) {
+        console.log("req ok")
+        window.location.href = redirectUrl ? redirectUrl : "/"
+      }
+    })
 }
+
+
+const hackClubAuth = document.querySelector(".hack-club-oauth")
+const CLIENT_ID = 'bf7d0bd81b456fe6c1fce13daf452ad7'
+
+hackClubAuth.href = `https://auth.hackclub.com/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(`${window.location.origin}/login`)}&response_type=code&scope=${encodeURIComponent("openid name profile email")}`
 
 const errorText = document.querySelector(".error-text")
 function getErrorText(response) {

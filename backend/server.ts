@@ -1,5 +1,6 @@
 import postgres from "postgres"
 import { authenticate, type authResponse, getCookies } from "./auth.ts"
+import { hash } from "bun";
 
 function cleanString(str: String) {
   return String(str)
@@ -113,6 +114,79 @@ const server = Bun.serve({
     // --- health ---
     if (pathname == "/api/ping") {
       return new Response("pong", withCors({ status: 200 }, CORS))
+    }
+
+    // --- OAuth ---
+    if (pathname === "/api/oauth" && req.method === "POST") {
+      const reqJSON = await req.json()
+      const { provider, code, redirect_uri } = reqJSON
+      if (provider === "hack-club") {
+        const body = JSON.stringify({
+          client_id: process.env.HACK_CLUB_CLIENT_ID,
+          client_secret: process.env.HACK_CLUB_CLIENT_SECRET,
+          redirect_uri: redirect_uri,
+          code: code,
+          grant_type: "authorization_code"
+        })
+        const tokenResponse = await fetch("https://auth.hackclub.com/oauth/token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: body
+        })
+
+        if (!tokenResponse.ok) {
+          console.log(tokenResponse.statusText)
+          return new Response("Failed to authenticate with Hack Club", { status: 401 })
+        }
+
+        const json = await tokenResponse.json()
+        const { access_token } = json
+        console.log(access_token)
+
+        const userProfileResponse = await fetch("https://auth.hackclub.com/api/v1/me", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${access_token}`
+          }
+        })
+
+        const userJSON = await userProfileResponse.json()
+        console.log(userJSON)
+        const { id, first_name, last_name } = userJSON.identity
+        console.log(first_name, last_name)
+
+        const oauthName = `${first_name} ${last_name}`
+        console.log(oauthName)
+        const existingUserRows = await sql`SELECT id FROM users WHERE username = ${oauthName} LIMIT 1`
+
+        let userId = existingUserRows[0]?.id
+
+        if (!userId) {
+          const randomPass = await Bun.password.hash(crypto.randomUUID())
+          const newUser = await sql`
+            INSERT INTO users (username, password_hash)
+            VALUES (${oauthName}, ${randomPass})
+            RETURNING id
+          `
+
+          userId = newUser[0].id
+        }
+
+        const uuid = crypto.randomUUID()
+        const hashedCookie = await Bun.password.hash(uuid)
+        const expirationTime = Date.now() + (60 * 60 * 24 * 14 * 1000)
+
+        const sessionId = await sql`
+          INSERT INTO sessions (token_hash, expires_at, user_id)
+          VALUES (${hashedCookie}, ${expirationTime}, ${userId})
+          RETURNING id
+        `
+
+        const headers = new Headers()
+        headers.append("Set-Cookie", `session-id=${sessionId[0].id}; Path=/; MaxAge=${60 * 60 * 24 * 14}`)
+        headers.append("Set-Cookie", `token=${uuid}; Path=/; MaxAge=${60 * 60 * 24 * 14}`)
+        return new Response(JSON.stringify({ id: sessionId[0].id }), { status: 200, headers: headers })
+      }
     }
 
     // --- login ---
