@@ -341,6 +341,7 @@ function handleTriggers(tx, ty) {
       }
       if (step.type == "rotate") {
         if (!step.x || !step.y || !step.beforeRotation) return
+
         rotateTile(step.x, step.y, step.beforeRotation)
 
         continue
@@ -418,6 +419,7 @@ function handleTriggers(tx, ty) {
         if (step.x == undefined || step.y == undefined || step.block == undefined) return
         const idx = step.y * editor.width + step.x
         calcAdjacentAdjacency(idx, step.block, player.tiles)
+        player.tiles[idx] = step.block << 4
         continue
       }
       if (step.type == "delay") {
