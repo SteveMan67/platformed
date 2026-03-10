@@ -33,7 +33,6 @@ export async function readTriggerScript(script) {
     }
     let tokens = line.split(/\s+/)
     tokens = tokens.map(f => f = f.toUpperCase())
-    console.log(tokens)
     const command = tokens[0]
 
     let step
@@ -127,7 +126,6 @@ export async function readTriggerScript(script) {
     }
     i++
   }
-  console.log(execute)
   return execute
 }
 

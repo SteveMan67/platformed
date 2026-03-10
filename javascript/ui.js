@@ -314,6 +314,19 @@ export function addEventListeners() {
   })
 
   tsTextarea.addEventListener("input", (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+  })
+
+  tsTextarea.addEventListener("keydown", (e) => {
+    e.stopPropagation()
+  })
+
+  tsTextarea.addEventListener("keyup", (e) => {
+    e.stopPropagation()
+  })
+
+  tsTextarea.addEventListener("keypress", (e) => {
     e.stopPropagation()
   })
 
@@ -561,7 +574,7 @@ export function addEventListeners() {
   })
 
   window.addEventListener('wheel', (e) => {
-    if (!overlay.classList.contains("hidden") || input.keys["shift"]) return
+    if (!overlay.classList.contains("hidden") || input.keys["Shift"]) return
     e.preventDefault()
 
     if (e.ctrlKey) {

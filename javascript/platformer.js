@@ -313,11 +313,9 @@ function checkPixelCollsion(tile, tx, ty, px, py, pw, ph) {
 }
 
 function fillSelection(startX, startY, endX, endY, tileId) {
-  console.log(startX, startY, endX, endY, tileId)
   for (let y = startY; y <= endY; y++) {
     for (let x = startX; x <= endX; x++) {
       const idx = y * editor.width + x
-      console.log(idx)
       calcAdjacentAdjacency(idx, tileId, player.tiles)
     }
   }
@@ -332,7 +330,6 @@ function handleTriggers(tx, ty) {
     for (let i = startIndex; i < trigger.execute.length; i++) {
       const step = trigger.execute[i]
       if (!step) return
-      console.log(`step ${i} is type ${step.type}`)
       if (step.type == "toggleBlocks") {
         player.toggledTile = !player.toggledTile
         continue
@@ -381,12 +378,10 @@ function handleTriggers(tx, ty) {
             }
           }
         }
-        console.log(isTrue)
         if (!isTrue) {
           // skip to the end or the else statement
           for (let x = i; x < trigger.execute.length; x++) {
             if (trigger.execute[x].type === "else" || trigger.execute[x].type === "end") {
-              console.log(trigger.execute[x])
               executeTriggerSteps(trigger, x)
               return
             }
@@ -396,12 +391,10 @@ function handleTriggers(tx, ty) {
         }
       }
       if (step.type == "else") {
-        console.log(player.skipElse)
         if (player.skipElse) {
           // if condition was true, skip this one
           for (let x = i; x < trigger.execute.length; x++) {
             if (trigger.execute[x].type === "end") {
-              console.log("skipping else statement")
               executeTriggerSteps(trigger, x)
               return
             }
