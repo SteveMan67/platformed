@@ -4,7 +4,6 @@
 - only highlight selected trigger (if any) and have different colors for different operations
 - add trigger limit
 - trigger detection
-- triggerScript
 
 
 # Finishing Touches
