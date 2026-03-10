@@ -5,6 +5,8 @@
 - add trigger limit
 - trigger detection
 
+# QOL
+- fill selection with current rotation
 
 # Finishing Touches
 - convert tiles to spritesheet

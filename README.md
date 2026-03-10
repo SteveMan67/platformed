@@ -19,6 +19,8 @@ An online level share means you can share your creation with the world (or at le
 ## The platformer
 The platformer is complete with 3 different tilesets (16x16 being the most complete). It has **Spawn**, **Checkpoint**, **End**, **Trigger**, **Walljump**, functionalites, along with many more.
 
+__Features__
+-Triggers
 It also has mobile support, with a fullscreen mode for the level page and working mobile controls. And if you want to connect a gamepad, that works too! 
 
 ## Trigger System
