@@ -2,7 +2,7 @@ const loginForm = document.getElementById('login-form')
 const serverUrl = window.location.origin
 
 try {
-  fetch(`${serverUrl}/api/ping`, {method: "POST"}).then(res => console.log(res.body))
+  fetch(`${serverUrl}/api/ping`, { method: "POST" }).then(res => console.log(res.body))
 } catch {
   alert("Failed to connect to server.")
 }
@@ -51,9 +51,9 @@ loginForm.addEventListener("submit", async (e) => {
       credentials: 'include',
       body: JSON.stringify(payload)
     })
-    
+
     if (res.ok) {
-      window.location.href = '/frontend/editor.html'
+      window.location.href = '/'
     } else {
       const text = await res.text()
       getErrorText(res)
