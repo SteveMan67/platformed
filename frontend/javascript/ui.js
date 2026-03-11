@@ -240,6 +240,10 @@ export function addEventListeners() {
   const background = document.querySelector(".background")
   const eraserButton = document.querySelector('.eraser')
   const saveButton = document.querySelector('.save')
+  const undoButton = document.querySelector('.undo')
+  const redoButton = document.querySelector('.redo')
+  const helpButton = document.querySelector('.help')
+  const helpTabRadio = document.getElementById('tab5')
   const importButton = document.querySelector('.import')
   const tileSelection = document.querySelector('.tile-selection')
   const zoomIn = document.querySelector('.plus')
@@ -641,6 +645,13 @@ export function addEventListeners() {
     updateMap()
   })
 
+  undoButton.addEventListener("click", () => undo())
+  redoButton.addEventListener("click", () => redo())
+
+  helpButton.addEventListener("click", () => {
+    openMenu("menu-content")
+    helpTabRadio.checked = true
+  })
   saveAsJson.addEventListener('click', () => {
     const json = createMap(editor.map.w, editor.map.h, Array.from(editor.map.tiles))
     const text = JSON.stringify(json, null, 2)

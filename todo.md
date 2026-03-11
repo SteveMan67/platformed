@@ -4,9 +4,9 @@
 - only highlight selected trigger (if any) and have different colors for different operations
 - add trigger limit
 - trigger detection
-- triggerScript
-- rotate trigger doesn't work
 
+# QOL
+- fill selection with current rotation
 
 # Finishing Touches
 - convert tiles to spritesheet

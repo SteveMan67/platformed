@@ -29,7 +29,7 @@ if (code) {
 const hackClubAuth = document.querySelector(".hack-club-oauth")
 const CLIENT_ID = 'bf7d0bd81b456fe6c1fce13daf452ad7'
 
-hackClubAuth.href = `https://auth.hackclub.com/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(`${window.location.origin}/login`)}&response_type=code&scope=${encodeURIComponent("openid name profile email")}`
+hackClubAuth.href = `https://auth.hackclub.com/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(`${window.location.origin}/login`)}&response_type=code&scope=${encodeURIComponent("openid slack_id")}`
 
 const errorText = document.querySelector(".error-text")
 function getErrorText(response) {

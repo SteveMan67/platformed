@@ -82,6 +82,11 @@ body {
   align-items: center;
 }
 
+.actions img.help {
+  width: 45px;
+  aspect-ratio: 1;
+}
+
 .actions img.menu-button {
   aspect-ratio: 1;
   width: 40px;

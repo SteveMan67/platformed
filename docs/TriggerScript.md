@@ -7,6 +7,8 @@ Each line is a command with options following it. It is case insensitive.
 
 ### CHANGE
 
+alter a block's tileId (changing what block it is) or rotate a tile
+
 #### Syntax: 
 
 `CHANGE <x> <y> BLOCK <tileId> ROTATE <rotation>`
@@ -23,6 +25,8 @@ Each line is a command with options following it. It is case insensitive.
 
 ### TELEPORT
 
+teleport to a given position
+
 #### Syntax:
 
 `TELEPORT <x> <y> INSTANT`
@@ -37,6 +41,8 @@ Each line is a command with options following it. It is case insensitive.
 
 ### DELAY
 
+wait a specified amount of milliseconds
+
 #### Syntax:
 
 `DELAY <ms>`
@@ -48,6 +54,8 @@ Each line is a command with options following it. It is case insensitive.
 ---
 
 ### FILL
+
+fill a selection for `(x1, y1)` to `(x2, y2)`
 
 #### Syntax: 
 
@@ -63,6 +71,8 @@ Each line is a command with options following it. It is case insensitive.
 
 ### IF
 
+check whether a statement is true and execute code
+
 #### Syntax:
 
 `IF BLOCK <x> <y> IS <property> <value>`
@@ -77,6 +87,8 @@ Each line is a command with options following it. It is case insensitive.
 
 ### ELSE 
 
+specify what code to run after an if statement if the condition is false
+
 #### Syntax:
 
 `ELSE`
@@ -84,6 +96,8 @@ Each line is a command with options following it. It is case insensitive.
 --- 
 
 ### END
+
+specifies the end for an if/else statement
 
 #### Syntax:
 

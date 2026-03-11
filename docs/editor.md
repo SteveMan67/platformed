@@ -68,4 +68,4 @@ To start, place a trigger in the level and then right click on it. This will sho
 
 ### TriggerScript
 
-TriggerScript is a minimal scripting language I made in order to make more complex triggers. You can access it from the typical trigger dialog by pressing Edit with TriggerScript. For a full reference, see `TriggerScript.md`.
+TriggerScript is a minimal scripting language I made in order to make more complex triggers. You can access it from the typical trigger dialog by pressing Edit with TriggerScript. For a full reference, see [`/docs/TriggerScript.md`](https://github.com/SteveMan67/platformed/blob/main/docs/TriggerScript.md).
