@@ -152,12 +152,19 @@ const server = Bun.serve({
 
         const userJSON = await userProfileResponse.json()
         console.log(userJSON)
-        const { id, first_name, last_name } = userJSON.identity
-        console.log(first_name, last_name)
+        const { id, slack_id } = userJSON.identity
 
-        const oauthName = `${first_name} ${last_name}`
-        console.log(oauthName)
-        const existingUserRows = await sql`SELECT id FROM users WHERE username = ${oauthName} LIMIT 1`
+        const username = await fetch(`https://slack.com/api/users.info?user=${slack_id}`, {
+          method: "GET",
+          headers: { "Authorization": `Bearer ${process.env.SLACK_OAUTH_TOKEN}` }
+        })
+
+        const response = await username.json()
+
+        console.log(response)
+        console.log(response.user.profile.display_name)
+
+        const existingUserRows = await sql`SELECT id FROM users WHERE username = ${response.user.profile.display_name} LIMIT 1`
 
         let userId = existingUserRows[0]?.id
 
@@ -165,7 +172,7 @@ const server = Bun.serve({
           const randomPass = await Bun.password.hash(crypto.randomUUID())
           const newUser = await sql`
             INSERT INTO users (username, password_hash)
-            VALUES (${oauthName}, ${randomPass})
+            VALUES (${response.user.profile.display_name}, ${randomPass})
             RETURNING id
           `
 
