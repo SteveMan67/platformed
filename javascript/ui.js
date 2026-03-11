@@ -917,6 +917,7 @@ export function addTileSelection() {
     if (editor.tileset[i]) {
       let div = document.createElement('div')
       div.classList.add('tile-select-container')
+      div.title = editor.tileset[i].name
       div.dataset.tile = i
       div.dataset.category = editor.tileset[i].category
       categoryBlocks.appendChild(div)
