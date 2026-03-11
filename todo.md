@@ -5,6 +5,7 @@
 - add trigger limit
 - trigger detection
 - triggerScript
+- rotate trigger doesn't work
 
 
 # Finishing Touches
