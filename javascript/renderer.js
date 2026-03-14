@@ -7,6 +7,22 @@ import { state } from "./state.js";
 import { addTileSelection, needsSmallerLevel } from "./ui.js";
 const { player, editor } = state
 
+function getThemeColor(colorName) {
+  return getComputedStyle(document.documentElement).getPropertyValue(colorName).trim()
+}
+
+function updateColorTheme() {
+  // get all the colors in the theme and set them in the editor object so we don't have to do getThemeColor each frame
+  const { colorTheme } = editor
+  colorTheme.bgPrimary = getThemeColor('--bg-primary')
+  colorTheme.bgAccent = getThemeColor('--bg-accent')
+  colorTheme.bgLevel = getThemeColor('--bg-level')
+  colorTheme.textOnPrimary = getThemeColor('--text-on-primary')
+  colorTheme.textOnAccent = getThemeColor('--text-on-accent')
+  colorTheme.action = getThemeColor('--action')
+  colorTheme.textOnAction = getThemeColor('--text-on-action')
+}
+
 export function drawMinimap() {
   const canvas = document.querySelector(".minimap-canvas")
   if (!canvas) return

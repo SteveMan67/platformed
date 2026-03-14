@@ -19,7 +19,6 @@ function showDeleteOverlay(levelNumber) {
 function deleteLevel(levelId = deletedLevelNumber) {
   const payload = {}
   payload.levelId = levelId
-  console.log(payload)
 
   fetch(`${serverUrl}/api/delete`, {
     method: "DELETE",
@@ -108,6 +107,24 @@ getLevel(1).then(levels => {
     renderLevelPreview(canvas, level)
   })
 })
+
+function getThemeColor(colorName) {
+  return getComputedStyle(document.documentElement).getPropertyValue(colorName).trim()
+}
+
+const colorTheme = {}
+
+function updateColorTheme() {
+  colorTheme.bgPrimary = getThemeColor('--bg-primary')
+  colorTheme.bgAccent = getThemeColor('--bg-accent')
+  colorTheme.bgLevel = getThemeColor('--bg-level')
+  colorTheme.textOnPrimary = getThemeColor('--text-on-primary')
+  colorTheme.textOnAccent = getThemeColor('--text-on-accent')
+  colorTheme.action = getThemeColor('--action')
+  colorTheme.textOnAction = getThemeColor('--text-on-action')
+}
+
+updateColorTheme()
 
 function decodeRLE(data) {
   const out = []
@@ -236,7 +253,6 @@ async function loadTileset(tilesetPath) {
 }
 
 export async function renderLevelPreview(canvas, levelData) {
-  console.log(levelData)
   const tilesetPath = levelData.data ? levelData.data.tilesetPath : "/assets/medium.json"
   let tileset = await loadTileset(tilesetPath)
   tileset = Object.values(tileset)
@@ -248,7 +264,7 @@ export async function renderLevelPreview(canvas, levelData) {
 
   ctx.imageSmoothingEnabled = false;
 
-  ctx.fillStyle = "#C29A62"
+  ctx.fillStyle = colorTheme.bgLevel
   ctx.fillRect(0, 0, canvas.width, canvas.height)
 
   if (imgMap.has(levelData.id)) {

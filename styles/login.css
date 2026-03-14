@@ -1,5 +1,5 @@
 body {
-  background-color: #c29a62;
+  background-color: var(--bg-primary);
   font-family: "Fredoka", sans-serif;
   font-weight: 500;
   margin: 0;
@@ -51,7 +51,7 @@ nav h1 {
 
 .login input {
   margin: 7px;
-  background-color: #c29a62;
+  background-color: var(--bg-primary);
   border: 3px solid black;
   border-radius: 17px;
   width: min(400px, 95vw);
@@ -63,18 +63,18 @@ nav h1 {
 }
 
 .login input:-webkit-autofill {
-  background-color: #c29a62 !important;
+  background-color: var(--bg-primary) !important;
 }
 
 .login input[type="submit"] {
   width: 100px;
   background-color: black;
-  color: #c29a62;
+  color: var(--bg-primary);
   font-family: "Fredoka", sans-serif;
   font-size: 20px;
   height: 33px;
   border: none;
-  -webkit-text-fill-color: #c29a62;
+  -webkit-text-fill-color: var(--bg-primary);
   /* styles the placeholder */
   font-size: 20px;
 }
