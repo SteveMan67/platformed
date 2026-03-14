@@ -1,7 +1,7 @@
 :root {
-  --bg-primary: #E6D6B2;
-  --bg-accent: #E6D6B2;
-  --bg-level: #CAD9E5;
+  --bg-primary: #f1e8d4;
+  --bg-accent: #f1e8d4;
+  --bg-level: #cae3f6;
 
   --action: black;
 
@@ -9,7 +9,7 @@
 
   --text-on-primary: black;
   --text-on-accent: black;
-  --text-on-action: #E6D6B2;
+  --text-on-action: #f1e8d4;
 }
 
 [data-theme="dark"] {
@@ -966,6 +966,52 @@ input[type="radio"] {
 
 .menu-item label {
   font-size: 25px;
+}
+
+.color-theme {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.color-theme p {
+  margin-top: 0;
+  font-size: 25px;
+}
+
+.color-theme .swatches {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 30px;
+}
+
+.color-theme .swatches>div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.color-theme .swatch {
+  width: 150px;
+  aspect-ratio: 2 / 1;
+  border: 3px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+}
+
+.color-theme .swatches p {
+  font-size: 20px;
+  margin: 5px auto;
+}
+
+.color-theme .swatch>div {
+  height: 100%;
+  aspect-ratio: 1;
 }
 
 .menu-item input[type="range"] {

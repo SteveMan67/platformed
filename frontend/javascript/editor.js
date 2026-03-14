@@ -1,5 +1,5 @@
 import { calcAdjacentAdjacency, calculateAdjacency, enemies, mechanicsHas, typeIs } from "./platformer.js"
-import { canvas, ctx, drawMap, drawMinimap } from "./renderer.js"
+import { canvas, ctx, drawMap, drawMinimap, updateColorTheme } from "./renderer.js"
 import { input, key } from "./site.js"
 import { state } from "./state.js"
 import { toggleTriggerDialog } from "./ui.js"
@@ -81,6 +81,7 @@ export function scrollCategoryTiles(up) {
 }
 
 export function initEditor() {
+  updateColorTheme()
   enemies.forEach(enemy => enemies.pop())
   ctx.imageSmoothingEnabled = false
 }

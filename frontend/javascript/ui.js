@@ -1,12 +1,12 @@
 import { importMap, updateMap, createMap } from "./file-utils.js"
 import { mode, setMode, input } from "./site.js"
 import { state } from "./state.js"
-import { canvas, drawMinimap, updateCanvasSize, updateTileset } from "./renderer.js"
+import { canvas, drawMinimap, updateCanvasSize, updateTileset, changeColorTheme } from "./renderer.js"
 import { toggleErase, changeSelectedTile, zoomMap, scrollCategoryTiles, undo, redo, calculateAdjacenciesForIndexes } from "/javascript/editor.js"
 import { killPlayer, mechanicsHas, typeIs } from "./platformer.js"
 import { stampSelection, updateLevelSize } from "./editor.js"
 import { compileToTriggerScript, getTriggerScriptForLine, readTriggerScript } from "./trigger-script.js"
-const { user, editor, player } = state
+const { user, editor, player, colorSchemes } = state
 
 export function openMenu(menuClass) {
   const menuOverlay = document.querySelector(".overlay")
@@ -217,6 +217,26 @@ export function addEventListeners() {
   console.log("setting event listeners")
 
   addTopBarSVGs()
+
+  // add color theme swatches
+
+  const swatches = document.querySelector(".color-theme .swatches")
+  for (const theme of colorSchemes) {
+    console.log(theme)
+    const swatch = document.createElement('div')
+    swatch.innerHTML = `
+      <div class="swatch">
+        <div class="level-color" style="background-color: ${theme.colors.bgLevel}"></div>
+        <div class="primary" style="background-color: ${theme.colors.bgPrimary}"></div>
+      </div>
+      <p>${theme.name}</p>
+    `
+    console.log(swatch)
+    swatch.addEventListener("click", () => {
+      changeColorTheme(theme.colors)
+    })
+    swatches.appendChild(swatch)
+  }
 
   window.addEventListener("beforeunload", (e) => {
     if (editor.dirty) {

@@ -2,6 +2,36 @@ export const state = {
   user: {
     id: null
   },
+  colorSchemes: [
+    {
+      name: "Cream",
+      id: "cream",
+      colors: {
+        bgPrimary: '#f1e8d4',
+        bgAccent: '#cbc3b0',
+        bgLevel: '#cae3f6',
+        action: 'black',
+        border: 'black',
+        textOnPrimary: 'black',
+        textOnAccent: 'black',
+        textOnAction: '#f1e8d4'
+      }
+    },
+    {
+      name: "Blue",
+      id: "blue",
+      colors: {
+        bgPrimary: '#a8b7d3',
+        bgAccent: '#94a1c5',
+        bgLevel: '#a3c9e5',
+        action: 'black',
+        border: 'black',
+        textOnPrimary: 'black',
+        textOnAccent: 'black',
+        textOnAction: '#a8b7d3'
+      }
+    }
+  ],
   player: {
     triggers: [],
     standingOnTrigger: false,
