@@ -30,6 +30,20 @@ export const state = {
         textOnAccent: 'black',
         textOnAction: '#a8b7d3'
       }
+    },
+    {
+      name: "Coffee",
+      id: "coffee",
+      colors: {
+        bgPrimary: '#2F271B',
+        bgAccent: '#765D41',
+        bgLevel: '#765D41',
+        action: '#DAD0B0',
+        border: '#DAD0B0',
+        textOnPrimary: '#DAD0B0',
+        textOnAccent: '#DAD0B0',
+        textOnAction: '#2A2722'
+      }
     }
   ],
   player: {

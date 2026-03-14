@@ -26,6 +26,10 @@
   --text-on-action: #2A2722;
 }
 
+* {
+  color: var(--text-on-primary);
+}
+
 .svg {
   mask-size: contain;
   mask-repeat: no-repeat;
@@ -409,10 +413,11 @@ i::before {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  border: 4px solid var(--border);
+  border-radius: 0 10px 10px 0;
   justify-self: center;
   position: relative;
   scrollbar-width: none;
+  overflow: hidden;
 }
 
 .minimap {
@@ -888,6 +893,9 @@ input[type="radio"] {
   cursor: pointer;
 }
 
+.tabs li.close-wrapper {
+  width: unset;
+}
 
 .tabs li:has(img) {
   display: flex;

@@ -218,6 +218,8 @@ export function addEventListeners() {
 
   addTopBarSVGs()
 
+  addSvg('close.svg', '.close-wrapper', 30, 30, 'close-button', 'close')
+
   // add color theme swatches
 
   const swatches = document.querySelector(".color-theme .swatches")
