@@ -11,7 +11,7 @@ function getThemeColor(colorName) {
   return getComputedStyle(document.documentElement).getPropertyValue(colorName).trim()
 }
 
-function updateColorTheme() {
+export function updateColorTheme() {
   // get all the colors in the theme and set them in the editor object so we don't have to do getThemeColor each frame
   const { colorTheme } = editor
   colorTheme.bgPrimary = getThemeColor('--bg-primary')
@@ -22,6 +22,20 @@ function updateColorTheme() {
   colorTheme.action = getThemeColor('--action')
   colorTheme.textOnAction = getThemeColor('--text-on-action')
   colorTheme.border = getThemeColor('--border')
+}
+
+export function changeColorTheme(colors) {
+  const root = document.documentElement;
+
+  root.style.setProperty('--bg-primary', colors.bgPrimary)
+  root.style.setProperty('--bg-accent', colors.bgAccent)
+  root.style.setProperty('--bg-level', colors.bgLevel)
+  root.style.setProperty('--text-on-primary', colors.textOnPrimary)
+  root.style.setProperty('--text-on-accent', colors.textOnAccent)
+  root.style.setProperty('--action', colors.action)
+  root.style.setProperty('--text-on-action', colors.textOnAction)
+  root.style.setProperty('--border', colors.border)
+  updateColorTheme()
 }
 
 export function drawMinimap() {
