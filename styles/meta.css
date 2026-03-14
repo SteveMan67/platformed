@@ -23,7 +23,7 @@
 input[type="text"] {
   background-color: transparent;
   text-decoration: underline;
-  -webkit-text-fill-color: black;
+  -webkit-text-fill-color: var(--text-on-primary);
   border: none;
   font-size: 35px;
   line-height: 1.2;
@@ -41,7 +41,7 @@ p.menu-item {
 
 .description.menu-item {
   width: 100%;
-  border: 3px solid black;
+  border: 3px solid var(--border);
   border-radius: 15px;
 }
 
@@ -65,15 +65,15 @@ p.menu-item {
 }
 
 a {
-  color: black;
+  color: var(--border);
   text-decoration: none;
 }
 
 button {
-  background-color: black;
-  color: #C29A62;
+  background-color: var(--action);
+  color: var(--text-on-action);
   outline: none;
-  border: 3px solid black;
+  border: 3px solid var(--action);
   border-radius: 10px;
   width: fit-content;
   padding: 5px 15px;

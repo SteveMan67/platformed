@@ -21,6 +21,7 @@ function updateColorTheme() {
   colorTheme.textOnAccent = getThemeColor('--text-on-accent')
   colorTheme.action = getThemeColor('--action')
   colorTheme.textOnAction = getThemeColor('--text-on-action')
+  colorTheme.border = getThemeColor('--border')
 }
 
 export function drawMinimap() {

@@ -5,6 +5,8 @@
 
   --action: black;
 
+  --border: black;
+
   --text-on-primary: black;
   --text-on-accent: black;
   --text-on-action: #E6D6B2;
@@ -15,8 +17,22 @@
   --bg-accent: #2A2722;
   --bg-level: #659BFF;
 
+  --action: white;
+
+  --border: white;
+
   --text-on-primary: white;
   --text-on-accent: white;
+  --text-on-action: #2A2722;
+}
+
+.svg {
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  background-color: var(--text-on-primary);
+  height: 50px;
+  width: 50px;
 }
 
 body {
@@ -67,7 +83,7 @@ body {
 .loading {
   height: 15px;
   aspect-ratio: 1;
-  border-top: 1px solid black;
+  border-top: 1px solid var(--border);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   transform-origin: center;
@@ -123,7 +139,7 @@ body {
 }
 
 .topbar .main a.main-link {
-  color: black;
+  color: var(--text-on-primary);
   font-size: 20px;
 }
 
@@ -157,6 +173,65 @@ body {
   align-items: center;
   justify-content: space-between;
   box-sizing: border-box;
+}
+
+/* here we go... */
+.svg.arrow-right {
+  width: 25px;
+  height: 25px;
+  mask-image: url('/assets/icons/arrow-right.svg')
+}
+
+.zoom .svg {
+  width: 35px;
+  height: 35px;
+  margin: 15px 0;
+}
+
+.categories .svg {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 20px;
+}
+
+.zoom .plus {
+  mask-image: url('/assets/icons/plus.svg');
+}
+
+.zoom .minus {
+  mask-image: url('/assets/icons/minus.svg');
+}
+
+.svg.mechanics {
+  mask-image: url('/assets/icons/mechanics.svg');
+}
+
+.svg.triggers {
+  mask-image: url('/assets/icons/triggers.svg');
+}
+
+.svg.mobs {
+  mask-image: url('/assets/icons/mobs.svg');
+}
+
+.svg.hazards {
+  mask-image: url('/assets/icons/hazards.svg');
+}
+
+.svg.powerups {
+  mask-image: url('/assets/icons/powerups.svg')
+}
+
+.svg.collectibles {
+  mask-image: url('/assets/icons/collectibles.svg')
+}
+
+.svg.blocks {
+  mask-image: url('/assets/icons/blocks.svg')
+}
+
+.svg.eraser {
+  mask-image: url('/assets/icons/erase.svg')
 }
 
 .sidebar-one {
@@ -196,7 +271,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: end;
-  border-right: 4px solid #AF8758;
+  border-right: 4px solid var(--bg-accent);
   margin-bottom: 10px;
   box-sizing: border-box;
   transform: translateX(4px)
@@ -234,7 +309,7 @@ body {
 }
 
 .categories:has(.active) {
-  border-left: 4px solid #AF8758;
+  border-left: 4px solid var(--bg-accent);
 }
 
 .categories div.active::after {
@@ -244,8 +319,8 @@ body {
   width: 10px;
   height: 10px;
   background-color: var(--bg-primary);
-  border-right: 4px solid #AF8758;
-  border-top: 4px solid #AF8758;
+  border-right: 4px solid var(--bg-accent);
+  border-top: 4px solid var(--bg-accent);
   border-radius: 2px;
 }
 
@@ -318,7 +393,7 @@ i::before {
 }
 
 .title {
-  color: black;
+  color: var(--text-on-primary);
   text-decoration: none;
   font-size: 35px;
   font-weight: 500;
@@ -326,7 +401,7 @@ i::before {
 }
 
 .title a {
-  color: black;
+  color: var(--text-on-primary);
   text-decoration: none;
 }
 
@@ -334,7 +409,7 @@ i::before {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  border: 4px solid black;
+  border: 4px solid var(--border);
   justify-self: center;
   position: relative;
   scrollbar-width: none;
@@ -346,7 +421,7 @@ i::before {
   bottom: 0;
   margin: 10px;
   background-color: var(--bg-level);
-  border: 3px solid black;
+  border: 3px solid var(--border);
   border-radius: 10px;
   overflow: hidden;
 }
@@ -438,7 +513,7 @@ i::before {
 .trigger-script textarea {
   width: 100%;
   height: 100%;
-  border: 3px solid black;
+  border: 3px solid var(--border);
   border-radius: 5px;
   background-color: transparent;
   outline: none;
@@ -456,7 +531,7 @@ button {
   border: none;
   outline: none;
   font-size: 20px;
-  background-color: black;
+  background-color: var(--action);
   color: var(--bg-primary);
   font-family: "Fredoka", sans-serif;
   border-radius: 500px;
@@ -493,7 +568,7 @@ button {
   left: 50%;
   transform: translateX(-50%);
   width: 3px;
-  background-color: black;
+  background-color: var(--border);
   border-radius: 2px;
 }
 
@@ -505,8 +580,8 @@ button {
   transform: translateY(-20%) translateX(-50%) rotate(45deg);
   width: 12px;
   height: 12px;
-  border-right: 3px solid black;
-  border-bottom: 3px solid black;
+  border-right: 3px solid var(--border);
+  border-bottom: 3px solid var(--border);
   border-radius: 2px;
 }
 
@@ -522,9 +597,9 @@ button {
   align-items: center;
   justify-content: space-between;
   height: 75px;
-  border: 3px solid black;
+  border: 3px solid var(--border);
   border-radius: 15px;
-  background-color: #b48d57;
+  background-color: var(--bg-accent);
   position: relative;
 }
 
@@ -558,7 +633,7 @@ div.step .options input.coord {
   bottom: -14px;
   width: 20px;
   height: 3px;
-  background: black;
+  background: var(--border);
   border-radius: 4px;
   pointer-events: none;
   z-index: 0;
@@ -591,7 +666,7 @@ div.step .options input.coord {
   appearance: unset;
   border-radius: 15px;
   font-size: 20px;
-  border: 3px solid black;
+  border: 3px solid var(--border);
 }
 
 .menu-item {
@@ -604,8 +679,8 @@ div.step .options input.coord {
 }
 
 .share-link {
-  border: 3px solid black;
-  background-color: #AF8758;
+  border: 3px solid var(--border);
+  background-color: var(--bg-accent);
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -632,8 +707,8 @@ div.step .options input.coord {
 .resize-wrapper .resize {
   border: none;
   outline: none;
-  background: black;
-  color: var(--bg-primary);
+  background: var(--action);
+  color: var(--text-on-action);
   font-size: 20px;
   border-radius: 15px;
   padding: 5px 15px;
@@ -663,8 +738,8 @@ input::-webkit-inner-spin-button {
 }
 
 .buttons .apply {
-  background-color: black;
-  color: var(--bg-primary);
+  background-color: var(--action);
+  color: var(--text-on-action);
   outline: none;
   border: none;
   border-radius: 500px;
@@ -683,7 +758,7 @@ input::-webkit-inner-spin-button {
   aspect-ratio: 10 / 3;
   width: 90px;
   height: 25px;
-  border: 3px solid black;
+  border: 3px solid var(--border);
   border-radius: 20px;
 }
 
@@ -706,7 +781,7 @@ input[type="radio"] {
   height: 34px;
   aspect-ratio: 5/3;
   background-color: var(--bg-primary);
-  border: 3px solid black;
+  border: 3px solid var(--border);
   border-radius: 50px;
   position: relative;
   cursor: pointer;
@@ -724,7 +799,7 @@ input[type="radio"] {
   width: 20px;
   aspect-ratio: 1;
   background-color: transparent;
-  border: 3px solid black;
+  border: 3px solid var(--action);
   border-radius: 50%;
   transition: transform 150ms ease;
 }
@@ -744,7 +819,7 @@ input[type="radio"] {
 }
 
 .toggle:not(:checked)::before {
-  border: 3px solid black;
+  border: 3px solid var(--border);
   border-radius: 50%;
   right: 5px;
   width: 8px;
@@ -753,13 +828,13 @@ input[type="radio"] {
 }
 
 .toggle:checked {
-  background-color: black;
-  border: 3px solid black;
+  background-color: var(--action);
+  border: 3px solid var(--action);
 }
 
 .toggle:not(:checked) {
   background-color: var(--bg-primary);
-  border: 3px solid black;
+  border: 3px solid var(--border);
 }
 
 .toggle:checked::after {
@@ -773,7 +848,7 @@ input[type="radio"] {
 .menu-content input[type="radio"]:nth-of-type(4):checked~.tabs li:nth-of-type(4),
 .menu-content input[type="radio"]:nth-of-type(5):checked~.tabs li:nth-of-type(5) {
   background-color: var(--bg-primary);
-  border: 3px solid black;
+  border: 3px solid var(--border);
   border-bottom: none;
   border-radius: 10px 10px 0 0;
   transform: translateY(3px);
@@ -782,7 +857,7 @@ input[type="radio"] {
 
 .tabs {
   margin: 15px 20px 15px 20px;
-  border-bottom: 3px solid black;
+  border-bottom: 3px solid var(--border);
 }
 
 .tabs ul {
@@ -829,8 +904,8 @@ input[type="radio"] {
 }
 
 .menu-item input[type="text"] {
-  color: black;
-  -webkit-text-fill-color: black;
+  color: var(--text-on-primary);
+  -webkit-text-fill-color: var(--text-on-primary);
   /* styles the placeholder */
   background-color: transparent;
   border: none;
@@ -850,7 +925,7 @@ input[type="radio"] {
 .menu-item input[type="text"]::-webkit-input-placeholder,
 .menu-item input[type="text"]:-ms-input-placeholder,
 .menu-item input[type="text"]::placeholder {
-  color: black !important;
+  color: var(--text-on-primary) !important;
   opacity: 1;
   text-decoration: underline;
 }
@@ -904,7 +979,7 @@ input[type="radio"] {
 .menu-item input[type="range"]::-webkit-slider-runnable-track {
   width: 100%;
   height: 3px;
-  background: black;
+  background: var(--border);
   border: none;
   border-radius: 2px;
 }
@@ -912,7 +987,7 @@ input[type="radio"] {
 .menu-item input[type="range"]::-moz-range-track {
   width: 100%;
   height: 3px;
-  background: black;
+  background: var(--border);
   border: none;
   border-radius: 2px;
 }
@@ -923,7 +998,7 @@ input[type="radio"] {
   width: 16px;
   border-radius: 200px;
   background: var(--bg-primary);
-  border: 3px solid black;
+  border: 3px solid var(--border);
   box-sizing: border-box;
   margin-top: -7px;
 }
@@ -933,7 +1008,7 @@ input[type="radio"] {
   width: 16px;
   border-radius: 200px;
   background: var(--bg-primary);
-  border: 3px solid black;
+  border: 3px solid var(--border);
   box-sizing: border-box;
 }
 
@@ -983,11 +1058,11 @@ input[type="radio"] {
 }
 
 span.keyboard-shortcut {
-  border: 2px solid black;
+  border: 2px solid var(--border);
   padding: 0 5px;
   border-radius: 4px;
   background-color: rgba(0, 0, 0, 0.3);
-  color: black;
+  color: var(--border);
 }
 
 .help li {
@@ -998,7 +1073,7 @@ span.keyboard-shortcut {
 .description-border {
   width: 100%;
   min-height: 50px;
-  border: 3px solid black;
+  border: 3px solid var(--border);
   border-radius: 10px
 }
 
@@ -1012,18 +1087,18 @@ div.menu-item div.description-border input[type="text"] {
 }
 
 .menu-item input[type="submit"] {
-  background-color: black;
-  border: 3px solid black;
+  background-color: var(--action);
+  border: 3px solid var(--action);
   padding: 5px 15px;
   font-size: 20px;
-  color: var(--bg-primary);
+  color: var(--text-on-action);
   border-radius: 20px;
   font-family: "Fredoka", sans-serif;
 }
 
 .menu-item input[type="button"] {
   background-color: transparent;
-  border: 3px solid black;
+  border: 3px solid var(--border);
   padding: 5px 15px;
   font-size: 20px;
   border-radius: 20px;

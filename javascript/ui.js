@@ -34,6 +34,39 @@ export function openMenu(menuClass) {
   }
 }
 
+function addSvg(filePath, containerSelector, width = 50, height = 50, svgClass, title) {
+  const div = document.createElement('div')
+  div.style.width = `${width}px`
+  div.style.height = `${height}px`
+  div.title = title
+  if (svgClass) {
+    div.classList.add(svgClass)
+  }
+
+  div.style.backgroundColor = 'var(--text-on-primary)'
+
+  const maskUrl = `url('/assets/icons/${filePath}')`
+
+  div.style.maskImage = maskUrl
+  div.style.maskSize = 'contain'
+  div.style.maskRepeat = 'no-repeat'
+  div.style.maskPosition = 'center'
+
+  const container = document.querySelector(containerSelector)
+  container.appendChild(div)
+}
+
+function addTopBarSVGs() {
+  addSvg('help.svg', '.actions', 45, 50, "help", "help")
+  addSvg('undo.svg', '.actions', 50, 50, "undo", "undo")
+  addSvg('redo.svg', '.actions', 50, 50, "redo", "redo")
+  addSvg('save.svg', '.actions', 50, 50, "save", "save-level")
+  addSvg('import.svg', '.actions', 50, 50, 'import', "import")
+  addSvg('play_nofill.svg', '.actions', 50, 50, 'play', 'play')
+  addSvg('menu.svg', '.actions', 40, 50, 'menu-button', 'menu')
+  // addSvg('.svg', '.actions', 50, 50, '', '')
+}
+
 export function toggleEditorUI(on) {
   const grid = document.querySelector(".grid")
   const minimap = document.querySelector('.minimap')
@@ -183,6 +216,8 @@ export function needsSmallerLevel() {
 export function addEventListeners() {
   console.log("setting event listeners")
 
+  addTopBarSVGs()
+
   window.addEventListener("beforeunload", (e) => {
     if (editor.dirty) {
       e.preventDefault()
@@ -271,6 +306,7 @@ export function addEventListeners() {
   const tilesetInput = document.getElementById('tileset-input')
   const resizeLevel = document.querySelector(".resize")
 
+  const closeButton = document.querySelector(".close-button")
   const triggerDialog = document.querySelector(".trigger-dialog")
   const stepsContainer = document.querySelector('.steps')
   const applyTrigger = document.querySelector('.trigger-dialog .apply')
@@ -572,6 +608,10 @@ export function addEventListeners() {
     player.xInertia = Number(horizontalInertiaSlider.value)
   })
 
+  closeButton.addEventListener("click", () => {
+    openMenu()
+  })
+
   categories.forEach(category => {
     category.addEventListener('click', () => {
       categories.forEach(cat => {
@@ -845,8 +885,8 @@ export function pollGamepad() {
   if (!gp) return
 
   input.keys[" "] = gp.buttons[0]?.pressed
-  const deadzone = 0.05
-  const outerDeadzone = 0.95
+  const deadzone = 0.1
+  const outerDeadzone = 0.9
   let rawX = gp.axes[0]
 
   if (Math.abs(rawX) > deadzone) {

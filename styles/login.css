@@ -52,7 +52,7 @@ nav h1 {
 .login input {
   margin: 7px;
   background-color: var(--bg-primary);
-  border: 3px solid black;
+  border: 3px solid var(--border);
   border-radius: 17px;
   width: min(400px, 95vw);
   height: 25px;
@@ -68,8 +68,8 @@ nav h1 {
 
 .login input[type="submit"] {
   width: 100px;
-  background-color: black;
-  color: var(--bg-primary);
+  background-color: var(--action);
+  color: var(--text-on-action);
   font-family: "Fredoka", sans-serif;
   font-size: 20px;
   height: 33px;
@@ -87,7 +87,7 @@ nav h1 {
 }
 
 .form-bottom a {
-  color: black;
+  color: var(--action);
   margin-right: 7px;
 }
 
@@ -109,7 +109,7 @@ label.error-text:empty {
 .title {
   font-size: 35px;
   font-weight: 500;
-  color: black;
+  color: var(--text-on-primary);
   text-decoration: none;
 }
 
@@ -120,7 +120,7 @@ label.error-text:empty {
 }
 
 .hack-club-oauth {
-  border: 3px solid black;
+  border: 3px solid var(--border);
   height: 25px;
   padding: 1px 10px;
   border-radius: 50px;
@@ -131,7 +131,7 @@ label.error-text:empty {
   align-items: center;
   margin: 7px;
   cursor: pointer;
-  color: black;
+  color: var(--text-on-primary);
   text-decoration: none;
 }
 

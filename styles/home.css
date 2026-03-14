@@ -15,7 +15,7 @@
 
 .right-nav>* {
     margin-right: 15px;
-    color: black;
+    color: var(--text-on-primary);
     text-decoration: none;
 }
 
@@ -51,7 +51,7 @@
 }
 
 .searchbar {
-    border: 3px solid black;
+    border: 3px solid var(--border);
     border-radius: 15px;
     width: 300px;
     display: flex;
@@ -65,7 +65,7 @@
     border: none;
     outline: none;
     padding: 5px 10px 5px 15px;
-    -webkit-text-fill-color: black;
+    -webkit-text-fill-color: var(--text-on-primary);
     font-size: 20px;
 }
 
@@ -80,7 +80,7 @@
 
 #sort-by {
     outline: none;
-    border: 3px solid black;
+    border: 3px solid var(--border);
     font-size: 20px;
     border-radius: 15px;
     padding: 5px 10px 5px 15px;
@@ -102,11 +102,11 @@
     flex-direction: column;
     justify-content: center;
     padding: 10px;
-    border: 3px solid black;
+    border: 3px solid var(--border);
     border-radius: 15px;
     width: min(400px, 90vw);
     margin: 20px;
-    color: black !important;
+    color: var(--text-on-primary) !important;
     text-decoration: none !important;
     transition: transform 200ms ease;
 }
@@ -117,7 +117,7 @@
 }
 
 .image {
-    border: 3px solid black;
+    border: 3px solid var(--border);
     border-radius: 7px;
     box-sizing: border-box;
     aspect-ratio: 5 / 3;
@@ -244,7 +244,7 @@
 }
 
 .quick-actions a {
-    color: black;
+    color: var(--border);
     text-decoration: none;
 }
 
@@ -268,7 +268,7 @@
 
 .overlay .confirm-delete {
     background-color: var(--bg-primary);
-    border: 3px solid black;
+    border: 3px solid var(--border);
     border-radius: 20px;
     padding: 10px 20px;
 }
@@ -288,7 +288,7 @@
 .overlay .option {
     border-radius: 10px;
     margin: 0 20px 10px 20px;
-    border: 3px solid black;
+    border: 3px solid var(--border);
 }
 
 .overlay #confirm-button {
@@ -311,7 +311,7 @@
 .divider {
     width: 0;
     height: 30px;
-    border-left: 3px solid black;
+    border-left: 3px solid var(--border);
     border-radius: 13px;
 }
 
