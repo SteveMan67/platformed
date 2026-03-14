@@ -29,7 +29,14 @@
 <body>
   <div class="grid">
     <div class="topbar">
-      <h1 class="title"><a href="/">Platformed</a></h1>
+      <div class="main">
+        <h1 class="title"><a href="/">Platformed</a></h1>
+
+        <div class="link-wrapper hidden">
+          <a class="main-link" href="">View Level</a>
+          <img src="/assets/icons/arrow-right.svg" alt="">
+        </div>
+      </div>
       <div class="actions">
 
         <div class="save-utils">
@@ -169,6 +176,11 @@
         <input type="text" name="username" id="username">
         <label for="password">Password</label>
         <input type="password" name="password" id="password">
+        <div class="oauth">
+          <a href="" class="hack-club-oauth">
+            <div>Sign in with Hack Club</div>
+          </a>
+        </div>
         <div class="form-button">
           <input id="submit" type="submit" value="Log in">
         </div>

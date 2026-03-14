@@ -555,7 +555,7 @@ function handleInput(timeScale) {
 
 export function levelEditorLoop(dt) {
   let timeScale = dt * 60
-  const { map, cam, tileSize, tileset } = editor
+  const { map, cam, tileSize, tileset, colorTheme } = editor
 
 
   handleInput(timeScale)
@@ -572,13 +572,14 @@ export function levelEditorLoop(dt) {
 
   updateBottomBar(tx, ty)
 
-  ctx.fillStyle = '#C29A62'
+
+  ctx.fillStyle = colorTheme.bgLevel
   ctx.fillRect(0, 0, canvas.width, canvas.height)
 
   drawMap()
 
   if (editor.selection.active) {
-    ctx.strokeStyle = 'white'
+    ctx.strokeStyle = colorTheme.textOnPrimary
     ctx.setLineDash([5, 5])
     ctx.lineWidth = 2
 

@@ -94,6 +94,24 @@ fetch(`${serverUrl}/api/me`)
     myLevelsbutton.href = `/login?redirect=${encodeURIComponent('/')}`
   })
 
+function getThemeColor(colorName) {
+  return getComputedStyle(document.documentElement).getPropertyValue(colorName).trim()
+}
+
+const colorTheme = {}
+
+function updateColorTheme() {
+  colorTheme.bgPrimary = getThemeColor('--bg-primary')
+  colorTheme.bgAccent = getThemeColor('--bg-accent')
+  colorTheme.bgLevel = getThemeColor('--bg-level')
+  colorTheme.textOnPrimary = getThemeColor('--text-on-primary')
+  colorTheme.textOnAccent = getThemeColor('--text-on-accent')
+  colorTheme.action = getThemeColor('--action')
+  colorTheme.textOnAction = getThemeColor('--text-on-action')
+}
+
+updateColorTheme()
+
 function decodeRLE(data) {
   const out = []
   for (let i = 0; i < data.length; i++) {
@@ -238,7 +256,7 @@ export async function renderLevelPreview(canvas, levelData) {
 
   ctx.imageSmoothingEnabled = false;
 
-  ctx.fillStyle = "#C29A62"
+  ctx.fillStyle = colorTheme.bgLevel
   ctx.fillRect(0, 0, canvas.width, canvas.height)
 
   if (imgMap.has(levelData.id)) {

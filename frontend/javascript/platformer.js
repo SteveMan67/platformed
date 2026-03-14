@@ -852,6 +852,7 @@ function updateEnemyPhysics(dt) {
 }
 
 export function platformerLoop(dt) {
+  const { colorTheme } = editor
   pollGamepad()
   let timeScale = dt * 60
 
@@ -875,7 +876,7 @@ export function platformerLoop(dt) {
       const ease = -(Math.cos(Math.PI * progress) - 1) / 2
       const mapW = editor.map.w * player.tileSize
       const mapH = editor.map.h * player.tileSize
-
+      '#C29A62'
       let targetX = getCameraCoords().x
       let targetY = getCameraCoords().y
 
@@ -900,7 +901,8 @@ export function platformerLoop(dt) {
   }
 
 
-  ctx.fillStyle = '#C29A62'
+
+  ctx.fillStyle = colorTheme.bgLevel
   ctx.fillRect(0, 0, canvas.width, canvas.height)
 
   drawMap(player.tileSize, player.cam)

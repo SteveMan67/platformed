@@ -84,9 +84,8 @@
     font-size: 20px;
     border-radius: 15px;
     padding: 5px 10px 5px 15px;
-    background-color: #C29A62;
+    background-color: var(--bg-accent);
     margin-left: 20px;
-
 }
 
 .levels {
@@ -173,7 +172,7 @@
     height: 100%;
     top: 0;
     left: 0;
-    background: linear-gradient(to right, transparent 95%, #C29A62 100%)
+    background: linear-gradient(to right, transparent 95%, var(--bg-primary) 100%)
 }
 
 .name.my-levels {
@@ -268,7 +267,7 @@
 }
 
 .overlay .confirm-delete {
-    background-color: #C29A62;
+    background-color: var(--bg-primary);
     border: 3px solid black;
     border-radius: 20px;
     padding: 10px 20px;
@@ -293,8 +292,8 @@
 }
 
 .overlay #confirm-button {
-    color: #C29A62;
-    background-color: black;
+    color: var(--text-on-action);
+    background-color: var(--action);
 }
 
 .overlay #cancel-button p,

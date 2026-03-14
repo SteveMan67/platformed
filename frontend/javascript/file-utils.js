@@ -365,10 +365,31 @@ export function splitStripImages(tileset) {
 
 export async function updateMap() {
   console.log(user)
+  let me
   if (!user || user.id == null) {
-    // need to show a log prompt 
-    openMenu("login")
-    return
+    // check whether the cookie exists
+    const serverUrl = window.location.origin
+
+    me = await fetch(`${serverUrl}/api/me`, {
+      method: "GET",
+      credentials: "include"
+    })
+
+    if (me.ok) {
+      const userJson = await me.json()
+      console.log(userJson)
+      if (userJson.user !== undefined) {
+        user.id = userJson.user
+      }
+    } else {
+      // need to show a log prompt 
+      const CLIENT_ID = 'bf7d0bd81b456fe6c1fce13daf452ad7'
+      const hackClub = document.querySelector(".hack-club-oauth")
+      hackClub.target = '_blank'
+      hackClub.href = `https://auth.hackclub.com/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(`${window.location.origin}/login`)}&response_type=code&scope=${encodeURIComponent("openid slack_id")}`
+      openMenu("login")
+      return
+    }
   }
 
   const levelNum = editor.level.id

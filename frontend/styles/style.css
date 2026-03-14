@@ -1,5 +1,26 @@
+:root {
+  --bg-primary: #E6D6B2;
+  --bg-accent: #E6D6B2;
+  --bg-level: #CAD9E5;
+
+  --action: black;
+
+  --text-on-primary: black;
+  --text-on-accent: black;
+  --text-on-action: #E6D6B2;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #2A2722;
+  --bg-accent: #2A2722;
+  --bg-level: #659BFF;
+
+  --text-on-primary: white;
+  --text-on-accent: white;
+}
+
 body {
-  background-color: #C29A62;
+  background-color: var(--bg-primary);
   font-family: "Fredoka", sans-serif;
   margin: 0;
   scrollbar-width: none;
@@ -59,7 +80,7 @@ body {
 }
 
 .login {
-  background-color: #C29A62;
+  background-color: var(--bg-primary);
   border-radius: 20px;
   z-index: 10;
   padding: 20px
@@ -80,6 +101,30 @@ body {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+}
+
+.topbar .main {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+}
+
+.topbar .link-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar .link-wrapper img {
+  width: 25px;
+  aspect-ratio: 1;
+}
+
+.topbar .main a.main-link {
+  color: black;
+  font-size: 20px;
 }
 
 .actions img.help {
@@ -198,7 +243,7 @@ body {
   transform: translateY(175%) translateX(-76px) rotate(45deg);
   width: 10px;
   height: 10px;
-  background-color: #C29A62;
+  background-color: var(--bg-primary);
   border-right: 4px solid #AF8758;
   border-top: 4px solid #AF8758;
   border-radius: 2px;
@@ -300,7 +345,7 @@ i::before {
   right: 0;
   bottom: 0;
   margin: 10px;
-  background-color: #C29A62;
+  background-color: var(--bg-level);
   border: 3px solid black;
   border-radius: 10px;
   overflow: hidden;
@@ -345,7 +390,7 @@ i::before {
   max-height: max(70vh, 500px);
   margin-top: 20px;
   z-index: 3;
-  background-color: #C29A62;
+  background-color: var(--bg-primary);
   border-radius: 20px;
   min-height: 400px;
   width: min(700px, 90vw);
@@ -358,7 +403,7 @@ i::before {
 .trigger-dialog {
   width: min(90vw, 800px);
   z-index: 3;
-  background-color: #C29A62;
+  background-color: var(--bg-primary);
   border-radius: 20px;
   min-height: 400px;
   user-select: none;
@@ -377,7 +422,7 @@ i::before {
 .trigger-script {
   width: min(500px, 90vw);
   height: min(700px, 80vh);
-  background-color: #C29A62;
+  background-color: var(--bg-primary);
   border-radius: 20px;
   z-index: 10;
   display: flex;
@@ -412,7 +457,7 @@ button {
   outline: none;
   font-size: 20px;
   background-color: black;
-  color: #C29A62;
+  color: var(--bg-primary);
   font-family: "Fredoka", sans-serif;
   border-radius: 500px;
 }
@@ -491,7 +536,7 @@ button {
   font-size: 30px;
   outline: none;
   border: none;
-  background-color: #C29A62;
+  background-color: var(--bg-primary);
   border-radius: 10px;
   font-family: "Fredoka", sans-serif;
 }
@@ -522,7 +567,7 @@ div.step .options input.coord {
 .step .options {
   display: flex;
   justify-content: right;
-  margin-right: 10px;
+  margin-right: 10p;
   align-items: center;
   font-size: 25px;
 }
@@ -536,7 +581,7 @@ div.step .options input.coord {
   font-size: 25px;
   outline: none;
   border: none;
-  background-color: #C29A62;
+  background-color: var(--bg-primary);
   border-radius: 10px;
   font-family: "Fredoka", sans-serif;
   appearance: textfield;
@@ -588,7 +633,7 @@ div.step .options input.coord {
   border: none;
   outline: none;
   background: black;
-  color: #C29A62;
+  color: var(--bg-primary);
   font-size: 20px;
   border-radius: 15px;
   padding: 5px 15px;
@@ -619,7 +664,7 @@ input::-webkit-inner-spin-button {
 
 .buttons .apply {
   background-color: black;
-  color: #C29A62;
+  color: var(--bg-primary);
   outline: none;
   border: none;
   border-radius: 500px;
@@ -660,7 +705,7 @@ input[type="radio"] {
   box-sizing: border-box;
   height: 34px;
   aspect-ratio: 5/3;
-  background-color: #C29A62;
+  background-color: var(--bg-primary);
   border: 3px solid black;
   border-radius: 50px;
   position: relative;
@@ -692,7 +737,7 @@ input[type="radio"] {
 }
 
 .toggle:checked::before {
-  border: 3px solid #C29A62;
+  border: 3px solid var(--bg-primary);
   height: 7px;
   left: 10px;
   border-radius: 3px;
@@ -704,7 +749,7 @@ input[type="radio"] {
   right: 5px;
   width: 8px;
   aspect-ratio: 1;
-  background-color: #C29A62;
+  background-color: var(--bg-primary);
 }
 
 .toggle:checked {
@@ -713,12 +758,12 @@ input[type="radio"] {
 }
 
 .toggle:not(:checked) {
-  background-color: #C29A62;
+  background-color: var(--bg-primary);
   border: 3px solid black;
 }
 
 .toggle:checked::after {
-  background-color: #C29A62;
+  background-color: var(--bg-primary);
   transform: translateX(22px) translateY(-50%);
 }
 
@@ -727,7 +772,7 @@ input[type="radio"] {
 .menu-content input[type="radio"]:nth-of-type(3):checked~.tabs li:nth-of-type(3),
 .menu-content input[type="radio"]:nth-of-type(4):checked~.tabs li:nth-of-type(4),
 .menu-content input[type="radio"]:nth-of-type(5):checked~.tabs li:nth-of-type(5) {
-  background-color: #C29A62;
+  background-color: var(--bg-primary);
   border: 3px solid black;
   border-bottom: none;
   border-radius: 10px 10px 0 0;
@@ -824,7 +869,7 @@ input[type="radio"] {
 }
 
 .menu-item select {
-  background-color: #C29A62;
+  background-color: var(--bg-primary);
   border: none !important;
   font-family: "Fredoka", sans-serif;
   font-size: 20px;
@@ -877,7 +922,7 @@ input[type="radio"] {
   height: 16px;
   width: 16px;
   border-radius: 200px;
-  background: #C29A62;
+  background: var(--bg-primary);
   border: 3px solid black;
   box-sizing: border-box;
   margin-top: -7px;
@@ -887,7 +932,7 @@ input[type="radio"] {
   height: 16px;
   width: 16px;
   border-radius: 200px;
-  background: #C29A62;
+  background: var(--bg-primary);
   border: 3px solid black;
   box-sizing: border-box;
 }
@@ -971,7 +1016,7 @@ div.menu-item div.description-border input[type="text"] {
   border: 3px solid black;
   padding: 5px 15px;
   font-size: 20px;
-  color: #C29A62;
+  color: var(--bg-primary);
   border-radius: 20px;
   font-family: "Fredoka", sans-serif;
 }

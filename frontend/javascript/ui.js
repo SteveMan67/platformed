@@ -196,8 +196,17 @@ export function addEventListeners() {
   const url = window.location.href
   const hasEditorId = /\/editor\/\d+/.test(url)
   let out = url.replace(/^https?:\/\//, '').replace('/editor/', '/level/')
+
   if (hasEditorId) {
+    const levelIdMatch = url.match(/\/editor\/(\d+)/)
+    const levelId = levelIdMatch[0].replace('editor/', 'level/')
     linkEl.innerText = out
+    const linkWrapper = document.querySelector(".topbar .link-wrapper")
+    const topBarLink = document.querySelector(".main-link")
+    linkWrapper.classList.remove("hidden")
+    topBarLink.href = levelId
+    topBarLink.innerText = "Open Level"
+    topBarLink.target = "_blank"
   } else {
     out = ''
   }
@@ -281,6 +290,11 @@ export function addEventListeners() {
   const loginSubmit = document.querySelector(".login #submit")
   const loginForm = document.querySelector(".login form")
   const overlay = document.querySelector(".overlay")
+  const HackClubOauth = document.querySelector(".hack-club-oauth")
+
+  HackClubOauth.addEventListener("click", () => {
+    openMenu()
+  })
 
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault()
@@ -311,6 +325,7 @@ export function addEventListeners() {
       }
     }
   })
+
 
   editWithTS.addEventListener("click", (e) => {
     openMenu("trigger-script")
@@ -641,7 +656,6 @@ export function addEventListeners() {
   })
 
   saveButton.addEventListener("click", () => {
-    console.log("Hello?")
     updateMap()
   })
 

@@ -48,6 +48,15 @@ export const state = {
     triggerTimeouts: []
   },
   editor: {
+    colorTheme: {
+      bgPrimary: '#E6D6B2',
+      bgAccent: '#E6D6B2',
+      bgLevel: '#CAD9E5',
+      action: 'black',
+      textOnPrimary: 'black',
+      textOnAccent: 'black',
+      textOnAction: '#E6d6b2'
+    },
     showTriggerHighlights: true,
     cam: {
       x: 0,

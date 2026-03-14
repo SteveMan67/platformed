@@ -109,6 +109,17 @@
       ]
     },
     {
+      "id": 12,
+      "name": "Enemy",
+      "file": "enemy.png",
+      "category": "mobs",
+      "type": "enemy",
+      "triggerAdjacency": false,
+      "mechanics": [
+        "noCollision"
+      ]
+    },
+    {
       "id": 13,
       "name": "Blue Toggle Block",
       "file": "blue-block.png",
