@@ -213,244 +213,124 @@ export function needsSmallerLevel() {
   return canvas.width < 900 && canvas.height < (player.tileSize * 15)
 }
 
-export function addEventListeners() {
-  console.log("setting event listeners")
-
+/**
+ * Handles ui functions for 
+ */
+function mainEditorUi() {
+  // add svgs 
   addTopBarSVGs()
   addSvg('close.svg', '.close-wrapper', 30, 30, 'close-button', 'close')
 
-  // add color theme swatches
-  const serverUrl = window.location.origin
-
-  const swatches = document.querySelector(".color-theme .swatches")
-  for (const theme of colorSchemes) {
-    console.log(theme)
-    const swatch = document.createElement('div')
-    swatch.innerHTML = `
-      <div class="swatch">
-        <div class="level-color" style="background-color: ${theme.colors.bgLevel}"></div>
-        <div class="primary" style="background-color: ${theme.colors.bgPrimary}"></div>
-      </div>
-      <p>${theme.name}</p>
-    `
-    console.log(swatch)
-    swatch.addEventListener("click", () => {
-      changeColorTheme(theme.id)
-      console.log(1)
-      fetch(`${serverUrl}/api/theme`, {
-        method: "PATCH",
-        credentials: "include",
-        body: JSON.stringify({
-          theme: theme.id
-        })
-      })
-    })
-    swatches.appendChild(swatch)
-  }
-
-  window.addEventListener("beforeunload", (e) => {
-    if (editor.dirty) {
-      e.preventDefault()
-      e.returnValue = ""
-    }
-  })
-
-  const linkEl = document.querySelector(".share-link .link")
-  const linkBox = document.querySelector(".share-link")
-
-  const url = window.location.href
-  const hasEditorId = /\/editor\/\d+/.test(url)
-  let out = url.replace(/^https?:\/\//, '').replace('/editor/', '/level/')
-
-  if (hasEditorId) {
-    const levelIdMatch = url.match(/\/editor\/(\d+)/)
-    const levelId = levelIdMatch[0].replace('editor/', 'level/')
-    linkEl.innerText = out
-    const linkWrapper = document.querySelector(".topbar .link-wrapper")
-    const topBarLink = document.querySelector(".main-link")
-    linkWrapper.classList.remove("hidden")
-    topBarLink.href = levelId
-    topBarLink.innerText = "Open Level"
-    topBarLink.target = "_blank"
-  } else {
-    out = ''
-  }
-
-  linkBox.addEventListener("click", async () => {
-    if (out === '') return
-    const text = out
-    try {
-      await navigator.clipboard.writeText(text)
-      linkEl.innerText = 'Copied'
-      setTimeout(() => {
-        if (out !== '') linkEl.innerText = out
-      }, 1000)
-      return
-    } catch {
-
-    }
-
-    const ta = document.createElement('textarea')
-    ta.value = text
-    ta.style.position = 'fixed'
-    ta.style.left = '-9999px'
-    document.body.appendChild(ta)
-    ta.select()
-    try {
-      document.execCommand('copy')
-      linkEl.innerText = "Copied"
-      setTimeout(() => {
-        if (out !== '') linkEl.innerText = out
-      }, 1000)
-    } finally {
-      document.removeChild(ta)
-    }
-
-  })
-
-  // page event listeners
-  const menuElement = document.querySelector(".overlay")
-  const menuButton = document.querySelector(".menu-button")
-  const background = document.querySelector(".background")
-  const eraserButton = document.querySelector('.eraser')
-  const saveButton = document.querySelector('.save')
-  const undoButton = document.querySelector('.undo')
-  const redoButton = document.querySelector('.redo')
+  // top bar
   const helpButton = document.querySelector('.help')
   const helpTabRadio = document.getElementById('tab5')
+  const undoButton = document.querySelector('.undo')
+  const redoButton = document.querySelector('.redo')
+  const saveButton = document.querySelector('.save')
   const importButton = document.querySelector('.import')
-  const tileSelection = document.querySelector('.tile-selection')
+  const play = document.querySelector(".play")
+  const menuButton = document.querySelector(".menu-button")
+
+  helpButton.addEventListener("click", () => {
+    openMenu("menu-content")
+    helpTabRadio.checked = true
+  })
+
+  undoButton.addEventListener("click", () => undo())
+  redoButton.addEventListener("click", () => redo())
+
+  saveButton.addEventListener("click", () => {
+    updateMap()
+  })
+
+
+  importButton.addEventListener('click', () => {
+    let input = document.createElement('input')
+    input.type = 'file'
+    input.id = 'mapFileInput'
+    input.accept = '.json,application/json'
+    input.style.display = 'none'
+    input.addEventListener('change', (e) => {
+      importMap(e)
+    })
+    input.value = ''
+    input.click()
+  })
+
+
+  play.addEventListener('click', () => {
+    setMode(mode === 'play' ? 'editor' : 'play')
+  })
+
+  menuButton.addEventListener("click", () => {
+    openMenu("menu-content")
+  })
+
+  // sidebar
   const zoomIn = document.querySelector('.plus')
   const zoomOut = document.querySelector('.minus')
   const categories = document.querySelectorAll('.category')
-  const play = document.querySelector(".play")
-  const saveAsJson = document.getElementById("save-as-json")
+  const eraserButton = document.querySelector('.eraser')
 
-  const jumpHeightSlider = document.querySelector('#jump-height-input')
-  const verticalInertiaSlider = document.querySelector('#vertical-inertia-input')
-  const jumpWidthSlider = document.querySelector('#jump-width-input')
-  const horizontalInertiaSlider = document.querySelector('#horizontal-inertia-input')
-  const bouncePadHeightSlider = document.querySelector('#bounce-pad-height-input')
-  const zoomSlider = document.getElementById('zoom-level-input')
-  const walljumpInput = document.getElementById('walljump-input')
-  const tilesetInput = document.getElementById('tileset-input')
-  const resizeLevel = document.querySelector(".resize")
+  categories.forEach(category => {
+    category.addEventListener('click', () => {
+      categories.forEach(cat => {
+        cat.classList.remove('active')
+      })
+      let tileCount = sortByCategory(category.dataset.category)
+      if (tileCount !== 0) category.classList.add('active')
+    })
+    window.addEventListener('keypress', (e) => {
+      if (!menuElement.classList.contains("hidden")) return
+      if (e.key == String(((Array.from(categories).indexOf(category)) * -1) + categories.length) && getComputedStyle(menuElement).display === "none") {
+        categories.forEach(cat => {
+          cat.classList.remove('active')
+        })
+        let tileCount = sortByCategory(category.dataset.category)
+        if (tileCount !== 0) category.classList.add('active')
+      }
+    })
+  })
 
-  const closeButton = document.querySelector(".close-button")
-  const triggerDialog = document.querySelector(".trigger-dialog")
-  const stepsContainer = document.querySelector('.steps')
-  const applyTrigger = document.querySelector('.trigger-dialog .apply')
-  const editWithTS = document.querySelector(".trigger-script-edit")
-  const tsTextarea = document.querySelector(".trigger-script textarea")
-  const tsDialog = document.querySelector(".trigger-script")
-  const applyTS = document.querySelector(".trigger-script .apply")
-  const tsError = document.querySelector(".trigger-script .error")
+  zoomIn.addEventListener('click', () => {
+    zoomMap(true, 10)
+  })
+
+  zoomOut.addEventListener('click', () => {
+    zoomMap(false, 10)
+  })
+
+  eraserButton.addEventListener('click', () => {
+    toggleErase()
+  })
+
+  // minimap 
   let mousedown = false
-  const minimapToggle = document.getElementById("show-minimap")
-  const triggerHighlightToggle = document.getElementById("trigger-highlight")
   const minimap = document.querySelector(".minimap")
 
-  const username = document.querySelector(".login #username")
-  const password = document.querySelector(".login #password")
-  const login = document.querySelector(".login")
-  const loginSubmit = document.querySelector(".login #submit")
-  const loginForm = document.querySelector(".login form")
-  const overlay = document.querySelector(".overlay")
-  const HackClubOauth = document.querySelector(".hack-club-oauth")
+  function moveMinimap(e) {
+    if (!mousedown || isDraggingMap) return
+    const tx = e.offsetX / 3
+    const ty = e.offsetY / 3
+    const x = tx * editor.tileSize
+    const y = ty * editor.tileSize
+    const mapX = Math.max(0, Math.min(x - (canvas.width / 2), (editor.map.w * editor.tileSize) - canvas.width))
+    const mapY = Math.max(0, Math.min(y - (canvas.height / 2), (editor.map.h * editor.tileSize) - canvas.height))
 
-  HackClubOauth.addEventListener("click", () => {
-    openMenu()
-  })
-
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault()
-
-    const form = e.target
-    if (form.username.value && form.password.value) {
-      console.log("hello")
-      const payload = {
-        username: form.username.value,
-        password: form.password.value
-      }
-
-      const url = `${serverUrl}/api/login`
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": 'applicatoin/json' },
-        credentials: 'include',
-        body: JSON.stringify(payload)
-      })
-
-      if (res.ok) {
-        openMenu()
-        const json = await res.json()
-        console.log(json)
-        user.id = json.id
-        updateMap()
-      }
-    }
-  })
-
-
-  editWithTS.addEventListener("click", (e) => {
-    openMenu("trigger-script")
-    tsTextarea.value = compileToTriggerScript(activeTrigger.execute)
-  })
-
-  tsTextarea.addEventListener("input", (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-  })
-
-  tsTextarea.addEventListener("keydown", (e) => {
-    e.stopPropagation()
-  })
-
-  tsTextarea.addEventListener("keyup", (e) => {
-    e.stopPropagation()
-  })
-
-  tsTextarea.addEventListener("keypress", (e) => {
-    e.stopPropagation()
-  })
-
-  applyTS.addEventListener("click", async () => {
-    const text = tsTextarea.value
-
-    try {
-      const execute = await readTriggerScript(text)
-      activeTrigger.execute = execute
-      openMenu()
-    } catch (e) {
-      console.log(e)
-      tsError.innerText = e
-    }
-  })
-
-  triggerHighlightToggle.addEventListener("input", (e) => {
-    if (triggerHighlightToggle.checked) {
-      editor.showTriggerHighlights = true
-    } else {
-      editor.showTriggerHighlights = false
-    }
-  })
-  minimapToggle.addEventListener("input", (e) => {
-    if (minimapToggle.checked) {
-      minimap.style.display = 'block'
-    } else {
-      minimap.style.display = 'none'
-    }
-  })
+    editor.cam.x = mapX
+    editor.cam.y = mapY
+    drawMinimap()
+  }
 
   minimap.addEventListener('mousedown', (e) => {
     mousedown = true
     moveMinimap(e)
   })
 
+  // main game canvas
   let isDraggingMap = false
   const dragStart = {}
   const camStart = {}
-
 
   canvas.addEventListener("mousedown", (e) => {
     // mmb move around
@@ -463,13 +343,12 @@ export function addEventListeners() {
     }
   })
 
-  const gameCanvas = document.querySelector(".canvas")
   let animationFrameId = null
 
   window.addEventListener("mousemove", (e) => {
     if (!isDraggingMap) return
-    const maxX = (editor.width * editor.tileSize) - gameCanvas.width
-    const maxY = (editor.height * editor.tileSize) - gameCanvas.height
+    const maxX = (editor.width * editor.tileSize) - canvas.width
+    const maxY = (editor.height * editor.tileSize) - canvas.height
 
     const dx = dragStart.x - e.screenX
     const dy = dragStart.y - e.screenY
@@ -492,177 +371,17 @@ export function addEventListeners() {
     isDraggingMap = false
   })
 
-  function moveMinimap(e) {
-    if (!mousedown || isDraggingMap) return
-    const tx = e.offsetX / 3
-    const ty = e.offsetY / 3
-    const x = tx * editor.tileSize
-    const y = ty * editor.tileSize
-    const mapX = Math.max(0, Math.min(x - (canvas.width / 2), (editor.map.w * editor.tileSize) - canvas.width))
-    const mapY = Math.max(0, Math.min(y - (canvas.height / 2), (editor.map.h * editor.tileSize) - canvas.height))
-
-    editor.cam.x = mapX
-    editor.cam.y = mapY
+  window.addEventListener('resize', () => {
+    updateCanvasSize()
     drawMinimap()
-  }
-
-  minimap.addEventListener('mousemove', (e) => {
-    moveMinimap(e)
   })
 
-  applyTrigger.addEventListener('click', (e) => {
-    console.log("1")
-    if (!activeTrigger) return
-    console.log("2")
 
-    const newExecuteArray = []
-    const stepElements = document.querySelectorAll('.steps .step')
-
-    stepElements.forEach(stepEl => {
-      const type = stepEl.querySelector('.action-type').value
-      let stepData = { type: type }
-
-      if (type == 'teleport') {
-        const xInput = stepEl.querySelector('.tp-x')
-        const yInput = stepEl.querySelector('.tp-y')
-        const instant = stepEl.querySelector('.instant')
-        stepData.instant = instant.checked
-        stepData.x = xInput ? parseInt(xInput.value, 10) : 0
-        stepData.y = yInput ? parseInt(yInput.value, 10) : 0
-      }
-      if (type == 'rotate') {
-        const xInput = stepEl.querySelector('.rotate-x')
-        const yInput = stepEl.querySelector('.rotate-y')
-        const rotationEl = stepEl.querySelector('.rotation-amount')
-        stepData.x = xInput ? Number(xInput.value) : 0
-        stepData.y = yInput ? Number(yInput.value) : 0
-        stepData.beforeRotation = rotationEl ? Number(rotationEl.value) : 1
-      }
-      if (type == "updateBlock") {
-        const xInput = stepEl.querySelector('.block-x')
-        const yInput = stepEl.querySelector('.block-y')
-        const blockEl = stepEl.querySelector('.block')
-        stepData.x = xInput ? Number(xInput.value) : null
-        stepData.y = xInput ? Number(yInput.value) : null
-        stepData.block = blockEl ? Number(blockEl.value) : null
-      }
-      if (type == "delay") {
-        const ms = stepEl.querySelector(".ms")
-        stepData.time = ms.value ?? 500
-      }
-      newExecuteArray.push(stepData)
-    })
-    activeTrigger.execute = newExecuteArray
-    toggleTriggerDialog(false)
-  })
-
-  stepsContainer.addEventListener('click', (e) => {
-    if (e.target.classList.contains('delete-step')) {
-      e.target.closest('.step').remove()
-    }
-  })
-
-  stepsContainer.addEventListener('change', (e) => {
-    if (e.target.classList.contains('action-type')) {
-      const stepEl = e.target.closest('.step')
-      const optionsContainer = stepEl.querySelector('.options')
-      optionsContainer.innerHTML = getOptionHTML({ type: e.target.value })
-    }
-  })
-
-  document.querySelector('#new').addEventListener('click', () => {
-    addStepToUI({ type: 'toggleBlocks' })
-  })
-
-  resizeLevel.addEventListener("click", () => {
-    console.log("hi")
-    const heightEl = document.querySelector(".resize-wrapper .height")
-    const widthEl = document.querySelector(".resize-wrapper .width")
-    const width = Number(widthEl.value)
-    const height = Number(heightEl.value)
-
-    if (height > 100 || height < 10 || width > 200 || width < 10) {
-      alert("invalid level size")
-      return
-    }
-    if (height < editor.height || width < editor.width) {
-      console.log(height, editor.height, width, editor.width)
-      console.log(height < editor.height, width < editor.width)
-      if (confirm("This might erase level data. Continue?")) {
-        updateLevelSize(width, height)
-      }
-    } else {
-      updateLevelSize(width, height)
-    }
-    openMenu()
-  })
-
-  menuButton.addEventListener("click", () => {
-    openMenu("menu-content")
-  })
-
-  background.addEventListener("click", () => {
-    openMenu()
-  })
-
-  tilesetInput.addEventListener("input", () => {
-    updateTileset(tilesetInput.value)
-  })
-
-  walljumpInput.addEventListener('input', () => {
-    player.wallJump = walljumpInput.value
-  })
-
-  zoomSlider.addEventListener('click', () => {
-    player.tileSize = Math.floor((32 / 0.6) * zoomSlider.value)
-  })
-
-  bouncePadHeightSlider.addEventListener('input', () => {
-    player.bouncePadHeight = Number(bouncePadHeightSlider.value)
-  })
-
-  jumpHeightSlider.addEventListener('input', () => {
-    player.jumpHeight = Number(jumpHeightSlider.value)
-  })
-
-  verticalInertiaSlider.addEventListener('input', () => {
-    player.yInertia = Number(verticalInertiaSlider.value)
-  })
-
-  jumpWidthSlider.addEventListener('input', () => {
-    player.jumpWidth = Number(jumpWidthSlider.value)
-  })
-
-  horizontalInertiaSlider.addEventListener('input', () => {
-    player.xInertia = Number(horizontalInertiaSlider.value)
-  })
-
-  closeButton.addEventListener("click", () => {
-    openMenu()
-  })
-
-  categories.forEach(category => {
-    category.addEventListener('click', () => {
-      categories.forEach(cat => {
-        cat.classList.remove('active')
-      })
-      let tileCount = sortByCategory(category.dataset.category)
-      if (tileCount !== 0) category.classList.add('active')
-    })
-    window.addEventListener('keypress', (e) => {
-      if (!overlay.classList.contains("hidden")) return
-      if (e.key == String(((Array.from(categories).indexOf(category)) * -1) + categories.length) && getComputedStyle(menuElement).display === "none") {
-        categories.forEach(cat => {
-          cat.classList.remove('active')
-        })
-        let tileCount = sortByCategory(category.dataset.category)
-        if (tileCount !== 0) category.classList.add('active')
-      }
-    })
-  })
+  // main keybinds 
+  const menuElement = document.querySelector(".overlay")
 
   window.addEventListener('wheel', (e) => {
-    if (!overlay.classList.contains("hidden") || input.keys["Shift"]) return
+    if (!menuElement.classList.contains("hidden") || input.keys["Shift"]) return
     e.preventDefault()
 
     if (e.ctrlKey) {
@@ -694,85 +413,10 @@ export function addEventListeners() {
     }
   }, { passive: false })
 
-  window.addEventListener('resize', () => {
-    updateCanvasSize()
-    drawMinimap()
-  })
 
-  zoomIn.addEventListener('click', () => {
-    zoomMap(true, 10)
-  })
-
-  zoomOut.addEventListener('click', () => {
-    zoomMap(false, 10)
-  })
-
-  play.addEventListener('click', () => {
-    setMode(mode === 'play' ? 'editor' : 'play')
-  })
-
-  importButton.addEventListener('click', () => {
-    let input = document.createElement('input')
-    input.type = 'file'
-    input.id = 'mapFileInput'
-    input.accept = '.json,application/json'
-    input.style.display = 'none'
-    input.addEventListener('change', (e) => {
-      importMap(e)
-    })
-    input.value = ''
-    input.click()
-  })
-
-  saveButton.addEventListener("click", () => {
-    updateMap()
-  })
-
-  undoButton.addEventListener("click", () => undo())
-  redoButton.addEventListener("click", () => redo())
-
-  helpButton.addEventListener("click", () => {
-    openMenu("menu-content")
-    helpTabRadio.checked = true
-  })
-  saveAsJson.addEventListener('click', () => {
-    const json = createMap(editor.map.w, editor.map.h, Array.from(editor.map.tiles))
-    const text = JSON.stringify(json, null, 2)
-    const blob = new Blob([text], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'map.json'
-    document.body.appendChild(a)
-    a.click()
-    a.remove()
-    URL.revokeObjectURL(url)
-  })
-
-  eraserButton.addEventListener('click', () => {
-    toggleErase()
-  })
-  document.addEventListener('keydown', (e) => {
-    if (e.key == "Escape") {
-      const { selection } = editor
-
-      if (selection.active) {
-        if (selection.hasFloatingTiles) {
-          stampSelection()
-        }
-
-        selection.active = false
-        editor.dirty = true
-      }
-
-      if (menuElement?.classList.contains("hidden")) {
-        openMenu()
-      }
-    }
-  })
   document.addEventListener('keypress', (e) => {
     if (!menuElement?.classList?.contains("hidden")) return
-    if (e.key == 'e') {
+    if (e.key.toLowerCase() == 'e') {
       const { selection } = editor
       if (selection.active) {
         // erase within selection
@@ -820,10 +464,10 @@ export function addEventListeners() {
       } else {
         toggleErase()
       }
-    } else if (e.key == 'p') {
+    } else if (e.key.toLowerCase() == 'p') {
       const desiredMode = mode == 'editor' ? 'play' : 'editor'
       setMode(desiredMode)
-    } else if (e.key == 'o') {
+    } else if (e.key.toLowerCase() == 'o') {
       let input = document.createElement('input')
       input.type = 'file'
       input.id = 'mapFileInput'
@@ -834,9 +478,9 @@ export function addEventListeners() {
       })
       input.value = ''
       input.click()
-    } else if (e.key == 'r') {
+    } else if (e.key.toLowerCase() == 'r') {
       killPlayer()
-    } else if (e.key == 'f' && editor.selection.active) {
+    } else if (e.key.toLowerCase() == 'f' && editor.selection.active) {
       const { selection } = editor
       // fill selection
 
@@ -902,6 +546,407 @@ export function addEventListeners() {
       }
     }
   })
+
+
+}
+
+/**
+ * Handles Ui functions for various menus
+ */
+function menuUi() {
+  // open menu stuff
+  const menuElement = document.querySelector(".overlay")
+  const background = document.querySelector(".background")
+  const closeButton = document.querySelector(".close-button")
+
+  background.addEventListener("click", () => {
+    openMenu()
+  })
+
+  closeButton.addEventListener("click", () => {
+    openMenu()
+  })
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key == "Escape") {
+      const { selection } = editor
+
+      if (selection.active) {
+        if (selection.hasFloatingTiles) {
+          stampSelection()
+        }
+
+        selection.active = false
+        editor.dirty = true
+      }
+
+      if (menuElement?.classList.contains("hidden")) {
+        openMenu()
+      }
+    }
+  })
+
+  // --- MAIN MENU ---
+
+  // -- level --
+  const zoomSlider = document.getElementById('zoom-level-input')
+  const resizeLevel = document.querySelector(".resize")
+  const tilesetInput = document.getElementById('tileset-input')
+
+  resizeLevel.addEventListener("click", () => {
+    const heightEl = document.querySelector(".resize-wrapper .height")
+    const widthEl = document.querySelector(".resize-wrapper .width")
+    const width = Number(widthEl.value)
+    const height = Number(heightEl.value)
+
+    if (height > 100 || height < 10 || width > 200 || width < 10) {
+      alert("invalid level size")
+      return
+    }
+    if (height < editor.height || width < editor.width) {
+      if (confirm("This might erase level data. Continue?")) {
+        updateLevelSize(width, height)
+      }
+    } else {
+      updateLevelSize(width, height)
+    }
+    openMenu()
+  })
+
+  tilesetInput.addEventListener("input", () => {
+    updateTileset(tilesetInput.value)
+  })
+
+  zoomSlider.addEventListener('click', () => {
+    player.tileSize = Math.floor((32 / 0.6) * zoomSlider.value)
+  })
+
+
+  // -- physics --
+  const jumpHeightSlider = document.querySelector('#jump-height-input')
+  const verticalInertiaSlider = document.querySelector('#vertical-inertia-input')
+  const jumpWidthSlider = document.querySelector('#jump-width-input')
+  const horizontalInertiaSlider = document.querySelector('#horizontal-inertia-input')
+  const bouncePadHeightSlider = document.querySelector('#bounce-pad-height-input')
+  const walljumpInput = document.getElementById('walljump-input')
+
+  walljumpInput.addEventListener('input', () => {
+    player.wallJump = walljumpInput.value
+  })
+
+  bouncePadHeightSlider.addEventListener('input', () => {
+    player.bouncePadHeight = Number(bouncePadHeightSlider.value)
+  })
+
+  jumpHeightSlider.addEventListener('input', () => {
+    player.jumpHeight = Number(jumpHeightSlider.value)
+  })
+
+  verticalInertiaSlider.addEventListener('input', () => {
+    player.yInertia = Number(verticalInertiaSlider.value)
+  })
+
+  jumpWidthSlider.addEventListener('input', () => {
+    player.jumpWidth = Number(jumpWidthSlider.value)
+  })
+
+  horizontalInertiaSlider.addEventListener('input', () => {
+    player.xInertia = Number(horizontalInertiaSlider.value)
+  })
+
+  // -- share --
+  const saveAsJson = document.getElementById("save-as-json")
+
+  saveAsJson.addEventListener('click', () => {
+    const json = createMap(editor.map.w, editor.map.h, Array.from(editor.map.tiles))
+    const text = JSON.stringify(json, null, 2)
+    const blob = new Blob([text], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'map.json'
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
+  })
+
+  // add link to copy 
+  const linkEl = document.querySelector(".share-link .link")
+  const linkBox = document.querySelector(".share-link")
+
+  const url = window.location.href
+  const hasEditorId = /\/editor\/\d+/.test(url)
+  let out = url.replace(/^https?:\/\//, '').replace('/editor/', '/level/')
+
+  if (hasEditorId) {
+    const levelIdMatch = url.match(/\/editor\/(\d+)/)
+    const levelId = levelIdMatch[0].replace('editor/', 'level/')
+    linkEl.innerText = out
+    const linkWrapper = document.querySelector(".topbar .link-wrapper")
+    const topBarLink = document.querySelector(".main-link")
+    linkWrapper.classList.remove("hidden")
+    topBarLink.href = levelId
+    topBarLink.innerText = "Open Level"
+    topBarLink.target = "_blank"
+  } else {
+    out = ''
+  }
+
+  linkBox.addEventListener("click", async () => {
+    if (out === '') return
+    const text = out
+    try {
+      await navigator.clipboard.writeText(text)
+      linkEl.innerText = 'Copied'
+      setTimeout(() => {
+        if (out !== '') linkEl.innerText = out
+      }, 1000)
+      return
+    } catch {
+
+    }
+
+    const ta = document.createElement('textarea')
+    ta.value = text
+    ta.style.position = 'fixed'
+    ta.style.left = '-9999px'
+    document.body.appendChild(ta)
+    ta.select()
+    try {
+      document.execCommand('copy')
+      linkEl.innerText = "Copied"
+      setTimeout(() => {
+        if (out !== '') linkEl.innerText = out
+      }, 1000)
+    } finally {
+      document.removeChild(ta)
+    }
+
+  })
+
+  // -- options --
+
+  // trigger highlighting
+  const minimap = document.querySelector(".minimap")
+  const minimapToggle = document.getElementById("show-minimap")
+  const triggerHighlightToggle = document.getElementById("trigger-highlight")
+
+  triggerHighlightToggle.addEventListener("input", (e) => {
+    if (triggerHighlightToggle.checked) {
+      editor.showTriggerHighlights = true
+    } else {
+      editor.showTriggerHighlights = false
+    }
+  })
+
+  // minimap toggle
+  minimapToggle.addEventListener("input", (e) => {
+    if (minimapToggle.checked) {
+      minimap.style.display = 'block'
+    } else {
+      minimap.style.display = 'none'
+    }
+  })
+
+  // add color theme selection
+  const swatches = document.querySelector(".color-theme .swatches")
+  for (const theme of colorSchemes) {
+    console.log(theme)
+    const swatch = document.createElement('div')
+    swatch.innerHTML = `
+      <div class="swatch">
+        <div class="level-color" style="background-color: ${theme.colors.bgLevel}"></div>
+        <div class="primary" style="background-color: ${theme.colors.bgPrimary}"></div>
+      </div>
+      <p>${theme.name}</p>
+    `
+    console.log(swatch)
+    swatch.addEventListener("click", () => {
+      changeColorTheme(theme.id)
+      console.log(1)
+      fetch(`${serverUrl}/api/theme`, {
+        method: "PATCH",
+        credentials: "include",
+        body: JSON.stringify({
+          theme: theme.id
+        })
+      })
+    })
+    swatches.appendChild(swatch)
+  }
+
+  // -- help --
+
+  // LOGIN
+  const loginForm = document.querySelector(".login form")
+  const HackClubOauth = document.querySelector(".hack-club-oauth")
+
+  HackClubOauth.addEventListener("click", () => {
+    openMenu()
+  })
+
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault()
+
+    const form = e.target
+    if (form.username.value && form.password.value) {
+      console.log("hello")
+      const payload = {
+        username: form.username.value,
+        password: form.password.value
+      }
+
+      const url = `${serverUrl}/api/login`
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": 'applicatoin/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload)
+      })
+
+      if (res.ok) {
+        openMenu()
+        const json = await res.json()
+        console.log(json)
+        user.id = json.id
+        updateMap()
+      }
+    }
+  })
+
+  // --- TRIGGERSCRIPT DIALOGS ---
+  const editWithTS = document.querySelector(".trigger-script-edit")
+  const tsTextarea = document.querySelector(".trigger-script textarea")
+  const applyTS = document.querySelector(".trigger-script .apply")
+  const tsError = document.querySelector(".trigger-script .error")
+
+  editWithTS.addEventListener("click", (e) => {
+    openMenu("trigger-script")
+    tsTextarea.value = compileToTriggerScript(activeTrigger.execute)
+  })
+
+  tsTextarea.addEventListener("input", (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+  })
+
+  tsTextarea.addEventListener("keydown", (e) => {
+    e.stopPropagation()
+  })
+
+  tsTextarea.addEventListener("keyup", (e) => {
+    e.stopPropagation()
+  })
+
+  tsTextarea.addEventListener("keypress", (e) => {
+    e.stopPropagation()
+  })
+
+  // --- TRIGGER DIALOGS ---
+  const applyTrigger = document.querySelector('.trigger-dialog .apply')
+  const stepsContainer = document.querySelector('.steps')
+  const newTrigger = document.getElementById("new")
+
+  applyTS.addEventListener("click", async () => {
+    const text = tsTextarea.value
+    try {
+      const execute = await readTriggerScript(text)
+      activeTrigger.execute = execute
+      openMenu()
+    } catch (e) {
+      console.log(e)
+      tsError.innerText = e
+    }
+  })
+
+
+  applyTrigger.addEventListener('click', (e) => {
+    console.log("1")
+    if (!activeTrigger) return
+    console.log("2")
+
+    const newExecuteArray = []
+    const stepElements = document.querySelectorAll('.steps .step')
+
+    stepElements.forEach(stepEl => {
+      const type = stepEl.querySelector('.action-type').value
+      let stepData = { type: type }
+
+      if (type == 'teleport') {
+        const xInput = stepEl.querySelector('.tp-x')
+        const yInput = stepEl.querySelector('.tp-y')
+        const instant = stepEl.querySelector('.instant')
+        stepData.instant = instant.checked
+        stepData.x = xInput ? parseInt(xInput.value, 10) : 0
+        stepData.y = yInput ? parseInt(yInput.value, 10) : 0
+      }
+      if (type == 'rotate') {
+        const xInput = stepEl.querySelector('.rotate-x')
+        const yInput = stepEl.querySelector('.rotate-y')
+        const rotationEl = stepEl.querySelector('.rotation-amount')
+        stepData.x = xInput ? Number(xInput.value) : 0
+        stepData.y = yInput ? Number(yInput.value) : 0
+        stepData.beforeRotation = rotationEl ? Number(rotationEl.value) : 1
+      }
+      if (type == "updateBlock") {
+        const xInput = stepEl.querySelector('.block-x')
+        const yInput = stepEl.querySelector('.block-y')
+        const blockEl = stepEl.querySelector('.block')
+        stepData.x = xInput ? Number(xInput.value) : null
+        stepData.y = xInput ? Number(yInput.value) : null
+        stepData.block = blockEl ? Number(blockEl.value) : null
+      }
+      if (type == "delay") {
+        const ms = stepEl.querySelector(".ms")
+        stepData.time = ms.value ?? 500
+      }
+      newExecuteArray.push(stepData)
+    })
+    activeTrigger.execute = newExecuteArray
+    toggleTriggerDialog(false)
+  })
+
+  stepsContainer.addEventListener('click', (e) => {
+    if (e.target.classList.contains('delete-step')) {
+      e.target.closest('.step').remove()
+    }
+  })
+
+  stepsContainer.addEventListener('change', (e) => {
+    if (e.target.classList.contains('action-type')) {
+      const stepEl = e.target.closest('.step')
+      const optionsContainer = stepEl.querySelector('.options')
+      optionsContainer.innerHTML = getOptionHTML({ type: e.target.value })
+    }
+  })
+
+  newTrigger.addEventListener('click', () => {
+    addStepToUI({ type: 'toggleBlocks' })
+  })
+}
+
+/**
+ * Handles user experience stuff
+ */
+function ux() {
+  // prevent accidentally closing the page if there are unsaved changes
+  window.addEventListener("beforeunload", (e) => {
+    if (editor.dirty) {
+      e.preventDefault()
+      e.returnValue = ""
+    }
+  })
+
+
+}
+
+export function addEventListeners() {
+  console.log("setting event listeners")
+
+  mainEditorUi()
+  menuUi()
+  ux()
 
 }
 

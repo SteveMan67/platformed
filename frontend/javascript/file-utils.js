@@ -9,7 +9,8 @@ const { user, player, editor } = state
 export function createSpriteSheet(width) {
   const { tileset } = editor
 
-  const tileWidth = tileset[1].image.naturalWidth
+  const tileWidth = tileset[1].image.naturalHeight
+  console.log(tileWidth)
   const newTileset = { tiles: [], type: "spritesheet" }
   const framesToDraw = []
   let tileIndex = 0
@@ -262,8 +263,11 @@ export function createMap(width = editor.map.w, height = editor.map.h, data = Ar
   json.layers.push(rotationLayer)
   return json
 }
+
 export function loadPlayerSprites(playerImg) {
+  console.log("hello")
   if (!playerImg) return
+  console.log("hi")
   const h = playerImg.naturalHeight
   const w = playerImg.naturalWidth
   const sprites = []
@@ -403,6 +407,7 @@ export async function loadTileset(manifestPath) {
     .then(response => response.json())
     .then(async (manifest) => {
       if (manifest.type == "spritesheet") {
+        console.log("spritesheet")
         const tileset = await loadSpriteSheetTileset(manifest)
 
         const rawCharacterImage = fetch(manifest.path + "/" + manifest.characterFile)

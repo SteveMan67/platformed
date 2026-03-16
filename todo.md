@@ -22,10 +22,13 @@
 - only highlight selected trigger (if any) and have different colors for different operations
 - save color scheme with level data
 - make input listeners nondependent of case with `.toLowerCase()`
+- set eraser color to `var(--border)`
+
+**Other**
+- refactor ui.js slop
 
 # QOL
 - fill selection with current rotation
 
 # Finishing Touches
-- convert tiles to spritesheet
 - run es build so the browser doesn't have to make so many fetches
