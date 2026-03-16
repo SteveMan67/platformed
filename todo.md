@@ -24,6 +24,7 @@
 - drag triggers around
 - only highlight selected trigger (if any) and have different colors for different operations
 - save color scheme with level data
+- make input listeners nondependent of case with `.toLowerCase()`
 
 # QOL
 - fill selection with current rotation
