@@ -33,7 +33,7 @@ function addEditButton(owned, levelId) {
     metadataA.classList.add("settings")
 
     metadataA.innerHTML = `
-      <img src="/assets/icons/settings.svg">
+      <div class="svg settings"></div>
     `
     insertPlace.appendChild(metadataA)
   }
