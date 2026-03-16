@@ -217,10 +217,10 @@ export function addEventListeners() {
   console.log("setting event listeners")
 
   addTopBarSVGs()
-
   addSvg('close.svg', '.close-wrapper', 30, 30, 'close-button', 'close')
 
   // add color theme swatches
+  const serverUrl = window.location.origin
 
   const swatches = document.querySelector(".color-theme .swatches")
   for (const theme of colorSchemes) {
@@ -235,7 +235,15 @@ export function addEventListeners() {
     `
     console.log(swatch)
     swatch.addEventListener("click", () => {
-      changeColorTheme(theme.id)
+      changeColorTheme(theme.colors)
+      console.log(1)
+      fetch(`${serverUrl}/api/theme`, {
+        method: "PATCH",
+        credentials: "include",
+        body: JSON.stringify({
+          theme: theme.id
+        })
+      })
     })
     swatches.appendChild(swatch)
   }
@@ -365,7 +373,6 @@ export function addEventListeners() {
         password: form.password.value
       }
 
-      const serverUrl = window.location.origin
       const url = `${serverUrl}/api/login`
       const res = await fetch(url, {
         method: "POST",

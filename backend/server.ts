@@ -136,6 +136,18 @@ const server = Bun.serve({
       return new Response("pong", withCors({ status: 200 }, CORS))
     }
 
+    if (pathname == '/api/theme' && req.method === "PATCH") {
+      console.log("hi")
+      const authentication = await authenticate(req)
+      const payload = await req.json()
+      if (authentication?.signedIn && payload.theme) {
+        await sql`
+          update users set preferred_theme = ${payload.theme} where id = ${authentication?.user}
+        `
+        return new Response("Updated Theme", { status: 200 })
+      }
+    }
+
     // --- OAuth ---
     if (pathname === "/api/oauth" && req.method === "POST") {
       const reqJSON = await req.json()
@@ -306,7 +318,8 @@ const server = Bun.serve({
     if (pathname == "/api/me") {
       const authentication = await authenticate(req)
       if (authentication?.signedIn) {
-        return new Response(JSON.stringify({ user: authentication.user }), { status: 200, headers: { "Content-Type": "application/json" } })
+        const matches = await sql`select preferred_theme from users where id = ${authentication.user} limit 1`
+        return new Response(JSON.stringify({ user: authentication.user, theme: matches[0]?.preferred_theme }), { status: 200, headers: { "Content-Type": "application/json" } })
       }
       return new Response("Authentication Failed", { status: 401 })
     }
