@@ -88,6 +88,7 @@ export function key(key) {
   }
 
 }
+
 export function init() {
   setInputEventListeners()
   loadTileset(editor.tilesetPath).then(({ tileset, characterImage }) => {

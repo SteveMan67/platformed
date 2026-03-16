@@ -14,9 +14,6 @@
 - add dissipation animation
 
 **Level Share**
-- pages in level share
-- color scheme + switching
-- save color scheme in server and automatically set the
 - options page 
 
 **Editor**
