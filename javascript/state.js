@@ -72,7 +72,7 @@ export const state = {
     grounded: false,
     coyoteTime: 5,
     coyoteTimer: 0,
-    wallCoyoteTime: 10,
+    wallCoyoteTime: 1,
     wallCoyoteTimer: 0,
     lastWallSide: 0,
     jumpBuffer: 10,

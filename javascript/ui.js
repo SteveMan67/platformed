@@ -235,7 +235,7 @@ export function addEventListeners() {
     `
     console.log(swatch)
     swatch.addEventListener("click", () => {
-      changeColorTheme(theme.colors)
+      changeColorTheme(theme.id)
     })
     swatches.appendChild(swatch)
   }

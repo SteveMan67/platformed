@@ -24,17 +24,11 @@ export function updateColorTheme() {
   colorTheme.border = getThemeColor('--border')
 }
 
-export function changeColorTheme(colors) {
+export function changeColorTheme(themeName) {
   const root = document.documentElement;
 
-  root.style.setProperty('--bg-primary', colors.bgPrimary)
-  root.style.setProperty('--bg-accent', colors.bgAccent)
-  root.style.setProperty('--bg-level', colors.bgLevel)
-  root.style.setProperty('--text-on-primary', colors.textOnPrimary)
-  root.style.setProperty('--text-on-accent', colors.textOnAccent)
-  root.style.setProperty('--action', colors.action)
-  root.style.setProperty('--text-on-action', colors.textOnAction)
-  root.style.setProperty('--border', colors.border)
+  root.dataset.theme = themeName
+
   updateColorTheme()
 }
 
