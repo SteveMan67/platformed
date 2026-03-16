@@ -111,6 +111,25 @@
     transition: transform 200ms ease;
 }
 
+.searchbar .search.svg {
+    mask-image: url("/assets/icons/search.svg");
+    width: 35px;
+    height: 35px;
+    margin-right: 10px;
+}
+
+.level .approval-rating-wrapper .thumbs-down {
+    mask-image: url("/assets/icons/thumbs-down-fill.svg");
+    width: 25px;
+    height: 25px;
+}
+
+.level .approval-rating-wrapper .thumbs-up {
+    width: 25px;
+    height: 25px;
+    mask-image: url("/assets/icons/thumbs-up.svg")
+}
+
 .level:hover {
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1);
     transform: translateY(-5px);
@@ -315,4 +334,16 @@
     border-radius: 13px;
 }
 
-@media (width) {}
+@media (max-height: 500px) {
+    .grid {
+        grid-template-rows: 50px 1fr;
+    }
+
+    .topbar {
+        height: 50px;
+    }
+
+    .level {
+        width: min(300px, 40vw);
+    }
+}

@@ -45,7 +45,7 @@ body .game.fullscreen {
 
 .fullscreen-control {
   width: 35px;
-  aspect-ratio: 1;
+  height: 35px;
   background-color: var(--bg-primary);
   border: 3px solid var(--border);
   border-radius: 10px;
@@ -161,21 +161,21 @@ body .game.fullscreen {
   left: 0;
 }
 
-.fullscreen-control img.maximize {
+.fullscreen-control div.maximize {
   width: 30px;
-  aspect-ratio: 1;
+  height: 30px;
 }
 
-.fullscreen-control img.minimize {
+.fullscreen-control div.minimize {
   width: 0;
 }
 
-.fullscreen~.fullscreen-control>.minimize {
+.fullscreen>.fullscreen-control>.minimize {
   width: 30px;
-  aspect-ratio: 1;
+  height: 30px;
 }
 
-.fullscreen~.fullscreen-control>.maximize {
+.fullscreen>.fullscreen-control>.maximize {
   display: none;
 }
 
@@ -277,7 +277,7 @@ a.edit div {
   margin-left: 10px;
 }
 
-.approval-wrapper img {
+.approval-wrapper .svg {
   width: 36px;
   aspect-ratio: 1;
   margin-left: 10px;
@@ -299,8 +299,8 @@ a.edit div {
   display: flex;
 }
 
-.thumbs-up-wrapper img,
-.thumbs-down-wrapper img {
+.thumbs-up-wrapper div,
+.thumbs-down-wrapper div {
   display: none;
 }
 
@@ -368,4 +368,34 @@ a.edit div {
   height: 100%;
   width: 0;
   border-radius: inherit;
+}
+
+.approval-wrapper .svg {}
+
+.svg.thumbs-up.fill {
+  mask-image: url("/assets/icons/thumbs-up-fill.svg");
+}
+
+.svg.thumbs-up.nofill {
+  mask-image: url("/assets/icons/thumbs-up.svg");
+}
+
+.svg.thumbs-down.fill {
+  mask-image: url("/assets/icons/thumbs-down-fill.svg");
+}
+
+.svg.thumbs-down.nofill {
+  mask-image: url("/assets/icons/thumbs-down.svg");
+}
+
+.svg.settings {
+  mask-image: url("/assets/icons/settings.svg");
+}
+
+.svg.maximize {
+  mask-image: url("/assets/icons/maximize.svg");
+}
+
+.svg.minimize {
+  mask-image: url("/assets/icons/minimize.svg");
 }
