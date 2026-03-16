@@ -2,9 +2,61 @@ const serverUrl = window.location.origin
 async function getLevel(page = 1) {
   try {
     const levels = await fetch(`${serverUrl}/api/browse`)
-    return levels.json()
+    const data = await levels.json()
+    updatePageHTML(data.pages)
+    return data.levels
   } catch (e) {
     console.error(e)
+  }
+}
+
+function updatePageHTML(pages, currentPage = 1) {
+  const pageWrapper = document.querySelector(".pages")
+  pageWrapper.innerHTML = '<p>Page</p>'
+
+  // always add the first page
+  const firstPage = document.createElement("button")
+  firstPage.innerText = "1"
+  firstPage.classList.add("page")
+  if (currentPage == 1) {
+    firstPage.classList.add("selected")
+  }
+  firstPage.addEventListener("click", async () => {
+    // switch to first page
+    for (const button of document.querySelectorAll(".pages .page")) {
+      button.classList.remove("selected")
+    }
+    const raw = await fetch(`${serverUrl}/api/browse?page=1`)
+    const json = await raw.json()
+    const levels = await json.levels
+    addLevels(levels)
+    updatePageHTML(json.pages, 1)
+  })
+  pageWrapper.appendChild(firstPage)
+
+  let start = Math.sign(currentPage - 2) === 1 && currentPage - 2 !== 1 ? currentPage - 2 : 2
+  console.log(start)
+  for (let i = start; i < start + 5; i++) {
+    if (i >= pages) continue
+    console.log(i)
+    const page = document.createElement("button")
+    page.innerText = i
+    page.classList.add("page")
+    if (currentPage === i) {
+      page.classList.add("selected")
+    }
+    page.addEventListener("click", async () => {
+      for (const button of document.querySelectorAll(".pages .page")) {
+        button.classList.remove("selected")
+      }
+      const data = await fetch(`${serverUrl}/api/browse?page=${i}`)
+      const json = await data.json()
+      const levels = json.levels
+      addLevels(levels)
+      console.log(page)
+      updatePageHTML(json.pages, i)
+    })
+    pageWrapper.appendChild(page)
   }
 }
 
@@ -78,7 +130,9 @@ const sortBy = document.getElementById("sort-by")
 
 sortBy.addEventListener("input", async (e) => {
   const raw = await fetch(`${serverUrl}/api/browse?sortBy=${encodeURIComponent(sortBy.value)}`)
-  const levels = await raw.json()
+  const data = await raw.json()
+  console.log(data)
+  const levels = data.levels
   addLevels(levels)
 })
 
