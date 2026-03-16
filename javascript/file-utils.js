@@ -401,6 +401,8 @@ export async function updateMap() {
     const payload = {}
     payload.levelId = levelNum
     payload.data = createMap()
+    payload.width = editor.width
+    payload.height = editor.height
 
     const saving = document.querySelector(".saving")
     const loading = document.querySelector(".loading")

@@ -23,7 +23,7 @@ function addEditButton(owned, levelId) {
   const text = owned ? "Edit" : "Remix"
   b.innerHTML = `
     <p>${text}</p>
-    <img src="/assets/icons/edit-light.svg">
+    <div class="svg edit"></div>
   `
   const insertPlace = document.querySelector(".approval-wrapper")
   insertPlace.appendChild(b)

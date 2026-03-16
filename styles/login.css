@@ -1,3 +1,63 @@
+:root {
+  --bg-primary: #f1e8d4;
+  --bg-accent: #f1e8d4;
+  --bg-level: #cae3f6;
+
+  --action: black;
+
+  --border: black;
+
+  --text-on-primary: black;
+  --text-on-accent: black;
+  --text-on-action: #f1e8d4;
+}
+
+[data-theme="cream"] {
+  --bg-primary: #f1e8d4;
+  --bg-accent: #cbc3b0;
+  --bg-level: #cae3f6;
+
+  --action: black;
+
+  --border: black;
+
+  --text-on-primary: black;
+  --text-on-accent: black;
+  --text-on-action: #f1e8d4;
+}
+
+[data-theme="blue"] {
+  --bg-primary: #a8b7d3;
+  --bg-accent: #94a1c3;
+  --bg-level: #a3c9e5;
+
+  --action: black;
+
+  --border: black;
+
+  --text-on-primary: black;
+  --text-on-accent: black;
+  --text-on-action: #a8b7d3;
+}
+
+[data-theme="coffee"] {
+  --bg-primary: #2f271b;
+  --bg-accent: #765d41;
+  --bg-level: #765d41;
+
+  --action: #dad0b0;
+
+  --border: #dad0b0;
+
+  --text-on-primary: #dad0b0;
+  --text-on-accent: #dad0b0;
+  --text-on-action: #2f271b;
+}
+
+* {
+  color: var(--text-on-primary);
+}
+
 body {
   background-color: var(--bg-primary);
   font-family: "Fredoka", sans-serif;
@@ -137,6 +197,6 @@ label.error-text:empty {
 
 .hack-club-oauth div {
   font-size: 20px;
-  color: black;
+  color: var(--text-on-primary);
   text-decoration: none;
 }

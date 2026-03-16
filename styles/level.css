@@ -255,12 +255,20 @@ canvas {
   display: flex;
   flex-direction: row;
   text-decoration: none;
+  align-items: center;
 }
 
-a.edit img {
+.edit p {
+  color: var(--text-on-action);
+}
+
+a.edit div {
   width: 26px;
-  aspect-ratio: 1;
+  height: 26px;
+  padding: 0;
   margin-left: 10px;
+  mask-image: url('/assets/icons/edit.svg');
+  background-color: var(--text-on-action);
 }
 
 .settings img {
