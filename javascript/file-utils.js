@@ -1,10 +1,82 @@
 import { uploadLevel } from "./api.js";
-import { calculateAdjacencies, initPlatformer, mechanicsHas, typeIs, updatePhysicsConstants } from "./platformer.js";
+import { calculateAdjacencies, initPlatformer, mechanicsHas, triggersAdjacency, typeIs, updatePhysicsConstants } from "./platformer.js";
 import { updateTileset } from "./renderer.js";
 import { state } from "./state.js"
 import { needsSmallerLevel, openMenu } from "./ui.js";
 
 const { user, player, editor } = state
+
+export function createSpriteSheet(width) {
+  const { tileset } = editor
+
+  const tileWidth = tileset[1].image.naturalWidth
+  const newTileset = { tiles: [], type: "spritesheet" }
+  const framesToDraw = []
+  let tileIndex = 0
+
+  for (const tile of tileset) {
+    const imagesToProcess = tile.images ? tile.images : (tile.image ? [tile.image] : [])
+
+    const tileY = Math.floor(tileIndex / width)
+    const tileX = tileIndex % width
+
+    for (const img of imagesToProcess) {
+      tileIndex++
+      framesToDraw.push({ img: img })
+    }
+
+    const newTile = {
+      x: tileX,
+      y: tileY,
+      id: tile.id,
+      name: tile.name,
+      type: tile.type,
+      category: tile.category,
+      triggerAdjacency: tile.triggerAdjacency,
+      file: tile.file,
+      mechanics: tile.mechanics
+    }
+
+    newTileset.tiles.push(newTile)
+  }
+
+  const columns = Math.min(width, framesToDraw.length)
+  const row = Math.ceil(framesToDraw.length / columns)
+
+  let currentX = 0
+  let currentY = 0
+
+  for (const frame of framesToDraw) {
+    frame.x = currentX * tileWidth
+    frame.y = currentY * tileWidth
+
+    currentX++
+    if (currentX >= columns) {
+      currentX = 0
+      currentY++
+    }
+  }
+
+  const sheetCanvas = document.createElement("canvas")
+  sheetCanvas.width = tileWidth * width
+  sheetCanvas.height = Math.ceil(framesToDraw.length / width) * tileWidth
+  const ctx = sheetCanvas.getContext("2d")
+  ctx.imageSmoothingEnabled = false
+
+  for (const frame of framesToDraw) {
+    ctx.drawImage(frame.img, frame.x, frame.y, tileWidth, tileWidth)
+    delete frame.obj
+  }
+
+  const link = document.createElement("a")
+  link.download = "spritesheet.png"
+  link.href = sheetCanvas.toDataURL("image/png")
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+
+  return newTileset
+}
 
 export async function importMap(e) {
   const file = e.target.files && e.target.files[0];
@@ -212,6 +284,114 @@ export function loadPlayerSprites(playerImg) {
 const loadedTilesets = new Map()
 const loadedPlayers = new Map()
 
+async function loadSpriteSheetTileset(manifest) {
+  const tileset = []
+  const raw = await fetch(manifest.spritesheetPath)
+  const blob = await raw.blob()
+
+  const spriteSheet = await new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => resolve(img)
+    img.onerror = reject
+    img.src = manifest.spritesheetPath
+  })
+
+  const tileWidth = manifest.tileWidth
+  const width = spriteSheet.naturalWidth / tileWidth
+  for (const tile of manifest.tiles) {
+    const dpr = window.devicePixelRatio
+    const canvas = document.createElement("canvas")
+    const ctx = canvas.getContext('2d')
+    canvas.width = width
+    canvas.height = width
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    ctx.imageSmoothingEnabled = false
+    canvas.style.imageRendering = 'pixelated'
+
+    ctx.drawImage(spriteSheet, tile.x * width, tile.y * width, width, width, 0, 0, width, width)
+
+    const images = []
+
+    if (tile.type === "adjacency") {
+      for (let i = 0; i < 16; i++) {
+        const subCanvas = document.createElement("canvas")
+        const subCtx = subCanvas.getContext("2d")
+        subCtx.setTransform(dpr, 0, 0, dpr, 0, 0)
+        subCanvas.width = width
+        subCanvas.height = width
+        subCtx.imageSmoothingEnabled = false
+        subCanvas.style.imageRendering = 'pixelated'
+
+        let x = tile.x + i
+        let y = tile.y
+
+        if (x >= tileWidth) {
+          y = Math.floor(x / tileWidth) + y
+          x = x % tileWidth
+        }
+        subCtx.drawImage(spriteSheet, x * width, y * width, width, width, 0, 0, width, width)
+        images.push(subCanvas)
+      }
+    } else if (tile.type === "rotation") {
+      for (let i = 0; i < 4; i++) {
+        const subCanvas = document.createElement("canvas")
+        const subCtx = subCanvas.getContext("2d")
+        subCtx.setTransform(dpr, 0, 0, dpr, 0, 0)
+        subCanvas.width = width
+        subCanvas.height = width
+        subCtx.imageSmoothingEnabled = false
+        subCanvas.style.imageRendering = 'pixelated'
+
+        let x = tile.x + i
+        let y = tile.y
+
+        if (x >= tileWidth) {
+          y = Math.floor(x / tileWidth) + y
+          x = x % tileWidth
+        }
+        subCtx.drawImage(spriteSheet, x * width, y * width, width, width, 0, 0, width, width)
+        images.push(subCanvas)
+      }
+    }
+
+    let minimapColor = 'rgba(0, 0, 0, 0)'
+    try {
+      const imgData = ctx.getImageData(0, 0, width, width).data
+      const colorCounts = {}
+      let maxCount = 0
+      for (let i = 0; i < imgData.length; i += 4) {
+        const r = imgData[i]
+        const g = imgData[i + 1]
+        const b = imgData[i + 2]
+        const a = imgData[i + 3]
+
+        if (a < 128) continue
+        const rgb = `rgb(${r}, ${g}, ${b})`
+        colorCounts[rgb] = (colorCounts[rgb] || 0) + 1
+
+        if (colorCounts[rgb] > maxCount) {
+          maxCount = colorCounts[rgb]
+          minimapColor = rgb
+        }
+      }
+    } catch (e) {
+      console.warn("could not calculate minimap color", e)
+    }
+
+    const tileObject = {
+      ...tile,
+      minimapColor: minimapColor,
+      image: canvas,
+    }
+    if (images.length > 0) {
+      tileObject.images = images
+    }
+    tileset.push(tileObject)
+  }
+  console.log(tileset)
+  return tileset
+}
+
 export async function loadTileset(manifestPath) {
   if (loadedTilesets.has(manifestPath)) {
     const tileset = loadedTilesets.get(manifestPath)
@@ -221,7 +401,27 @@ export async function loadTileset(manifestPath) {
 
   return fetch(manifestPath)
     .then(response => response.json())
-    .then(manifest => {
+    .then(async (manifest) => {
+      if (manifest.type == "spritesheet") {
+        const tileset = await loadSpriteSheetTileset(manifest)
+
+        const rawCharacterImage = fetch(manifest.path + "/" + manifest.characterFile)
+        const blob = await rawCharacterImage.blob
+
+        let characterImage = null
+
+        characterImage = await new Promise((resolve) => {
+          const img = new Image()
+          const prefix = manifest.path + "/"
+          img.onload = () => resolve(img)
+          img.onerror = resolve(null)
+          img.src = prefix + manifest.characterFile
+        })
+        loadedTilesets.set(manifestPath, tileset)
+        loadedPlayers.set(manifestPath, characterImage)
+        return { tileset, characterImage }
+      }
+
       let loadedCount = 0
       const totalCount = manifest.tiles.length + 1
 
@@ -316,6 +516,10 @@ export function splitStripImages(tileset) {
   const newTileset = []
   tileset.forEach(tile => {
     if (!tile) return
+    if (tile.images) {
+      newTileset[tile.id] = tile
+      return
+    }
     if (tile.type === 'adjacency' && tile.image) {
       // split the strip into different pieces here 
       const h = tile.image.naturalHeight

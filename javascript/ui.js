@@ -1023,7 +1023,17 @@ export function addTileSelection() {
           img.src = c.src
         }
       } else {
-        if (editor.tileset[i].image instanceof HTMLImageElement) {
+        const c = editor.tileset[i].image
+        if (c instanceof HTMLCanvasElement) {
+          if (c.toBlob) {
+            c.toBlob(blob => {
+              const url = URL.createObjectURL(blob)
+              img.src = url
+              img.onload = () => URL.revokeObjectURL(url)
+            })
+          } else {
+            img.src = c.toDataURL()
+          }
           img.src = editor.tileset[i].image.src
         } else {
           img.src = ''

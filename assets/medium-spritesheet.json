@@ -1,0 +1,319 @@
+{
+  "path": "/assets/medium",
+  "name": "16x16",
+  "type": "spritesheet",
+  "spritesheetPath": "/assets/medium.png",
+  "characterFile": "player.png",
+  "imgWidth": 16,
+  "tileWidth": 10,
+  "tiles": [
+    {
+      "id": 0,
+      "name": "air",
+      "type": "empty",
+      "triggerAdjacency": false
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "id": 1,
+      "name": "Ground",
+      "type": "adjacency",
+      "category": "blocks",
+      "triggerAdjacency": true,
+      "file": "ground.png"
+    },
+    {
+      "x": 6,
+      "y": 1,
+      "id": 2,
+      "name": "Spikes",
+      "type": "rotation",
+      "category": "hazards",
+      "triggerAdjacency": false,
+      "file": "spikes.png",
+      "mechanics": [
+        "killOnTouch"
+      ]
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "id": 3,
+      "name": "Double Spikes",
+      "type": "rotation",
+      "category": "hazards",
+      "triggerAdjacency": false,
+      "file": "double-spikes.png",
+      "mechanics": [
+        "killOnTouch"
+      ]
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "id": 4,
+      "name": "checkpoint",
+      "type": "standalone",
+      "category": "mechanics",
+      "triggerAdjacency": false,
+      "file": "checkpoint.png",
+      "mechanics": [
+        "checkpoint",
+        "noCollision"
+      ]
+    },
+    {
+      "x": 5,
+      "y": 2,
+      "id": 5,
+      "name": "spawn",
+      "type": "standalone",
+      "category": "mechanics",
+      "triggerAdjacency": false,
+      "file": "spawn.png",
+      "mechanics": [
+        "onePerLevel",
+        "spawn",
+        "hidden"
+      ]
+    },
+    {
+      "x": 6,
+      "y": 2,
+      "id": 6,
+      "name": "end",
+      "type": "standalone",
+      "category": "mechanics",
+      "triggerAdjacency": false,
+      "file": "end.png",
+      "mechanics": [
+        "onePerLevel",
+        "end"
+      ]
+    },
+    {
+      "x": 7,
+      "y": 2,
+      "id": 7,
+      "name": "cactus",
+      "type": "rotation",
+      "category": "hazards",
+      "triggerAdjacency": false,
+      "file": "cactus.png",
+      "mechanics": [
+        "killOnTouch"
+      ]
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "id": 8,
+      "name": "crate",
+      "type": "standalone",
+      "category": "blocks",
+      "triggerAdjacency": false,
+      "file": "crate.png",
+      "mechanics": []
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "id": 9,
+      "name": "Bounce Pad",
+      "type": "rotation",
+      "category": "mechanics",
+      "triggerAdjacency": false,
+      "file": "bounce-pad.png",
+      "mechanics": [
+        "bouncePad"
+      ]
+    },
+    {
+      "x": 6,
+      "y": 3,
+      "id": 10,
+      "name": "Coin",
+      "type": "standalone",
+      "category": "collectibles",
+      "triggerAdjacency": false,
+      "file": "coin.png",
+      "mechanics": [
+        "coin",
+        "noCollision"
+      ]
+    },
+    {
+      "x": 7,
+      "y": 3,
+      "id": 11,
+      "name": "Dissipation Block",
+      "type": "rotation",
+      "category": "blocks",
+      "triggerAdjacency": false,
+      "file": "dissipation-block.png",
+      "mechanics": [
+        "dissipate"
+      ]
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "id": 12,
+      "name": "Enemy",
+      "type": "enemy",
+      "category": "mobs",
+      "triggerAdjacency": false,
+      "file": "enemy.png",
+      "mechanics": [
+        "noCollision"
+      ]
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "id": 13,
+      "name": "Blue Toggle Block",
+      "type": "standalone",
+      "category": "triggers",
+      "triggerAdjacency": false,
+      "file": "blue-block.png",
+      "mechanics": [
+        "swapTrigger1"
+      ]
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "id": 14,
+      "name": "Red Toggle Block",
+      "type": "standalone",
+      "category": "triggers",
+      "triggerAdjacency": false,
+      "file": "red-block.png",
+      "mechanics": [
+        "swapTrigger2"
+      ]
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "id": 15,
+      "name": "Trigger 1",
+      "type": "rotation",
+      "category": "triggers",
+      "triggerAdjacency": true,
+      "file": "trigger-one.png",
+      "mechanics": [
+        "trigger",
+        "noCollision"
+      ]
+    },
+    {
+      "x": 8,
+      "y": 4,
+      "id": 16,
+      "name": "Invisible Trigger",
+      "type": "standalone",
+      "category": "triggers",
+      "triggerAdjacency": false,
+      "file": "trigger-two.png",
+      "mechanics": [
+        "hidden",
+        "trigger"
+      ]
+    },
+    {
+      "x": 9,
+      "y": 4,
+      "id": 17,
+      "name": "Trigger 3",
+      "type": "standalone",
+      "category": "triggers",
+      "triggerAdjacency": false,
+      "file": "trigger-three.png",
+      "mechanics": [
+        "noCollision",
+        "trigger"
+      ]
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "id": 18,
+      "name": "Right Sign",
+      "type": "rotation",
+      "category": "blocks",
+      "triggerAdjacency": false,
+      "file": "sign-right.png",
+      "mechanics": [
+        "noCollision"
+      ]
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "id": 19,
+      "name": "Left Sign",
+      "type": "rotation",
+      "category": "blocks",
+      "triggerAdjacency": false,
+      "file": "sign-left.png",
+      "mechanics": [
+        "noCollision"
+      ]
+    },
+    {
+      "x": 8,
+      "y": 5,
+      "id": 20,
+      "name": "Up Sign",
+      "type": "rotation",
+      "category": "blocks",
+      "triggerAdjacency": false,
+      "file": "sign-up.png",
+      "mechanics": [
+        "noCollision"
+      ]
+    },
+    {
+      "x": 2,
+      "y": 6,
+      "id": 21,
+      "name": "Down Sign",
+      "type": "rotation",
+      "category": "blocks",
+      "triggerAdjacency": false,
+      "file": "sign-down.png",
+      "mechanics": [
+        "noCollision"
+      ]
+    },
+    {
+      "x": 6,
+      "y": 6,
+      "id": 22,
+      "name": "Half Spikes Right",
+      "type": "rotation",
+      "category": "hazards",
+      "triggerAdjacency": false,
+      "file": "half-double-spike-right.png",
+      "mechanics": [
+        "killOnTouch"
+      ]
+    },
+    {
+      "x": 0,
+      "y": 7,
+      "id": 23,
+      "name": "Half Spikes Left",
+      "type": "rotation",
+      "category": "hazards",
+      "triggerAdjacency": false,
+      "file": "half-double-spike-left.png",
+      "mechanics": [
+        "killOnTouch"
+      ]
+    }
+  ]
+}
