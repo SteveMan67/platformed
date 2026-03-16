@@ -368,12 +368,20 @@ const server = Bun.serve({
         sortBySQL = sql`ORDER BY total_plays DESC`
       }
 
+      const pageSize = 50
+      const totalCountRes = await sql`select count(*)::int as total from levels where public = true`
+      const total = totalCountRes[0].total ?? 0
+      const pages = Math.ceil(total / pageSize)
 
       const levels = await sql`select id, data, name, created_at, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels
         WHERE public = true 
         ${sortBySQL}
         limit 50 offset ${(page - 1) * 50}
         `
+
+
+
+      const response = { levels: levels, total: total, pages: pages }
 
       const usernames = new Map()
 
@@ -387,7 +395,7 @@ const server = Bun.serve({
         }
       }
 
-      return new Response(JSON.stringify(levels), withCors({ headers: { "Content-Type": "application/json" } }, CORS))
+      return new Response(JSON.stringify(response), withCors({ headers: { "Content-Type": "application/json" } }, CORS))
     }
 
     if (pathname.startsWith("/api/search")) {

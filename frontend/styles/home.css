@@ -334,6 +334,31 @@
     border-radius: 13px;
 }
 
+.pages {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+    gap: 20px;
+    margin: 20px auto;
+}
+
+.pages p {
+    font-size: 20px;
+}
+
+.pages .page {
+    background-color: var(--bg-primary);
+    color: var(--text-on-primary);
+    border: 3px solid var(--border);
+}
+
+.pages .page.selected {
+    border: 3px solid var(--border);
+    background-color: var(--action);
+    color: var(--text-on-action);
+}
+
 @media (max-height: 500px) {
     .grid {
         grid-template-rows: 50px 1fr;
