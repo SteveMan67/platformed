@@ -580,7 +580,7 @@ export function levelEditorLoop(dt) {
   drawMap()
 
   if (editor.selection.active) {
-    ctx.strokeStyle = colorTheme.textOnPrimary
+    ctx.strokeStyle = colorTheme.selection
     ctx.setLineDash([5, 5])
     ctx.lineWidth = 2
 
@@ -604,7 +604,7 @@ export function levelEditorLoop(dt) {
     img = selectedTileOfTileset.images[calculateAdjacency(ty * map.w + tx, editor.selectedTile) & 15]
   } else if (selectedTileOfTileset && selectedTileOfTileset.type == "rotation") {
     img = selectedTileOfTileset.images[editor.currentRotation]
-  } else if (selectedTileOfTileset) {
+  } else if (selectedTileOfTileset && selectedTileOfTileset.image) {
     img = selectedTileOfTileset.image
   }
 
@@ -616,7 +616,7 @@ export function levelEditorLoop(dt) {
     ctx.drawImage(img, cursorScrX, cursorScrY, tileSize, tileSize)
     ctx.restore()
   } else {
-    ctx.strokeStyle = 'black'
+    ctx.strokeStyle = colorTheme.selection
     ctx.strokeRect(cursorScrX, cursorScrY, tileSize, tileSize)
   }
   ctx.globalAlpha = 1

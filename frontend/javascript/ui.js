@@ -322,6 +322,10 @@ function mainEditorUi() {
     drawMinimap()
   }
 
+  minimap.addEventListener('mousemove', (e) => {
+    moveMinimap(e)
+  })
+
   minimap.addEventListener('mousedown', (e) => {
     mousedown = true
     moveMinimap(e)
@@ -750,6 +754,8 @@ function menuUi() {
   })
 
   // add color theme selection
+  const serverUrl = window.location.origin
+
   const swatches = document.querySelector(".color-theme .swatches")
   for (const theme of colorSchemes) {
     console.log(theme)

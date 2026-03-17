@@ -7,28 +7,30 @@ export const state = {
       name: "Cream",
       id: "cream",
       colors: {
-        bgPrimary: '#f1e8d4',
+        bgPrimary: '#EAE2D0',
         bgAccent: '#cbc3b0',
-        bgLevel: '#cae3f6',
-        action: 'black',
-        border: 'black',
-        textOnPrimary: 'black',
-        textOnAccent: 'black',
-        textOnAction: '#f1e8d4'
+        bgLevel: '#B5D4F0',
+        action: '#2D2A26',
+        border: '#2D2A26',
+        textOnPrimary: '#2D2A26',
+        textOnAccent: '#2D2A26',
+        textOnAction: '#EAE2D0',
+        selection: '#2D2A26'
       }
     },
     {
       name: "Blue",
       id: "blue",
       colors: {
-        bgPrimary: '#a8b7d3',
-        bgAccent: '#94a1c5',
-        bgLevel: '#a3c9e5',
-        action: 'black',
-        border: 'black',
-        textOnPrimary: 'black',
-        textOnAccent: 'black',
-        textOnAction: '#a8b7d3'
+        bgPrimary: '#95B2E9',
+        bgAccent: '#647EC2',
+        bgLevel: '#BCD4E6',
+        action: '#2D313F',
+        border: '#2D313F',
+        textOnPrimary: '#2D313F',
+        textOnAccent: '#2D313F',
+        textOnAction: '#BCD4E6',
+        selection: '#2D313F'
       }
     },
     {
@@ -42,7 +44,38 @@ export const state = {
         border: '#DAD0B0',
         textOnPrimary: '#DAD0B0',
         textOnAccent: '#DAD0B0',
-        textOnAction: '#2A2722'
+        textOnAction: '#2A2722',
+        selection: 'black'
+      }
+    },
+    {
+      name: "Midnight",
+      id: 'sailor',
+      colors: {
+        bgPrimary: '#0D0D32',
+        bgAccent: '#D7C0A7',
+        bgLevel: "#D7C0A7",
+        action: '#D7C0A7',
+        border: "#D7C0A7",
+        textOnPrimary: '#D7C0A7',
+        textOnAccent: '#0D0D32',
+        textOnAction: '#D7C0A7',
+        selection: 'black'
+      }
+    },
+    {
+      name: "Mahogany",
+      id: 'mahogany',
+      colors: {
+        bgPrimary: '#2A0C0D',
+        bgAccent: '#551C1D',
+        bgLevel: "#D2BAA5",
+        action: '#D2BAA5',
+        border: "#D2BAA5",
+        textOnPrimary: '#D2BAA5',
+        textOnAccent: '#D2BAA5',
+        textOnAction: '#2A0C0D',
+        selection: '#2A0C0D'
       }
     }
   ],
