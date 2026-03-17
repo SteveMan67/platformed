@@ -302,13 +302,13 @@ async function loadSpriteSheetTileset(manifest) {
 
   const tileWidth = manifest.tileWidth
   const width = spriteSheet.naturalWidth / tileWidth
+  console.log(`width: ${width}`)
   for (const tile of manifest.tiles) {
     const dpr = window.devicePixelRatio
     const canvas = document.createElement("canvas")
     const ctx = canvas.getContext('2d')
     canvas.width = width
     canvas.height = width
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     ctx.imageSmoothingEnabled = false
     canvas.style.imageRendering = 'pixelated'
 
@@ -413,17 +413,20 @@ export async function loadTileset(manifestPath) {
         const rawCharacterImage = fetch(manifest.path + "/" + manifest.characterFile)
         const blob = await rawCharacterImage.blob
 
-        let characterImage = null
-
-        characterImage = await new Promise((resolve) => {
+        const characterImage = await new Promise((resolve) => {
           const img = new Image()
           const prefix = manifest.path + "/"
           img.onload = () => resolve(img)
-          img.onerror = resolve(null)
+          img.onerror = (e) => {
+            console.error(`failed to load character image from: ${srcPath}`, e)
+            resolve(null)
+          }
           img.src = prefix + manifest.characterFile
         })
+
         loadedTilesets.set(manifestPath, tileset)
         loadedPlayers.set(manifestPath, characterImage)
+        console.log(characterImage)
         return { tileset, characterImage }
       }
 
