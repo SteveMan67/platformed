@@ -84,6 +84,21 @@
   --selection: black;
 }
 
+[data-theme="blackandwhite"] {
+  --bg-primary: black;
+  --bg-accent: #303030;
+  --bg-level: white;
+
+  --action: white;
+
+  --border: white;
+
+  --text-on-primary: white;
+  --text-on-accent: white;
+  --text-on-action: black;
+  --selection: black;
+}
+
 * {
   color: var(--text-on-primary);
 }

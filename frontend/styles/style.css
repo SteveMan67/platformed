@@ -69,6 +69,22 @@
   --selection: black;
 }
 
+
+[data-theme="blackandwhite"] {
+  --bg-primary: black;
+  --bg-accent: #303030;
+  --bg-level: white;
+
+  --action: white;
+
+  --border: white;
+
+  --text-on-primary: white;
+  --text-on-accent: white;
+  --text-on-action: black;
+  --selection: black;
+}
+
 * {
   color: var(--text-on-primary);
 }
@@ -152,6 +168,10 @@ body {
 .grid-uihidden {
   grid-template-columns: 1fr 0px;
   grid-template-rows: 80px 1fr 0px;
+}
+
+.grid-uihidden .game {
+  border-radius: 0;
 }
 
 .grid-uihidden ::after {
@@ -659,9 +679,14 @@ button {
   font-size: 30px;
   outline: none;
   border: none;
-  background-color: var(--bg-primary);
+  background-color: var(--bg-accent);
+  color: var(--text-on-accent);
   border-radius: 10px;
   font-family: "Fredoka", sans-serif;
+}
+
+.step select option {
+  color: var(--text-on-accent);
 }
 
 .step select.block,
@@ -688,6 +713,7 @@ div.step .options input.coord {
 }
 
 .step .options {
+  color: var(--text-on-accent);
   display: flex;
   justify-content: right;
   margin-right: 10p;

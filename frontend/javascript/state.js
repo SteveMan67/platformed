@@ -77,6 +77,21 @@ export const state = {
         textOnAction: '#2A0C0D',
         selection: '#2A0C0D'
       }
+    },
+    {
+      name: "Black and White",
+      id: "blackandwhite",
+      colors: {
+        bgPrimary: 'black',
+        bgAccent: '#303030',
+        bgLevel: 'white',
+        action: 'white',
+        border: 'white',
+        textOnPrimary: 'white',
+        textOnAccent: 'white',
+        textOnAction: 'black',
+        selection: 'black'
+      }
     }
   ],
   player: {
