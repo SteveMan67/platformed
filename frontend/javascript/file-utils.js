@@ -96,6 +96,7 @@ export async function loadMapFromData(json) {
   player.jumpWidth = json.jumpWidth ?? 7;
   player.yInertia = json.yInertia ?? 1;
   player.xInertia = json.xInertia ?? 1.5;
+  player.physicsVersion = json.physicsVersion ?? 1
   if (json.bouncePadHeight) {
     player.bouncePadHeight = json.bouncePadHeight;
   }
@@ -228,10 +229,9 @@ export function createMap(width = editor.map.w, height = editor.map.h, data = Ar
   const json = {}
   json.width = width
   json.height = height
+  json.physicsVersion = 2
   json.jumpHeight = player.jumpHeight
-  json.yInertia = player.yInertia
   json.jumpWidth = player.jumpWidth
-  json.xInertia = player.xInertia
   json.wallJump = player.wallJump
   json.bouncePadHeight = player.bouncePadHeight
   json.zoom = player.tileSize

@@ -661,15 +661,32 @@ function updatePhysics(dt) {
   }
 
   function slowDown() {
-    if (player.vx < 0) {
-      player.vx += scaledXInertia * 0.45 * dt
-      if (player.vx > 0) player.vx = 0
-    } else if (player.vx > 0) {
-      player.vx -= scaledXInertia * 0.45 * dt
-      if (player.vx < 0) player.vx = 0
-    }
-    if (Math.abs(player.vx) < player.stopThreshold) {
-      player.vx = 0
+    if (player.physicsVersion === 2) {
+      const slidiness = Math.max(player.slidiness, 0.05)
+      const midairSlidiness = Math.max(slidiness - 0.4, 0.2)
+      const outSlidiness = player.grounded ? slidiness : midairSlidiness
+      console.log(outSlidiness)
+      if (player.vx < 0) {
+        player.vx += scaledXInertia * outSlidiness * dt
+        if (player.vx > 0) player.vx = 0
+      } else if (player.vx > 0) {
+        player.vx -= scaledXInertia * outSlidiness * dt
+        if (player.vx < 0) player.vx = 0
+      }
+      if (Math.abs(player.vx) < player.stopThreshold) {
+        player.vx = 0
+      }
+    } else {
+      if (player.vx < 0) {
+        player.vx += scaledXInertia * 0.45 * dt
+        if (player.vx > 0) player.vx = 0
+      } else if (player.vx > 0) {
+        player.vx -= scaledXInertia * 0.45 * dt
+        if (player.vx < 0) player.vx = 0
+      }
+      if (Math.abs(player.vx) < player.stopThreshold) {
+        player.vx = 0
+      }
     }
   }
 

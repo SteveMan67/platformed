@@ -627,12 +627,16 @@ function menuUi() {
 
 
   // -- physics --
+  const physicsVersion = document.querySelector("#physics-version")
   const jumpHeightSlider = document.querySelector('#jump-height-input')
-  const verticalInertiaSlider = document.querySelector('#vertical-inertia-input')
   const jumpWidthSlider = document.querySelector('#jump-width-input')
-  const horizontalInertiaSlider = document.querySelector('#horizontal-inertia-input')
   const bouncePadHeightSlider = document.querySelector('#bounce-pad-height-input')
   const walljumpInput = document.getElementById('walljump-input')
+  const slidiness = document.getElementById("slidiness-input")
+
+  slidiness.addEventListener("input", () => {
+    player.slidiness = slidiness.value
+  })
 
   walljumpInput.addEventListener('input', () => {
     player.wallJump = walljumpInput.value
@@ -646,16 +650,13 @@ function menuUi() {
     player.jumpHeight = Number(jumpHeightSlider.value)
   })
 
-  verticalInertiaSlider.addEventListener('input', () => {
-    player.yInertia = Number(verticalInertiaSlider.value)
-  })
-
   jumpWidthSlider.addEventListener('input', () => {
     player.jumpWidth = Number(jumpWidthSlider.value)
   })
 
-  horizontalInertiaSlider.addEventListener('input', () => {
-    player.xInertia = Number(horizontalInertiaSlider.value)
+  physicsVersion.value = `${player.physicsVersion}`
+  physicsVersion.addEventListener("input", (e) => {
+    player.physicsVersion = parseInt(physicsVersion.value, 10)
   })
 
   // -- share --

@@ -213,6 +213,21 @@
         <!-- Physics -->
         <div class="tab">
           <div class="menu-item">
+            <label for="physicsV">Physics Version</label>
+            <select name="physics-version" id="physics-version">
+              <option value="1">v1</option>
+              <option value="2">v2</option>
+            </select>
+          </div>
+          <div class="menu-item">
+            <label for="slidiness">Slidiness</label>
+            <div class="range-wrapper">
+              <output id="slidiness-val">0.8</output>
+              <input type="range" name="slidiness" id="slidiness-input" min="0" max="1" step="0.05" value="0.8"
+                oninput="document.getElementById('slidiness-val').innerHTML = this.value">
+            </div>
+          </div>
+          <div class="menu-item">
             <label for="jump-height">Jump Height</label>
             <div class="range-wrapper">
               <output id="jump-height-val">2.5</output>
@@ -220,14 +235,14 @@
                 oninput="document.getElementById('jump-height-val').innerHTML = this.value">
             </div>
           </div>
-          <div class="menu-item">
+          <!-- <div class="menu-item">
             <label for="vertical-inertia">Vertical Inertia</label>
             <div class="range-wrapper">
               <output id="vertical-inertia-val">1</output>
               <input type="range" name="vertical-inertia" id="vertical-inertia-input" min="0.8" max="3" step="0.1"
                 value="1" oninput="document.getElementById('vertical-inertia-val').innerHTML = this.value">
             </div>
-          </div>
+          </div> -->
           <div class="menu-item">
             <label for="jump-width">Jump Width</label>
             <div class="range-wrapper">
@@ -236,14 +251,14 @@
                 oninput="document.getElementById('jump-width-val').innerHTML = this.value">
             </div>
           </div>
-          <div class="menu-item">
+          <!-- <div class="menu-item">
             <label for="horizontal-inertia">Horizonal Inertia</label>
             <div class="range-wrapper">
               <output id="horizontal-inertia-val">1.5</output>
               <input type="range" name="horizontal-inertia" id="horizontal-inertia-input" min="0.8" max="2" step="0.1"
                 value="1.5" oninput="document.getElementById('horizontal-inertia-val').innerHTML = this.value">
             </div>
-          </div>
+          </div> -->
           <div class="menu-item">
             <label for="bounce-pad-height">Bounce Pad Height</label>
             <div class="range-wrapper">
@@ -292,9 +307,11 @@
         <!-- Help -->
         <div class="tab help">
           <p>For a more detailed tutorial, see <a
-              href="https://github.com/SteveMan67/platformed/blob/main/docs/editor.md" target="_blank">editor.md</a></p>
+              href="https://github.com/SteveMan67/platformed/blob/main/docs/editor.md" target="_blank">editor.md</a>
+          </p>
           <p>Getting Around</p>
-          <p class="body-text">You can move the view with WASD, middle mouse button click and drag, or the minimap.</p>
+          <p class="body-text">You can move the view with WASD, middle mouse button click and drag, or the minimap.
+          </p>
 
           <p>Keyboard Shortcuts</p>
           <ul class="trigger-actions">
@@ -316,7 +333,8 @@
             <li><span class="keyboard-shortcut">E</span> - Erase whole selection</li>
           </ul>
           <p>Triggers</p>
-          <p class="body-text">Triggers can be found in the sixth category with a toggle icon. Once you place a trigger,
+          <p class="body-text">Triggers can be found in the sixth category with a toggle icon. Once you place a
+            trigger,
             right click it to edit what it will do. Triggers will execute their steps from top to bottom.</p>
           <p>Trigger Functions:</p>
           <ul class="trigger-actions">

@@ -95,6 +95,8 @@ export const state = {
     }
   ],
   player: {
+    physicsVersion: 2,
+    slidiness: 0.8,
     triggers: [],
     standingOnTrigger: false,
     toggledTile: true,
