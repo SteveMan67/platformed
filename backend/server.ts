@@ -1,6 +1,8 @@
 import postgres from "postgres"
 import { authenticate, type authResponse, getCookies } from "./auth.ts"
 
+const STATIC_DIR = 'dist'
+
 async function serveFile(req: Request, filePath: string) {
   let theme = 'cream'
 
@@ -75,30 +77,30 @@ const server = Bun.serve({
     // --- login page --
     "/login": async (req) => {
       if ((await authenticate(req))?.signedIn) {
-        return await serveFile(req, "frontend/index.html")
+        return await serveFile(req, `${STATIC_DIR}/index.html`)
       } else {
-        return await serveFile(req, "frontend/login.html")
+        return await serveFile(req, `${STATIC_DIR}/login.html`)
       }
     },
     // -- editor page --
     "/editor": async (req) => {
-      return await serveFile(req, "frontend/editor.html")
+      return await serveFile(req, `${STATIC_DIR}/editor.html`)
     },
     "/register": async (req) => {
-      return await serveFile(req, "frontend/register.html")
+      return await serveFile(req, `${STATIC_DIR}/login.html`)
     },
     "/myLevels": async (req) => {
       if ((await authenticate(req))?.signedIn) {
-        return await serveFile(req, "frontend/user.html")
+        return await serveFile(req, `${STATIC_DIR}/user.html`)
       } else {
-        return await serveFile(req, "frontend/login.html")
+        return await serveFile(req, `${STATIC_DIR}/login.html`)
       }
     },
     "/new": async (req) => {
-      return await serveFile(req, "frontend/new-level.html")
+      return await serveFile(req, `${STATIC_DIR}/new-level.html`)
     },
     "/": async (req) => {
-      return await serveFile(req, "frontend/index.html")
+      return await serveFile(req, `${STATIC_DIR}/index.html`)
     },
   },
   async fetch(req) {
@@ -116,11 +118,11 @@ const server = Bun.serve({
     };
 
     if (pathname.startsWith("/editor")) {
-      return await serveFile(req, "frontend/editor.html")
+      return await serveFile(req, `${STATIC_DIR}/editor.html`)
     }
 
     if (pathname.startsWith("/meta") && req.method == "GET") {
-      return await serveFile(req, "frontend/level-meta.html")
+      return await serveFile(req, `${STATIC_DIR}/level-meta.html`)
     }
 
     if (req.method == "OPTIONS") {
@@ -128,7 +130,7 @@ const server = Bun.serve({
     }
 
     if (pathname == "/level" || pathname.startsWith("/level/")) {
-      return await serveFile(req, "frontend/level.html")
+      return await serveFile(req, `${STATIC_DIR}/level.html`)
     }
 
     // --- health ---
@@ -137,7 +139,6 @@ const server = Bun.serve({
     }
 
     if (pathname == '/api/theme' && req.method === "PATCH") {
-      console.log("hi")
       const authentication = await authenticate(req)
       const payload = await req.json()
       if (authentication?.signedIn && payload.theme) {
@@ -167,13 +168,11 @@ const server = Bun.serve({
         })
 
         if (!tokenResponse.ok) {
-          console.log(tokenResponse.statusText)
           return new Response("Failed to authenticate with Hack Club", { status: 401 })
         }
 
         const json = await tokenResponse.json()
         const { access_token } = json
-        console.log(access_token)
 
         const userProfileResponse = await fetch("https://auth.hackclub.com/api/v1/me", {
           method: "GET",
@@ -183,7 +182,6 @@ const server = Bun.serve({
         })
 
         const userJSON = await userProfileResponse.json()
-        console.log(userJSON)
         const { id, slack_id } = userJSON.identity
 
         const username = await fetch(`https://slack.com/api/users.info?user=${slack_id}`, {
@@ -193,8 +191,6 @@ const server = Bun.serve({
 
         const response = await username.json()
 
-        console.log(response)
-        console.log(response.user.profile.display_name)
 
         const existingUserRows = await sql`SELECT id FROM users WHERE username = ${response.user.profile.display_name} LIMIT 1`
 
@@ -607,8 +603,15 @@ const server = Bun.serve({
     }
 
     try {
-      const url = `./frontend${pathname}`
-      const file = Bun.file(url)
+      let url = `./${STATIC_DIR}${pathname}`
+      let file = Bun.file(url)
+      let fileExists = await file.exists()
+
+      if (!fileExists) {
+        url = `./frontend${pathname}`
+        file = Bun.file(url)
+        fileExists = await file.exists()
+      }
 
       const extension = String(pathname.split('.').pop()) || ""
       let mime = "application/octet-stream"
@@ -632,7 +635,6 @@ const server = Bun.serve({
           mime = "application/json; charset=utf-8"
           break
       }
-      const fileExists = await file.exists()
       if (!fileExists) {
         return new Response("Not Found", withCors({ status: 404 }, CORS))
       }

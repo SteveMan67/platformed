@@ -69,6 +69,20 @@
   --selection: black;
 }
 
+[data-theme="mahogany"] {
+  --bg-primary: #2A0C0D;
+  --bg-accent: #551C1D;
+  --bg-level: #D2BAA5;
+
+  --action: #D2BAA5;
+
+  --border: #D2BAA5;
+
+  --text-on-primary: #D2BAA5;
+  --text-on-accent: #D2BAA5;
+  --text-on-action: #2A0C0D;
+  --selection: black;
+}
 
 [data-theme="blackandwhite"] {
   --bg-primary: black;

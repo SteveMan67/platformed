@@ -25,7 +25,11 @@
     border-radius: 50%;
 }
 
-.grid {
+.grid,
+.home-grid,
+.level-grid {
+    width: 100vw;
+    height: 100vh;
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 80px 1fr;
@@ -360,7 +364,9 @@
 }
 
 @media (max-height: 500px) {
-    .grid {
+
+    .grid,
+    .level-grid {
         grid-template-rows: 50px 1fr;
     }
 

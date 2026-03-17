@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+  <title>Platformed</title>
+  <link rel="stylesheet" crossorigin href="/assets/home-ClEfntOQ.css">
+  <link rel="stylesheet" crossorigin href="/assets/meta-4nPeTIn4.css">
+  <link rel="stylesheet" crossorigin href="/assets/style-D-kSfpz6.css">
+</head>
+
+<body>
+  <div class="grid">
+    <div class="topbar">
+      <a href="/" class="title">Platformed</a>
+      <div class="right-nav">
+        <a href="/editor" target="" class="link-button">Editor</a>
+        <a href="/myLevels" class="link-button">My Levels</a>
+      </div>
+    </div>
+    <div class="content">
+      <div class="main-content">
+        <div class="back menu-item">
+          <a href="" class="back-wrapper">
+            <img src="data:image/svg+xml,%3csvg%20width='31'%20height='24'%20viewBox='0%200%2031%2024'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M1.5%2012H29.5M1.5%2012C1.5%2012.4038%2011.8083%2022.5%2011.8083%2022.5M1.5%2012C1.5%2011.5962%2011.8083%201.5%2011.8083%201.5'%20stroke='black'%20stroke-width='3'%20stroke-linecap='round'/%3e%3c/svg%3e" alt="">
+            <p>Back</p>
+          </a>
+        </div>
+        <input class="menu-item" type="text" name="level-name" id="level-name" placeholder="Untitled Level">
+        <div class="visibility menu-item">
+          <label for="visibility">Visibility</label>
+          <select name="visibility" id="visibility">
+            <option value="public">Public</option>
+            <option value="private">Private</option>
+          </select>
+        </div>
+        <p class="menu-item">Description</p>
+        <div class="description menu-item">
+          <textarea type="text" name="description" id="description"></textarea>
+        </div>
+        <button id="update">Create</button>
+      </div>
+    </div>
+  </div>
+  <script src="./javascript/new-level.js" defer></script>
+</body>
+
+</html>

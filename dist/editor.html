@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- preload modules -->
+  <link rel="modulepreload" href="/assets/site-D43MjAqN.js">
+  <link rel="modulepreload" href="data:text/javascript;base64,aW1wb3J0IHsgbG9hZE1hcEZyb21EYXRhLCBsb2FkT3duZXJEYXRhIH0gZnJvbSAnLi9maWxlLXV0aWxzLmpzJw0KaW1wb3J0IHsgaW5pdCB9IGZyb20gJy9qYXZhc2NyaXB0L3NpdGUuanMnDQppbXBvcnQgeyBzdGF0ZSB9IGZyb20gJy9qYXZhc2NyaXB0L3N0YXRlLmpzJw0KY29uc3QgeyB1c2VyIH0gPSBzdGF0ZQ0KDQpjb25zdCBzZXJ2ZXJVcmwgPSB3aW5kb3cubG9jYXRpb24ub3JpZ2luDQoNCi8vIGZldGNoIHRoZSBsZXZlbCBpZiB0aGVyZSBpcyBhIGxldmVsIGluIHRoZSANCg0KYXN5bmMgZnVuY3Rpb24gZ2V0TGV2ZWwobGV2ZWwpIHsNCiAgdHJ5IHsNCiAgICBjb25zdCByYXcgPSBhd2FpdCBmZXRjaChgJHtzZXJ2ZXJVcmx9L2FwaS9sZXZlbD9sZXZlbElkPSR7bGV2ZWx9YCkNCiAgICBjb25zdCBsZXZlbHMgPSByYXcuanNvbigpDQogICAgd2luZG93LmRpc3BhdGNoRXZlbnQobmV3IEN1c3RvbUV2ZW50KCdsZXZlbDpsb2FkZWQnLCB7IGRldGFpbDogbGV2ZWxzIH0pKQ0KICAgIHJldHVybiBhd2FpdCBsZXZlbHMNCiAgfSBjYXRjaCB7DQogIH0NCn0NCg0KZmV0Y2goYCR7c2VydmVyVXJsfS9hcGkvbWVgKQ0KICAudGhlbihyZXMgPT4gcmVzLmpzb24oKSkNCiAgLnRoZW4ocmVzID0+IHsNCiAgICB1c2VyLmlkID0gcmVzLnVzZXINCiAgfSkNCg0KbGV0IGxldmVsTnVtDQoNCnRyeSB7DQogIGxldmVsTnVtID0gTnVtYmVyKHdpbmRvdy5sb2NhdGlvbi5ocmVmLm1hdGNoKC9cL2VkaXRvclwvKFxkKykoPzpbXC8/I118JCkvKVsxXSkNCn0gY2F0Y2ggew0KICBsZXZlbE51bSA9IG51bGw7DQp9DQoNCmlmIChsZXZlbE51bSkgew0KDQogIGdldExldmVsKGxldmVsTnVtKS50aGVuKGxldmVsID0+IHsNCiAgICBpZiAobGV2ZWwgJiYgbGV2ZWxOdW0gJiYgbGV2ZWwuZXJyb3IgPT0gbnVsbCkgew0KICAgICAgY29uc3QgbGV2ZWxEYXRhID0gbGV2ZWwuZGF0YQ0KICAgICAgbG9hZE1hcEZyb21EYXRhKGxldmVsRGF0YSkNCiAgICAgIGxvYWRPd25lckRhdGEobGV2ZWwpDQogICAgfSBlbHNlIGlmIChsZXZlbCAmJiBsZXZlbC5lcnJvcikgew0KICAgIH0NCiAgICBpbml0KCkNCiAgfSkNCn0gZWxzZSB7DQogIGluaXQoKQ0KfQ0K">
+  <link rel="modulepreload" href="/assets/editor-C3bxFxBx.js">
+  <link rel="modulepreload" href="/assets/renderer-DZMZvFsw.js">
+  <link rel="modulepreload" href="/assets/file-utils-C7bHPRit.js">
+  <link rel="modulepreload" href="/assets/ui-B2aNIrsH.js">
+  <link rel="modulepreload" href="/assets/platformer-BcG5d9d1.js">
+  <link rel="modulepreload" href="/assets/state-hr_40cZS.js">
+  <link rel="modulepreload" href="data:text/javascript;base64,Y29uc3Qgc2VydmVyVXJsID0gd2luZG93LmxvY2F0aW9uLm9yaWdpbg0KDQpjb25zdCBzZXJ2ZXJVUkwgPSB3aW5kb3cubG9jYXRpb24ub3JpZ2luDQoNCmV4cG9ydCBhc3luYyBmdW5jdGlvbiB1cGxvYWRMZXZlbChkYXRhTGlzdCkgew0KICBjb25zdCBwYXlsb2FkID0ge30NCiAgZGF0YUxpc3QuZm9yRWFjaChkYXRhcG9pbnQgPT4gew0KICAgIHBheWxvYWRbZGF0YXBvaW50WzBdXSA9IGRhdGFwb2ludFsxXQ0KICB9KQ0KDQogIGNvbnN0IHVwbG9hZCA9IGF3YWl0IGZldGNoKGAke3NlcnZlclVSTH0vYXBpL3VwbG9hZGAsIHsNCiAgICBtZXRob2Q6ICdQT1NUJywNCiAgICBoZWFkZXJzOiB7ICdDb250ZW50LVR5cGUnOiAnYXBwbGljYXRpb24vanNvbicgfSwNCiAgICBjcmVkZW50aWFsczogJ2luY2x1ZGUnLA0KICAgIGJvZHk6IEpTT04uc3RyaW5naWZ5KHBheWxvYWQpDQogIH0pDQogIGNvbnN0IGxldmVsSWQgPSBhd2FpdCB1cGxvYWQuanNvbigpDQogIHJldHVybiBsZXZlbElkLmxldmVsSWQNCn0NCg0KZXhwb3J0IGZ1bmN0aW9uIHBsYXkobGV2ZWxJZCwgZmluaXNoZWQpIHsNCiAgY29uc3QgcGF5bG9hZCA9IHsgbGV2ZWxJZDogbGV2ZWxJZCwgZmluaXNoZWQ6IGZpbmlzaGVkIH0NCg0KICBmZXRjaChgJHtzZXJ2ZXJVcmx9L2FwaS9wbGF5YCwgew0KICAgIG1ldGhvZDogIlBPU1QiLA0KICAgIGJvZHk6IEpTT04uc3RyaW5naWZ5KHBheWxvYWQpDQogIH0pDQp9DQo=">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+  <title>Platformed - Editor</title>
+  <script type="module" crossorigin src="/assets/editor-D4TDVINm.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-EeOZK34R.js">
+  <link rel="modulepreload" crossorigin href="/assets/site-D3DfCUGJ.js">
+  <link rel="stylesheet" crossorigin href="/assets/login-GD92ah_R.css">
+  <link rel="stylesheet" crossorigin href="/assets/style-D-kSfpz6.css">
+</head>
+
+<body>
+  <div class="grid">
+    <div class="topbar">
+      <div class="main">
+        <h1 class="title"><a href="/">Platformed</a></h1>
+
+        <div class="link-wrapper hidden">
+          <a class="main-link" href="">View Level</a>
+          <div class="svg arrow-right"></div>
+        </div>
+      </div>
+      <div class="actions">
+
+        <div class="save-utils">
+          <p class="save-info"></p>
+          <div class="saving hidden">Saving...</div>
+          <div class="loading hidden"></div>
+        </div>
+
+      </div>
+    </div>
+    <div class="game">
+      <canvas class="canvas"></canvas>
+      <div class="minimap">
+        <canvas class="minimap-canvas"></canvas>
+      </div>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-one">
+        <div class="category-blocks"></div>
+      </div>
+      <div class="sidebar-two">
+        <div class="zoom">
+          <div class="plus svg" title="zoom in"></div>
+          <div class="minus svg" title="zoom out"></div>
+        </div>
+        <div class="tile-selection">
+          <div class="categories">
+            <div class="category svg mechanics" data-category="mechanics" title="mechanics"></div>
+            <div class="category svg triggers" data-category="triggers" title="triggers"></div>
+            <div class="category svg mobs" data-category="mobs" title="mobs"></div>
+            <div class="category svg hazards" data-category="hazards" title="hazards"></div>
+            <div class="category svg powerups" data-category="powerups" title="powerups"></div>
+            <div class="category svg collectibles" data-category="collectibles" title="collectibles"></div>
+            <div class="category svg blocks" data-category="blocks" title="blocks"></div>
+            <div class="eraser svg" title="eraser"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-bar">
+      <div class="left-info">
+        <p class="selected-tile">Trigger 2</p>
+        <p>|</p>
+        <p>tileId:</p>
+        <p class="selected-tile-id">16</p>
+      </div>
+      <div class="right-info">
+        <p>x:</p>
+        <p class="x">30</p>
+        <p>|</p>
+        <p>y:</p>
+        <p class="y">20</p>
+      </div>
+    </div>
+  </div>
+  <div class="overlay hidden">
+    <div class="background">
+    </div>
+    <div class="trigger-script menu hidden">
+      <div class="trigger-top">
+        <p>Edit with Trigger Script</p>
+      </div>
+      <div class="error"></div>
+      <textarea name="triggerScript" id="triggerScript"></textarea>
+      <div class="buttons">
+        <input type="submit" class="submit apply" value="apply">
+      </div>
+    </div>
+    <div class="trigger-dialog menu hidden">
+      <div class="trigger-top">
+        <p>Edit Trigger</p>
+        <button class="trigger-script-edit">Edit with TriggerScript</button>
+      </div>
+      <div class="steps-wrapper">
+        <div class="arrow"></div>
+        <div class="steps">
+          <div class="step">
+            <div class="type">
+              <select name="type" id="type">
+                <option value="toggle">Swap red and blue blocks</option>
+              </select>
+            </div>
+            <div class="options">
+              <img src="data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20640%20640'%3e%3c!--!Font%20Awesome%20Free%207.2.0%20by%20@fontawesome%20-%20https://fontawesome.com%20License%20-%20https://fontawesome.com/license/free%20Copyright%202026%20Fonticons,%20Inc.--%3e%3cpath%20d='M232.7%2069.9L224%2096L128%2096C110.3%2096%2096%20110.3%2096%20128C96%20145.7%20110.3%20160%20128%20160L512%20160C529.7%20160%20544%20145.7%20544%20128C544%20110.3%20529.7%2096%20512%2096L416%2096L407.3%2069.9C402.9%2056.8%20390.7%2048%20376.9%2048L263.1%2048C249.3%2048%20237.1%2056.8%20232.7%2069.9zM512%20208L128%20208L149.1%20531.1C150.7%20556.4%20171.7%20576%20197%20576L443%20576C468.3%20576%20489.3%20556.4%20490.9%20531.1L512%20208z'/%3e%3c/svg%3e" title="delete step">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="buttons">
+        <div id="new">
+          <img src="data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20640%20640'%3e%3c!--!Font%20Awesome%20Free%207.1.0%20by%20@fontawesome%20-%20https://fontawesome.com%20License%20-%20https://fontawesome.com/license/free%20Copyright%202026%20Fonticons,%20Inc.--%3e%3cpath%20d='M352%20128C352%20110.3%20337.7%2096%20320%2096C302.3%2096%20288%20110.3%20288%20128L288%20288L128%20288C110.3%20288%2096%20302.3%2096%20320C96%20337.7%20110.3%20352%20128%20352L288%20352L288%20512C288%20529.7%20302.3%20544%20320%20544C337.7%20544%20352%20529.7%20352%20512L352%20352L512%20352C529.7%20352%20544%20337.7%20544%20320C544%20302.3%20529.7%20288%20512%20288L352%20288L352%20128z'/%3e%3c/svg%3e" title="add step">
+        </div>
+        <input type="submit" class="submit apply" value="apply">
+      </div>
+      <script>
+        document.addEventListener('keydown', (e) => {
+          if (e.key !== "Enter") return
+          const overlay = document.querySelector(".overlay")
+          const dialog = document.querySelector(".trigger-dialog")
+          if (getComputedStyle(dialog).display !== 'none') {
+            const button = dialog.querySelector(".trigger-dialog .submit")
+            if (button) {
+              e.preventDefault()
+              button.click()
+            }
+          }
+        })
+      </script>
+    </div>
+    <div class="login menu hidden">
+      <h1>login</h1>
+      <form action="">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password">
+        <div class="oauth">
+          <a href="" class="hack-club-oauth">
+            <div>Sign in with Hack Club</div>
+          </a>
+        </div>
+        <div class="form-button">
+          <input id="submit" type="submit" value="Log in">
+        </div>
+      </form>
+    </div>
+    <div class="menu-content menu hidden">
+      <input type="radio" name="tabs" id="tab1">
+      <input type="radio" name="tabs" id="tab2" checked>
+      <input type="radio" name="tabs" id="tab3">
+      <input type="radio" name="tabs" id="tab4">
+      <input type="radio" name="tabs" id="tab5">
+      <div class="tabs">
+        <ul>
+          <li><label for="tab1">Level</label></li>
+          <li><label for="tab2">Physics</label></li>
+          <li><label for="tab3">Share</label></li>
+          <li><label for="tab4">Options</label></li>
+          <li><label for="tab5">Help</label></li>
+          <li class="close-wrapper"></li>
+        </ul>
+      </div>
+      <div class="tab-content">
+        <!-- Level Options -->
+        <div class="tab">
+          <div class="menu-item">
+            <label for="zoom-level">Zoom Level</label>
+            <div class="range-wrapper">
+              <output id="zoom-level-val">1</output>
+              <input type="range" name="zoom-level" id="zoom-level-input" min="0.7" max="2" step="0.2" value="1"
+                oninput="document.getElementById('zoom-level-val').innerHTML = this.value">
+            </div>
+          </div>
+          <div class="menu-item">
+            <label for="tileset">Tileset</label>
+            <select name="tileset" id="tileset-input" a>
+              <option value="/assets/small.json">8x8 Blocky</option>
+              <option value="/assets/medium-spritesheet.json" selected>16x16 blocky</option>
+              <option value="/assets/large.json">32x32 Realistic</option>
+              <option value="/assets/symbols.json">Symbols</option>
+            </select>
+          </div>
+          <div class="menu-item">
+            <label for="resize-level">Resize Level</label>
+            <div class="resize-wrapper">
+              height
+              <input type="number" class="number height" min="10" max="100" placeholder="50">
+              width
+              <input type="number" class="number width" min="10" max="200" placeholder="100">
+              <button class="resize">Resize</button>
+            </div>
+          </div>
+        </div>
+        <!-- Physics -->
+        <div class="tab">
+          <div class="menu-item">
+            <label for="physicsV">Physics Version</label>
+            <select name="physics-version" id="physics-version">
+              <option value="1">v1</option>
+              <option value="2">v2</option>
+            </select>
+          </div>
+          <div class="menu-item">
+            <label for="slidiness">Slidiness</label>
+            <div class="range-wrapper">
+              <output id="slidiness-val">0.8</output>
+              <input type="range" name="slidiness" id="slidiness-input" min="0" max="1" step="0.05" value="0.8"
+                oninput="document.getElementById('slidiness-val').innerHTML = this.value">
+            </div>
+          </div>
+          <div class="menu-item">
+            <label for="jump-height">Jump Height</label>
+            <div class="range-wrapper">
+              <output id="jump-height-val">2.5</output>
+              <input type="range" name="jump-height" id="jump-height-input" min="0" max="10" step="0.5" value="2.5"
+                oninput="document.getElementById('jump-height-val').innerHTML = this.value">
+            </div>
+          </div>
+          <!-- <div class="menu-item">
+            <label for="vertical-inertia">Vertical Inertia</label>
+            <div class="range-wrapper">
+              <output id="vertical-inertia-val">1</output>
+              <input type="range" name="vertical-inertia" id="vertical-inertia-input" min="0.8" max="3" step="0.1"
+                value="1" oninput="document.getElementById('vertical-inertia-val').innerHTML = this.value">
+            </div>
+          </div> -->
+          <div class="menu-item">
+            <label for="jump-width">Jump Width</label>
+            <div class="range-wrapper">
+              <output id="jump-width-val">7</output>
+              <input type="range" name="jump-width" id="jump-width-input" min="3" max="10" step="0.5" value="7"
+                oninput="document.getElementById('jump-width-val').innerHTML = this.value">
+            </div>
+          </div>
+          <!-- <div class="menu-item">
+            <label for="horizontal-inertia">Horizonal Inertia</label>
+            <div class="range-wrapper">
+              <output id="horizontal-inertia-val">1.5</output>
+              <input type="range" name="horizontal-inertia" id="horizontal-inertia-input" min="0.8" max="2" step="0.1"
+                value="1.5" oninput="document.getElementById('horizontal-inertia-val').innerHTML = this.value">
+            </div>
+          </div> -->
+          <div class="menu-item">
+            <label for="bounce-pad-height">Bounce Pad Height</label>
+            <div class="range-wrapper">
+              <output id="bounce-pad-val">10</output>
+              <input type="range" name="bounce-pad-height" id="bounce-pad-height-input" min="0" max="20" step="1"
+                value="10" oninput="document.getElementById('bounce-pad-val').innerHTML = this.value">
+            </div>
+          </div>
+          <div class="menu-item">
+            <label for="walljump">Walljump</label>
+            <select name="walljump" id="walljump-input">
+              <option value="">Disabled</option>
+              <option value="up" selected>Jump Up Wall</option>
+              <option value="off">Jump Off Wall</option>
+            </select>
+          </div>
+        </div>
+        <!-- Share -->
+        <div class="tab">
+          <div class="menu-item align-items-left">
+            <input type="button" value="Save as JSON" id="save-as-json">
+          </div>
+          <div class="menu-item">
+            <label for="">Share Link</label>
+            <div class="share-link">
+              <p class="link">Save to create a link</p>
+              <img src="data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20640%20640'%3e%3c!--!Font%20Awesome%20Free%207.2.0%20by%20@fontawesome%20-%20https://fontawesome.com%20License%20-%20https://fontawesome.com/license/free%20Copyright%202026%20Fonticons,%20Inc.--%3e%3cpath%20d='M480%20400L288%20400C279.2%20400%20272%20392.8%20272%20384L272%20128C272%20119.2%20279.2%20112%20288%20112L421.5%20112C425.7%20112%20429.8%20113.7%20432.8%20116.7L491.3%20175.2C494.3%20178.2%20496%20182.3%20496%20186.5L496%20384C496%20392.8%20488.8%20400%20480%20400zM288%20448L480%20448C515.3%20448%20544%20419.3%20544%20384L544%20186.5C544%20169.5%20537.3%20153.2%20525.3%20141.2L466.7%2082.7C454.7%2070.7%20438.5%2064%20421.5%2064L288%2064C252.7%2064%20224%2092.7%20224%20128L224%20384C224%20419.3%20252.7%20448%20288%20448zM160%20192C124.7%20192%2096%20220.7%2096%20256L96%20512C96%20547.3%20124.7%20576%20160%20576L352%20576C387.3%20576%20416%20547.3%20416%20512L416%20496L368%20496L368%20512C368%20520.8%20360.8%20528%20352%20528L160%20528C151.2%20528%20144%20520.8%20144%20512L144%20256C144%20247.2%20151.2%20240%20160%20240L176%20240L176%20192L160%20192z'/%3e%3c/svg%3e" tile="copy link">
+            </div>
+          </div>
+        </div>
+        <!-- Options -->
+        <div class="tab options">
+          <div class="menu-item">
+            <label for="show-minimap">Show Minimap</label>
+            <input type="checkbox" class="toggle" id="show-minimap" checked>
+          </div>
+          <div class="menu-item">
+            <label for="show-trigger-highlights">Highlight Triggers</label>
+            <input type="checkbox" class="toggle" id="trigger-highlight" checked>
+          </div>
+          <div class="color-theme">
+            <p>Color Theme</p>
+            <div class="swatches"></div>
+          </div>
+        </div>
+        <!-- Help -->
+        <div class="tab help">
+          <p>For a more detailed tutorial, see <a
+              href="https://github.com/SteveMan67/platformed/blob/main/docs/editor.md" target="_blank">editor.md</a>
+          </p>
+          <p>Getting Around</p>
+          <p class="body-text">You can move the view with WASD, middle mouse button click and drag, or the minimap.
+          </p>
+
+          <p>Keyboard Shortcuts</p>
+          <ul class="trigger-actions">
+            <li><span class="keyboard-shortcut">E</span> - toggle eraser</li>
+            <li><span class="keyboard-shortcut">1-7</span> - switch categories</li>
+            <li><span class="keyboard-shortcut">&lt;shift&gt;&lt;scroll&gt;</span> - switch blocks within a category
+            </li>
+            <li><span class="keyboard-shortcut">P</span> - toggle play mode</li>
+            <li><span class="keyboard-shortcut">O</span> - open file</li>
+            <li><span class="keyboard-shortcut">R</span> - rotate block (editor)</li>
+            <li><span class="keyboard-shortcut">R</span> - respawn (play mode)</li>
+            <li><span class="keyboard-shortcut">&lt;Esc&gt;</span> - Close menu</li>
+            <li>Selection Tools</li>
+            <li><span class="keyboard-shortcut">&lt;Shift&gt;&lt;drag&gt;</span></li>
+            <li><span class="keyboard-shortcut">&lt;drag&gt;</span> - Move selection around</li>
+            <li><span class="keyboard-shortcut">F</span> - Fill Selection with currently selected block</li>
+            <li><span class="keyboard-shortcut">R</span> - Rotate all rotatable blocks within the selection 90&deg;
+            </li>
+            <li><span class="keyboard-shortcut">E</span> - Erase whole selection</li>
+          </ul>
+          <p>Triggers</p>
+          <p class="body-text">Triggers can be found in the sixth category with a toggle icon. Once you place a
+            trigger,
+            right click it to edit what it will do. Triggers will execute their steps from top to bottom.</p>
+          <p>Trigger Functions:</p>
+          <ul class="trigger-actions">
+            <li>Swap red and blue - swaps the red and blue blocks</li>
+            <li>Teleport - teleports the player to a given x/y, can be instant or have camera animation</li>
+            <li>Rotate - rotates a block at a specific x/y position a given amount of degrees </li>
+            <li>Change Block - Changes a block at a specific x/y to the given block</li>
+            <li>Delay - stops execution for a given amount of miliseconds</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
