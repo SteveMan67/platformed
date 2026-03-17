@@ -69,19 +69,19 @@ getLevel(1).then(levels => {
       </div>
       <div class="quick-actions">
         <a href="/editor/${level.id}" id="edit" class="quick-action">
-          <img src="/assets/icons/edit.svg">
+          <div class="svg edit"></div>
         </a>
         <div class="divider"></div>
         <a href="/level/${level.id}" id="view" class="quick-action">
-          <img src="/assets/icons/view.svg">
+          <div class="svg view"></div>
         </a>
         <div class="divider"></div>
         <button data-level="${level.id}" class="quick-action">
-          <img src="/assets/icons/delete.svg">
+          <div class="svg delete"></div>
         </button>
         <div class="divider"></div>
         <a href="/meta/${level.id}" id="settings" class="quick-action">
-          <img src="/assets/icons/settings.svg">
+          <div class="svg settings"></div>
         </a>
       </div>
       
