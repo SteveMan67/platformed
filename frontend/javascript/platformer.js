@@ -465,7 +465,7 @@ function rotateTile(tx, ty, amount) {
 }
 function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
   const tiles = mode == "play" ? player.tiles : editor.map.tiles
-  const mechanics = editor.tileset[tileId].mechanics
+  const mechanics = editor.tileset[tileId]?.mechanics
   if (!mechanics) return
   if (mechanics.includes("killOnTouch")) {
     if (checkPixelCollsion(tiles[tileIdx], tx, ty, x, y, w, h)) {
@@ -548,7 +548,6 @@ function checkCollision(dt, x, y, w, h, simulate = false) {
 
       if (player.x !== oldX || player.y !== oldY) return false
       if (tileId !== 0) {
-        const tile = editor.tileset[tileId]
         if (mechanicsHas(tileId, "trigger")) {
           touchingTrigger = true
         }
@@ -580,6 +579,9 @@ function checkCollision(dt, x, y, w, h, simulate = false) {
           }
         }
         if (player.collectedCoinList.includes(idx)) continue
+        if (!editor.tileset[tileId]) {
+          continue
+        }
         return true
       }
     }
