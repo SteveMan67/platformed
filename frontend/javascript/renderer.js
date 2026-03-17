@@ -22,6 +22,7 @@ export function updateColorTheme() {
   colorTheme.action = getThemeColor('--action')
   colorTheme.textOnAction = getThemeColor('--text-on-action')
   colorTheme.border = getThemeColor('--border')
+  colorTheme.selection = getThemeColor('--selection')
 }
 
 export function changeColorTheme(themeName) {

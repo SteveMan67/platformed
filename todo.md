@@ -7,7 +7,6 @@
 
 **Platformer**
 - parallax background
-- physics v2
 - enemy texture
 - lava, water, ladders
 - moving blocks
@@ -22,10 +21,6 @@
 - drag minimap around
 - drag triggers around
 - only highlight selected trigger (if any) and have different colors for different operations
-- set eraser color to `var(--border)`
-
-**Other**
-- refactor ui.js slop
 
 # QOL
 - fill selection with current rotation
