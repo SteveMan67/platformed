@@ -1,6 +1,7 @@
 # Bug Fixes
 - trigger detection
 - add trigger limit
+- pixel collision not working for dissipation block
 
 # New Features
 
@@ -12,6 +13,7 @@
 - moving blocks
 - collect all coins in level to finish
 - add dissipation animation
+- tileset switching looks for matching names instead of just using the id
 
 **Level Share**
 - options page 
