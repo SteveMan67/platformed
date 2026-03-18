@@ -2,6 +2,7 @@
 - trigger detection
 - add trigger limit
 - pixel collision not working for dissipation block
+- better undo/redo
 
 # New Features
 

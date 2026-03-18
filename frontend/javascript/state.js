@@ -174,7 +174,7 @@ export const state = {
     height: 50,
     tileset: [],
     limitedPlacedTiles: [],
-    tilesetPath: "/assets/medium-spritesheet.json",
+    tilesetPath: "/assets/medium.json",
     dissipateTime: 2 * 60,
     dissipateDelay: 2 * 60,
     history: [],

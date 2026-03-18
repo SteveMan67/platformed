@@ -581,7 +581,6 @@ export function levelEditorLoop(dt) {
 
   if (editor.selection.active) {
     ctx.strokeStyle = colorTheme.selection
-    console.log(colorTheme)
     ctx.setLineDash([5, 5])
     ctx.lineWidth = 2
 
