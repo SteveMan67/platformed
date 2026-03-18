@@ -265,6 +265,13 @@ export function getCameraCoords() {
   }
   return { x: x, y: y }
 }
+
+export function drawMovingTiles() {
+  player.movingBlocks.forEach(block => {
+    ctx.drawImage(block.image, Math.round(block.x - player.cam.x), Math.round(block.y - player.cam.y), player.tileSize, player.tileSize)
+  })
+}
+
 export function drawEnemies(dt) {
   enemies.forEach(enemy => {
     ctx.drawImage(editor.tileset[enemy.tileId].image, enemy.x - player.cam.x, enemy.y - player.cam.y, player.tileSize, player.tileSize)

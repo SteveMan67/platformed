@@ -9,13 +9,13 @@ const { user, player, editor } = state
 export function createSpriteSheet(width) {
   const { tileset } = editor
 
-  const tileWidth = tileset[1].image.naturalHeight
-  console.log(tileWidth)
+  const tileWidth = tileset[1].image.naturalHeight || tileset[1].image.height
   const newTileset = { tiles: [], type: "spritesheet" }
   const framesToDraw = []
   let tileIndex = 0
 
   for (const tile of tileset) {
+    if (!tile) continue
     const imagesToProcess = tile.images ? tile.images : (tile.image ? [tile.image] : [])
 
     const tileY = Math.floor(tileIndex / width)

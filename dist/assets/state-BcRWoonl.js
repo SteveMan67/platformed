@@ -95,6 +95,7 @@ export const state = {
     }
   ],
   player: {
+    movingBlocks: [],
     physicsVersion: 2,
     slidiness: 0.8,
     triggers: [],
@@ -118,6 +119,7 @@ export const state = {
     y: 0,
     w: 30,
     h: 30,
+    onMovingPlatform: false,
     stopThreshold: 0.4,
     grounded: false,
     coyoteTime: 5,
@@ -174,7 +176,7 @@ export const state = {
     height: 50,
     tileset: [],
     limitedPlacedTiles: [],
-    tilesetPath: "/assets/medium-spritesheet.json",
+    tilesetPath: "/assets/medium.json",
     dissipateTime: 2 * 60,
     dissipateDelay: 2 * 60,
     history: [],

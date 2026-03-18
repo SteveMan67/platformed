@@ -1,5 +1,5 @@
 import { toggleEditorUI, sortByCategory, needsSmallerLevel, pollGamepad } from "./ui.js"
-import { canvas, ctx, drawEnemies, drawMap, drawPlayer, getCameraCoords } from "./renderer.js"
+import { canvas, ctx, drawEnemies, drawMap, drawMovingTiles, drawPlayer, getCameraCoords } from "./renderer.js"
 import { endLevel, key, playSound, input, mode } from "./site.js"
 import { state } from "./state.js"
 import { createMap } from "./file-utils.js"
@@ -200,8 +200,27 @@ function scanLevelOnPlay() {
         direction: 1
       }
       enemies.push(enemy)
+    } else if (tileId !== 0 && mechanicsHas(tileId, "movingBlock")) {
+      const ty = Math.floor(i / editor.map.w)
+      const tx = i % editor.map.w
+      const worldY = ty * player.tileSize
+      const worldX = tx * player.tileSize
+      player.tiles[i] = 0
+      player.movingBlocks.push({
+        image: editor.tileset[tileId]?.images[raw & 15],
+        x: worldX,
+        y: worldY,
+        w: player.tileSize,
+        h: player.tileSize,
+        vx: 2,
+        vy: 0,
+        startX: worldX,
+        startY: worldY,
+        direction: 1
+      })
     }
   }
+  console.log(player.movingBlocks)
 }
 
 export function updatePhysicsConstants() {
@@ -222,6 +241,7 @@ export function updatePhysicsConstants() {
 export function initPlatformer() {
   toggleEditorUI(false)
   player.tiles = new Uint16Array(editor.map.tiles)
+  player.movingBlocks = []
   player.toggledTile = true
   player.lastCheckpointSpawn = { x: 0, y: 0 }
   player.collectedCoinList = []
@@ -465,7 +485,7 @@ function rotateTile(tx, ty, amount) {
 }
 function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
   const tiles = mode == "play" ? player.tiles : editor.map.tiles
-  const mechanics = editor.tileset[tileId].mechanics
+  const mechanics = editor.tileset[tileId]?.mechanics
   if (!mechanics) return
   if (mechanics.includes("killOnTouch")) {
     if (checkPixelCollsion(tiles[tileIdx], tx, ty, x, y, w, h)) {
@@ -548,7 +568,6 @@ function checkCollision(dt, x, y, w, h, simulate = false) {
 
       if (player.x !== oldX || player.y !== oldY) return false
       if (tileId !== 0) {
-        const tile = editor.tileset[tileId]
         if (mechanicsHas(tileId, "trigger")) {
           touchingTrigger = true
         }
@@ -580,11 +599,59 @@ function checkCollision(dt, x, y, w, h, simulate = false) {
           }
         }
         if (player.collectedCoinList.includes(idx)) continue
+        if (!editor.tileset[tileId]) {
+          continue
+        }
         return true
       }
     }
   }
   return false
+}
+
+function checkMovingBlockCollision(x, y, w, h) {
+  for (const block of player.movingBlocks) {
+    if (aabbIntersect(x, y, w, h, block.x, block.y, block.w, block.h)) {
+      return block
+    }
+  }
+  return null
+}
+
+function updateMovingBlocks(dt) {
+  for (const block of player.movingBlocks) {
+    const dx = block.vx * dt
+    const dy = block.vy * dt
+
+    block.x += dx
+    block.y += dy
+
+    const offX = (player.w - player.hitboxW) / 2
+    const offY = player.h - player.hitboxH
+    const px = player.x + offX
+    const py = player.y + offY
+    const pw = player.hitboxW
+    const ph = player.hitboxH
+
+    const isStandingOn =
+      py + ph <= block.y + 10 &&
+      py + ph >= block.y - 5 &&
+      px + pw > block.x &&
+      px < block.x + block.w
+
+    if (isStandingOn) {
+      player.onMovingPlatform = true
+      player.x += dx
+
+      player.y = block.y - ph - offY - 0.01
+
+      player.grounded = true
+      player.vy = 0
+      player.coyoteTimer = player.coyoteTime
+    } else {
+      player.onMovingPlatform = false
+    }
+  }
 }
 
 function limitControl(time, multiplier) {
@@ -627,7 +694,9 @@ function updatePhysics(dt) {
   }
 
   const gravity = ((0.7 * player.yInertia) + 0.5) * (player.tileSize / 64)
-  player.vy += gravity * dt
+  if (!player.onMovingPlatform) {
+    player.vy += gravity * dt
+  }
 
   if (player.vy > player.tileSize * 0.8) {
     player.vy = player.tileSize * 0.8
@@ -702,7 +771,18 @@ function updatePhysics(dt) {
 
   player.x += player.vx * dt
   touchingTrigger = false
-  if (checkCollision(dt, player.x + offX, player.y + offY, player.hitboxW, player.hitboxH)) {
+
+  const tileHitX = checkCollision(dt, player.x + offX, player.y + offY, player.hitboxW, player.hitboxH)
+  const blockHitX = checkMovingBlockCollision(player.x + offX, player.y + offY, player.hitboxW, player.hitboxH)
+
+  if (blockHitX) {
+    if (player.vx > 0) {
+      player.x = blockHitX.x - player.hitboxW - offX - 0.01
+    } else if (player.vx < 0) {
+      player.x = blockHitX.x + blockHitX.w - offX + 0.01
+    }
+    player.vx = 0
+  } else if (tileHitX) {
     if (player.vx > 0) {
       const hitRight = player.x + offX + player.hitboxW
       player.x = (Math.floor(hitRight / player.tileSize) * player.tileSize) - player.hitboxW - offX - 0.01
@@ -716,7 +796,19 @@ function updatePhysics(dt) {
   player.y += player.vy * dt
   player.grounded = false
 
-  if (checkCollision(dt, player.x + offX, player.y + offY, player.hitboxW, player.hitboxH)) {
+  const blockHitY = checkMovingBlockCollision(player.x + offX, player.y + offY, player.hitboxW, player.hitboxH)
+  const tileHitY = checkCollision(dt, player.x + offX, player.y + offY, player.hitboxW, player.hitboxH)
+
+  if (blockHitY) {
+    if (player.vy > 0) {
+      player.y = blockHitY.y - player.hitboxH - offY - 0.01
+      player.grounded = true
+      player.coyoteTimer = player.coyoteTime
+    } else if (player.vy < 0) {
+      player.y = blockHitY.y + blockHitY.h - offY + 0.01
+    }
+    player.vy = 0
+  } else if (tileHitY) {
     if (player.vy > 0) {
       const hitBottom = player.y + offY + player.hitboxH
       const tileTop = Math.floor(hitBottom / player.tileSize) * player.tileSize
@@ -878,6 +970,7 @@ export function platformerLoop(dt) {
     }
   })
   if (!player.died) {
+    updateMovingBlocks(timeScale)
     updatePhysics(timeScale)
   }
   updateEnemyPhysics(timeScale)
@@ -926,6 +1019,7 @@ export function platformerLoop(dt) {
     drawPlayer(timeScale)
   }
   drawEnemies(timeScale)
+  drawMovingTiles(timeScale)
 }
 
 function logCurrentMapAsJSON() {

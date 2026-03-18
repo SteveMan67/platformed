@@ -617,6 +617,7 @@ function menuUi() {
     openMenu()
   })
 
+  tilesetInput.value = editor.tilesetPath
   tilesetInput.addEventListener("input", () => {
     updateTileset(tilesetInput.value)
   })
