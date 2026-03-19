@@ -369,11 +369,11 @@ async function loadSpriteSheetTileset(manifest) {
         const b = imgData[i + 2]
         const a = imgData[i + 3]
 
-        if (a < 128) continue
+        if (a < 128 || (r < 10 && g < 10 && b < 10)) continue
         const rgb = `rgb(${r}, ${g}, ${b})`
         colorCounts[rgb] = (colorCounts[rgb] || 0) + 1
 
-        if (colorCounts[rgb] > maxCount) {
+        if (colorCounts[rgb] > maxCount && colorCounts[rgb] > (imgData.length / 4) * 0.1) {
           maxCount = colorCounts[rgb]
           minimapColor = rgb
         }
@@ -467,11 +467,11 @@ export async function loadTileset(manifestPath) {
                 const b = imgData[i + 2]
                 const a = imgData[i + 3]
 
-                if (a < 128) continue
+                if (a < 128 || (r < 10 && g < 10 && b < 10)) continue
                 const rgb = `rgb(${r}, ${g}, ${b})`
                 colorCounts[rgb] = (colorCounts[rgb] || 0) + 1
 
-                if (colorCounts[rgb] > maxCount) {
+                if (colorCounts[rgb] > maxCount && colorCounts[rgb] > (imgData.length / 4) * 0.1) {
                   maxCount = colorCounts[rgb]
                   minimapColor = rgb
                 }
