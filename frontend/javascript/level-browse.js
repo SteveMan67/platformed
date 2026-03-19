@@ -251,56 +251,258 @@ function calculateAdjacency(tileIdx, tileId, tiles, tileset, w, h) {
 const tilesetMap = new Map()
 const imgMap = new Map()
 
-async function loadTileset(tilesetPath) {
-  console.log(tilesetPath)
-  if (tilesetMap.has(tilesetPath)) return tilesetMap.get(tilesetPath)
+async function loadSpriteSheetTileset(manifest) {
+  const tileset = []
+  const raw = await fetch(manifest.spritesheetPath)
+  const blob = await raw.blob()
 
-  const fetchPromise = (async () => {
+  const spriteSheet = await new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => resolve(img)
+    img.onerror = reject
+    img.src = manifest.spritesheetPath
+  })
 
-    const res = await fetch(tilesetPath)
-    const rawJson = await res.json()
-    const tilesetJson = rawJson.tiles
-    const tileset = {}
-    const path = rawJson.path
+  const tileWidth = manifest.tileWidth
+  const width = spriteSheet.naturalWidth / tileWidth
+  console.log(`width: ${width}`)
+  for (const tile of manifest.tiles) {
+    const dpr = window.devicePixelRatio
+    const canvas = document.createElement("canvas")
+    const ctx = canvas.getContext('2d')
+    canvas.width = width
+    canvas.height = width
+    ctx.imageSmoothingEnabled = false
+    canvas.style.imageRendering = 'pixelated'
 
-    const promises = tilesetJson.map(async (def) => {
-      const img = new Image()
-      img.src = path + def.file
-      await new Promise(resolve => {
-        img.onload = resolve
-        img.onerror = resolve
-      })
+    ctx.drawImage(spriteSheet, tile.x * width, tile.y * width, width, width, 0, 0, width, width)
 
-      tileset[def.id] = { ...def, triggerAdjacency: def.triggerAdjacency, image: img, images: [] }
+    const images = []
 
-      if (def.type == "adjacency" || def.type == "rotation") {
-        const w = img.naturalHeight
-        if (w > 0) {
-          const count = Math.floor(img.naturalWidth / w)
-          for (let i = 0; i < count; i++) {
-            const canvas = document.createElement('canvas')
-            canvas.width = w
-            canvas.height = w
-            const ctx = canvas.getContext('2d')
-            ctx.drawImage(img, i * w, 0, w, w, 0, 0, w, w)
+    if (tile.type === "adjacency") {
+      for (let i = 0; i < 16; i++) {
+        const subCanvas = document.createElement("canvas")
+        const subCtx = subCanvas.getContext("2d")
+        subCtx.setTransform(dpr, 0, 0, dpr, 0, 0)
+        subCanvas.width = width
+        subCanvas.height = width
+        subCtx.imageSmoothingEnabled = false
+        subCanvas.style.imageRendering = 'pixelated'
 
-            const sliceImg = new Image()
-            sliceImg.src = canvas.toDataURL()
-            tileset[def.id].images[i] = sliceImg
-          }
+        let x = tile.x + i
+        let y = tile.y
+
+        if (x >= tileWidth) {
+          y = Math.floor(x / tileWidth) + y
+          x = x % tileWidth
+        }
+        subCtx.drawImage(spriteSheet, x * width, y * width, width, width, 0, 0, width, width)
+        images.push(subCanvas)
+      }
+    } else if (tile.type === "rotation") {
+      for (let i = 0; i < 4; i++) {
+        const subCanvas = document.createElement("canvas")
+        const subCtx = subCanvas.getContext("2d")
+        subCtx.setTransform(dpr, 0, 0, dpr, 0, 0)
+        subCanvas.width = width
+        subCanvas.height = width
+        subCtx.imageSmoothingEnabled = false
+        subCanvas.style.imageRendering = 'pixelated'
+
+        let x = tile.x + i
+        let y = tile.y
+
+        if (x >= tileWidth) {
+          y = Math.floor(x / tileWidth) + y
+          x = x % tileWidth
+        }
+        subCtx.drawImage(spriteSheet, x * width, y * width, width, width, 0, 0, width, width)
+        images.push(subCanvas)
+      }
+    }
+
+    let minimapColor = 'rgba(0, 0, 0, 0)'
+    try {
+      const imgData = ctx.getImageData(0, 0, width, width).data
+      const colorCounts = {}
+      let maxCount = 0
+      for (let i = 0; i < imgData.length; i += 4) {
+        const r = imgData[i]
+        const g = imgData[i + 1]
+        const b = imgData[i + 2]
+        const a = imgData[i + 3]
+
+        if (a < 128) continue
+        const rgb = `rgb(${r}, ${g}, ${b})`
+        colorCounts[rgb] = (colorCounts[rgb] || 0) + 1
+
+        if (colorCounts[rgb] > maxCount) {
+          maxCount = colorCounts[rgb]
+          minimapColor = rgb
         }
       }
-    })
-    await Promise.all(promises)
-    return tileset
-  })();
-  tilesetMap.set(tilesetPath, fetchPromise)
-  console.log(tilesetMap.has(tilesetPath))
-  return fetchPromise
+    } catch (e) {
+      console.warn("could not calculate minimap color", e)
+    }
+
+    const tileObject = {
+      ...tile,
+      minimapColor: minimapColor,
+      image: canvas,
+    }
+    if (images.length > 0) {
+      tileObject.images = images
+    }
+    tileset.push(tileObject)
+  }
+  console.log(tileset)
+  return tileset
 }
+
+export function splitStripImages(tileset) {
+  // split strip images 
+  const newTileset = []
+  tileset.forEach(tile => {
+    if (!tile) return
+    if (tile.images) {
+      newTileset[tile.id] = tile
+      return
+    }
+    if (tile.type === 'adjacency' && tile.image) {
+      // split the strip into different pieces here 
+      const h = tile.image.naturalHeight
+      const w = tile.image.naturalWidth
+      const sublist = []
+      for (let i = 0; i < 16; i++) {
+        const c = document.createElement('canvas')
+        c.width = h
+        c.height = h
+        const ctx = c.getContext('2d')
+        ctx.drawImage(tile.image, i * h, 0, h, h, 0, 0, h, h)
+
+        sublist.push(c)
+      }
+      newTileset[tile.id] = { ...tile, images: sublist }
+    } else if (tile.type == 'rotation') {
+      const h = tile.image.naturalHeight
+      const w = tile.image.naturalWidth
+      const sublist = []
+      if (w == h * 4) {
+        for (let i = 0; i < 4; i++) {
+          const c = document.createElement('canvas')
+          c.width = h
+          c.height = h
+          const ctx = c.getContext('2d')
+          ctx.drawImage(tile.image, i * h, 0, h, h, 0, 0, h, h)
+          sublist.push(c)
+        }
+        newTileset[tile.id] = { ...tile, images: sublist }
+      } else if (w == h * 8) {
+        for (let i = 0; i < 8; i++) {
+          const c = document.createElement('canvas')
+          c.width = h
+          c.height = h
+          const ctx = c.getContext('2d')
+          ctx.drawImage(tile.image, i * h, 0, h, h, 0, 0, h, h)
+          sublist.push(c)
+        }
+        newTileset[tile.id] = { ...tile, images: sublist }
+      }
+    } else {
+      newTileset[tile.id] = tile
+    }
+  })
+  return newTileset
+}
+
+export async function loadTileset(manifestPath) {
+  if (manifestPath === "/assets/medium-spritesheet.json") manifestPath = "/assets/medium.json"
+  if (tilesetMap.has(manifestPath)) {
+    const tileset = tilesetMap.get(manifestPath)
+    return tileset
+  }
+
+  const fetchPromise = fetch(manifestPath)
+    .then(response => response.json())
+    .then(async (manifest) => {
+      if (manifest.type == "spritesheet") {
+        const tileset = await loadSpriteSheetTileset(manifest)
+
+        const characterImage = await new Promise((resolve) => {
+          const img = new Image()
+          const prefix = manifest.path + "/"
+          img.onload = () => resolve(img)
+          img.onerror = (e) => {
+            console.error(`failed to load character image from: ${srcPath}`, e)
+            resolve(null)
+          }
+          img.src = prefix + manifest.characterFile
+        })
+
+        tilesetMap.set(manifestPath, tileset)
+        console.log(characterImage)
+        return tileset
+      }
+
+      let loadedCount = 0
+      const totalCount = manifest.tiles.length + 1
+
+      function updateProgress() {
+        loadedCount++
+        window.dispatchEvent(new CustomEvent('loading:progress', {
+          detail: { loaded: loadedCount, total: totalCount }
+        }))
+      }
+
+      const promises = manifest.tiles.map(tileData => {
+
+        if (!tileData.file) {
+          updateProgress()
+          return Promise.resolve(tileData)
+        }
+        return new Promise((resolve, reject) => {
+          const img = new Image()
+          img.src = manifest.path + tileData.file
+          img.onload = () => {
+            const canvas = document.createElement('canvas')
+            const ctx = canvas.getContext('2d')
+            canvas.width = img.height || 1
+            canvas.height = img.height || 1
+            ctx.drawImage(img, 0, 0)
+
+            updateProgress()
+            resolve({ ...tileData, image: img })
+          }
+          img.onerror = (e) => {
+            updateProgress()
+            reject(e)
+          }
+        })
+      })
+
+      return Promise.all(promises)
+        .then((items) => {
+          const tileset = []
+          items.forEach(item => {
+            tileset[item.id] = item
+          })
+
+          tilesetMap.set(manifestPath, tileset)
+          return tileset
+        })
+
+    })
+
+  tilesetMap.set(manifestPath, fetchPromise)
+
+  return fetchPromise
+
+}
+
 
 export async function renderLevelPreview(canvas, levelData) {
   let tileset = await loadTileset(levelData.data.tilesetPath)
+  tileset = splitStripImages(tileset)
   tileset = Object.values(tileset)
   if (!canvas || !levelData) return
 
@@ -324,7 +526,7 @@ export async function renderLevelPreview(canvas, levelData) {
 
   const rotationData = decodeRLE(levelData.data.layers[1] ? levelData.data.layers[1].data : [])
 
-  const spawnId = tileset.find(f => f.mechanics && f.mechanics.includes("spawn")).id
+  const spawnId = tileset.find(f => f.mechanics && f.mechanics.includes("spawn"))?.id
   const spawnIdx = decoded.findIndex(f => f == spawnId)
 
   let spawnX = 0
