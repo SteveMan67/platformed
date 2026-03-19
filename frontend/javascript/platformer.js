@@ -694,10 +694,11 @@ function updateMovingBlocks(dt) {
         } else {
           player.x = block.x + block.w - offX + 0.01
         }
+        player.vx = hit.block.vx
       } else {
         if (hit.ny < 0) {
           player.y = block.y - ph - offY - 0.01
-          player.vy = 0
+          player.vy = hit.block.vy
           player.grounded = true
         } else {
           player.y == block.y + block.h - offY + 0.01
@@ -880,7 +881,7 @@ function updatePhysics(dt) {
 
   const blockHitY = getMovingBlockHit(player.x + offX, player.y + offY, player.hitboxW, player.hitboxH)
 
-  if (blockHitY) {
+  if (blockHitY && blockHitY.axis === "y") {
     if (blockHitY.ny < 0) {
       player.y = blockHitY.block.y - player.hitboxH - offY - 0.01
       player.grounded = true
