@@ -609,22 +609,45 @@ function checkCollision(dt, x, y, w, h, simulate = false) {
   return false
 }
 
-function checkMovingBlockCollision(x, y, w, h) {
+function getMovingBlockHit(px, py, pw, ph) {
+  let best = null
+
   for (const block of player.movingBlocks) {
-    if (aabbIntersect(x, y, w, h, block.x, block.y, block.w, block.h)) {
-      return block
+    if (!aabbIntersect(px, py, pw, ph, block.x, block.y, block.w, block.h)) continue
+
+    const overlapLeft = (px + pw) - block.x
+    const overlapRight = (block.x + block.w) - px
+    const overlapTop = (py + ph) - block.y
+    const overlapBottom = (block.y + block.h) - py
+
+    const penX = Math.min(overlapLeft, overlapRight)
+    const penY = Math.min(overlapTop, overlapBottom)
+
+    const hit = {
+      block,
+      axis: penX < penY ? "x" : "y",
+      penX,
+      penY,
+      nx: (px + pw * 0.5) < (block.x + block.w * 0.5) ? -1 : 1,
+      ny: (py + ph * 0.5) < (block.y + block.h * 0.5) ? -1 : 1
+    }
+
+    if (!best || Math.min(hit.penX, hit.penY) < Math.min(best.penX, best.penY)) {
+      best = hit
     }
   }
-  return null
+
+  return best
 }
 
+
 function updateMovingBlocks(dt) {
+  player.onMovingPlatform = false
+  let alreadyMovedByPlatform = false
   for (const block of player.movingBlocks) {
     const dx = block.vx * dt
     const dy = block.vy * dt
 
-    block.x += dx
-    block.y += dy
 
     const offX = (player.w - player.hitboxW) / 2
     const offY = player.h - player.hitboxH
@@ -633,23 +656,70 @@ function updateMovingBlocks(dt) {
     const pw = player.hitboxW
     const ph = player.hitboxH
 
+    const standEps = Math.max(1, Math.abs(dy) + 0.25)
+    const edgeEps = 0.5
+
+    const feet = py + ph
     const isStandingOn =
-      py + ph <= block.y + 10 &&
-      py + ph >= block.y - 5 &&
-      px + pw > block.x &&
-      px < block.x + block.w
+      Math.abs(feet - block.y) <= standEps &&
+      px + pw > block.x + edgeEps &&
+      px < block.x + block.w - edgeEps &&
+      player.vy >= 0
+
+    block.x += dx
+    block.y += dy
 
     if (isStandingOn) {
       player.onMovingPlatform = true
-      player.x += dx
+      if (!alreadyMovedByPlatform) {
+        player.x += dx
+        alreadyMovedByPlatform = true
+      }
 
       player.y = block.y - ph - offY - 0.01
 
       player.grounded = true
       player.vy = 0
       player.coyoteTimer = player.coyoteTime
-    } else {
-      player.onMovingPlatform = false
+    }
+
+    const newPx = player.x + offX
+    const newPy = player.y + offY
+
+    const hit = getMovingBlockHit(newPx, newPy, pw, ph)
+    if (!isStandingOn && hit && hit.block === block) {
+      if (hit.axis === "x") {
+        if (hit.nx < 0) {
+          player.x = block.x - pw - offX - 0.01
+        } else {
+          player.x = block.x + block.w - offX + 0.01
+        }
+      } else {
+        if (hit.ny < 0) {
+          player.y = block.y - ph - offY - 0.01
+          player.vy = 0
+          player.grounded = true
+        } else {
+          player.y == block.y + block.h - offY + 0.01
+          if (player.vy < 0) player.vy = 0
+        }
+      }
+
+      const tileHit = checkCollision(dt, player.x + offX, player.y + offY, pw, ph)
+
+      const margin = 2
+      let isSquished = false
+
+      if (hit.axis == "x" && hit.block.vx !== 0) {
+        isSquished = checkCollision(dt, player.x + offX, player.y + offY + margin, pw, ph - (margin * 2), true)
+      } else if (hit.axis === "y" && hit.block.vx !== 0) {
+        isSquished = checkCollision(dt, player.x + offX + margin, player.y + offY, pw - (margin * 2), ph, true)
+      }
+
+      // only kill the player if the they're being squished, not just pushed into a wall by standing on the platform
+      if (isSquished) {
+        killPlayer()
+      }
     }
   }
 }
@@ -772,23 +842,35 @@ function updatePhysics(dt) {
   player.x += player.vx * dt
   touchingTrigger = false
 
-  const tileHitX = checkCollision(dt, player.x + offX, player.y + offY, player.hitboxW, player.hitboxH)
-  const blockHitX = checkMovingBlockCollision(player.x + offX, player.y + offY, player.hitboxW, player.hitboxH)
+  const blockHitX = getMovingBlockHit(player.x + offX, player.y + offY, player.hitboxW, player.hitboxH)
 
-  if (blockHitX) {
-    if (player.vx > 0) {
-      player.x = blockHitX.x - player.hitboxW - offX - 0.01
-    } else if (player.vx < 0) {
-      player.x = blockHitX.x + blockHitX.w - offX + 0.01
+  if (blockHitX && blockHitX.axis === "x") {
+    if (blockHitX.nx < 0) {
+      player.x = blockHitX.block.x - player.hitboxW - offX - 0.01
+    } else {
+      player.x = blockHitX.block.x + blockHitX.block.w - offX + 0.01
     }
-    player.vx = 0
-  } else if (tileHitX) {
+    player.vx = blockHitX.block.vx
+  }
+
+  const tileHitX = checkCollision(dt, player.x + offX, player.y + offY, player.hitboxW, player.hitboxH)
+  if (tileHitX) {
     if (player.vx > 0) {
       const hitRight = player.x + offX + player.hitboxW
       player.x = (Math.floor(hitRight / player.tileSize) * player.tileSize) - player.hitboxW - offX - 0.01
     } else if (player.vx < 0) {
       const hitLeft = player.x + offX
       player.x = ((Math.floor(hitLeft / player.tileSize) + 1) * player.tileSize) - offX + 0.01
+    } else {
+      const centerX = player.x + offX + (player.hitboxW / 2)
+      const relativeX = centerX % player.tileSize
+      if (relativeX > player.tileSize / 2) {
+        const hitRight = player.x + offX + player.hitboxW
+        player.x = (Math.floor(hitRight / player.tileSize) * player.tileSize) - player.hitboxW - offX - 0.01
+      } else {
+        const hitLeft = player.x + offX
+        player.x = ((Math.floor(hitLeft / player.tileSize) + 1) * player.tileSize) - offX + 0.01
+      }
     }
     player.vx = 0
   }
@@ -796,20 +878,22 @@ function updatePhysics(dt) {
   player.y += player.vy * dt
   player.grounded = false
 
-  const blockHitY = checkMovingBlockCollision(player.x + offX, player.y + offY, player.hitboxW, player.hitboxH)
-  const tileHitY = checkCollision(dt, player.x + offX, player.y + offY, player.hitboxW, player.hitboxH)
+  const blockHitY = getMovingBlockHit(player.x + offX, player.y + offY, player.hitboxW, player.hitboxH)
 
   if (blockHitY) {
-    if (player.vy > 0) {
-      player.y = blockHitY.y - player.hitboxH - offY - 0.01
+    if (blockHitY.ny < 0) {
+      player.y = blockHitY.block.y - player.hitboxH - offY - 0.01
       player.grounded = true
       player.coyoteTimer = player.coyoteTime
-    } else if (player.vy < 0) {
-      player.y = blockHitY.y + blockHitY.h - offY + 0.01
+    } else {
+      player.y = blockHitY.block.y + blockHitY.block.h - offY + 0.01
     }
-    player.vy = 0
-  } else if (tileHitY) {
-    if (player.vy > 0) {
+    player.vy = blockHitY.block.vy
+  }
+
+  const tileHitY = checkCollision(dt, player.x + offX, player.y + offY, player.hitboxW, player.hitboxH)
+  if (tileHitY) {
+    if (player.vy >= 0) {
       const hitBottom = player.y + offY + player.hitboxH
       const tileTop = Math.floor(hitBottom / player.tileSize) * player.tileSize
       player.y = tileTop - player.hitboxH - offY - 0.01
@@ -819,7 +903,7 @@ function updatePhysics(dt) {
       player.y = ((Math.floor((player.y + offY) / player.tileSize) + 1) * player.tileSize) - offY + 0.01
     }
     player.vy = 0
-  } else {
+  } else if (!player.onMovingPlatform) {
     player.grounded = false
   }
 
@@ -827,8 +911,8 @@ function updatePhysics(dt) {
     killPlayer()
   }
 
-  const touchingLeft = checkCollision(dt, player.x + offX - 2, player.y + offY + 2, player.hitboxW, player.hitboxH - 4, true)
-  const touchingRight = checkCollision(dt, player.x + offX + 2, player.y + offY + 2, player.hitboxW, player.hitboxH - 4, true)
+  const touchingLeft = checkCollision(dt, player.x + offX - 2, player.y + offY + 2, player.hitboxW, player.hitboxH - 4, true) || (blockHitX && blockHitX.nx > 0)
+  const touchingRight = checkCollision(dt, player.x + offX + 2, player.y + offY + 2, player.hitboxW, player.hitboxH - 4, true) || (blockHitX && blockHitX.nx < 0)
 
   if (!touchingTrigger) {
     player.standingOnTrigger = false
