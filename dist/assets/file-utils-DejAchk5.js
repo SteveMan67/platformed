@@ -359,29 +359,31 @@ async function loadSpriteSheetTileset(manifest) {
     }
 
     let minimapColor = 'rgba(0, 0, 0, 0)'
-    try {
-      const imgData = ctx.getImageData(0, 0, width, width).data
-      const colorCounts = {}
-      let maxCount = 0
-      for (let i = 0; i < imgData.length; i += 4) {
-        const r = imgData[i]
-        const g = imgData[i + 1]
-        const b = imgData[i + 2]
-        const a = imgData[i + 3]
+    if (tile.type !== "empty") {
 
-        if (a < 128 || (r < 10 && g < 10 && b < 10)) continue
-        const rgb = `rgb(${r}, ${g}, ${b})`
-        colorCounts[rgb] = (colorCounts[rgb] || 0) + 1
+      try {
+        const imgData = ctx.getImageData(0, 0, width, width).data
+        const colorCounts = {}
+        let maxCount = 0
+        for (let i = 0; i < imgData.length; i += 4) {
+          const r = imgData[i]
+          const g = imgData[i + 1]
+          const b = imgData[i + 2]
+          const a = imgData[i + 3]
 
-        if (colorCounts[rgb] > maxCount && colorCounts[rgb] > (imgData.length / 4) * 0.1) {
-          maxCount = colorCounts[rgb]
-          minimapColor = rgb
+          if (a < 128) continue
+          const rgb = `rgb(${r}, ${g}, ${b})`
+          colorCounts[rgb] = (colorCounts[rgb] || 0) + 1
+
+          if (colorCounts[rgb] > maxCount && colorCounts[rgb] > (imgData.length / 4) * 0.1) {
+            maxCount = colorCounts[rgb]
+            minimapColor = rgb
+          }
         }
+      } catch (e) {
+        console.warn("could not calculate minimap color", e)
       }
-    } catch (e) {
-      console.warn("could not calculate minimap color", e)
     }
-
     const tileObject = {
       ...tile,
       minimapColor: minimapColor,

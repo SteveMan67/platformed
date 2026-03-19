@@ -159,8 +159,12 @@ export function calcAdjacentAdjacency(idx, tile = editor.selectedTile, tiles = e
  */
 function getJumpHeight(heightInTiles, yInertia, tileSize) {
   const gravity = ((0.7 * yInertia) + 0.5) * (tileSize / 64)
-  const heightInPixels = heightInTiles * tileSize
-  return Math.sqrt(2 * gravity * heightInPixels)
+  const maxHeightInPixels = heightInTiles * tileSize
+  const minHeightInPixels = (heightInTiles * 0.3) * tileSize
+  return {
+    max: Math.sqrt(2 * gravity * maxHeightInPixels),
+    min: Math.sqrt(2 * gravity * minHeightInPixels)
+  }
 }
 
 function getJumpSpeed(jumpLengthInTiles, jumpForce, yInertia, tilesize) {
@@ -225,7 +229,9 @@ function scanLevelOnPlay() {
 
 export function updatePhysicsConstants() {
   const ratio = player.tileSize / 64
-  player.jump = getJumpHeight(player.jumpHeight + 0.3, player.yInertia, player.tileSize)
+  const jumpInfo = getJumpHeight(player.jumpHeight + 0.3, player.yInertia, player.tileSize)
+  player.jump = jumpInfo.max
+  player.minJump = jumpInfo.min
   player.speed = getJumpSpeed(player.jumpWidth - 1, player.jump, player.yInertia, player.tileSize)
   player.x = editor.playerSpawn.x * player.tileSize
   player.y = editor.playerSpawn.y * player.tileSize
@@ -500,13 +506,13 @@ function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
       const idx = ty * editor.map.w + tx
       const bounceTile = tiles[idx]
       if ((bounceTile & 15) == 0) {
-        player.vy = -getJumpHeight(player.bouncePadHeight, player.yInertia, player.tileSize)
+        player.vy = -getJumpHeight(player.bouncePadHeight, player.yInertia, player.tileSize).max
       } else if ((bounceTile & 15) == 1) {
-        player.vx = -getJumpHeight(player.bouncePadHeight, player.xInertia, player.tileSize)
+        player.vx = -getJumpHeight(player.bouncePadHeight, player.xInertia, player.tileSize).max
       } else if ((bounceTile & 15) == 2) {
-        player.vy = getJumpHeight(player.bouncePadHeight, player.yInertia, player.tileSize)
+        player.vy = getJumpHeight(player.bouncePadHeight, player.yInertia, player.tileSize).max
       } else if ((bounceTile & 15) == 3) {
-        player.vx = getJumpHeight(player.bouncePadHeight, player.xInertia, player.tileSize)
+        player.vx = getJumpHeight(player.bouncePadHeight, player.xInertia, player.tileSize).max
       }
     }
   }
@@ -769,6 +775,10 @@ function updatePhysics(dt) {
     player.vy += gravity * dt
   }
 
+  if (player.vy < -player.minJump && !key("up") && !input.jumpButton) {
+    player.vy = -player.minJump
+  }
+
   if (player.vy > player.tileSize * 0.8) {
     player.vy = player.tileSize * 0.8
   }
@@ -992,7 +1002,7 @@ function handleEnemyCollision(enemy, dt) {
 
   if (py < ey) {
     // player stomped on enemy
-    player.vy = -getJumpHeight(5, player.yInertia, player.tileSize)
+    player.vy = -getJumpHeight(5, player.yInertia, player.tileSize).max
     return true
   } else {
     killPlayer()
