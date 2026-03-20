@@ -257,6 +257,39 @@ body {
 }
 
 /* here we go... */
+
+.svg.help {
+  mask-image: url("/assets/icons/help.svg");
+  width: 45;
+  height: 50;
+}
+
+.svg.undo {
+  mask-image: url("/assets/icons/undo.svg")
+}
+
+.svg.redo {
+  mask-image: url("/assets/icons/redo.svg")
+}
+
+.svg.save {
+  mask-image: url("/assets/icons/save.svg")
+}
+
+.svg.import {
+  mask-image: url("/assets/icons/import.svg")
+}
+
+.svg.play {
+  mask-image: url("/assets/icons/play_nofill.svg")
+}
+
+.svg.menu-button {
+  mask-image: url("/assets/icons/menu.svg");
+  width: 40px;
+  height: 50px;
+}
+
 .svg.arrow-right {
   width: 25px;
   height: 25px;

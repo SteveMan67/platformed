@@ -218,7 +218,6 @@ export function needsSmallerLevel() {
  */
 function mainEditorUi() {
   // add svgs 
-  addTopBarSVGs()
   addSvg('close.svg', '.close-wrapper', 30, 30, 'close-button', 'close')
 
   // top bar
