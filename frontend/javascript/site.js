@@ -106,6 +106,7 @@ export function init() {
       drawMinimap()
     }
     engineLoop()
+    preloadSounds()
   })
 }
 
@@ -115,13 +116,14 @@ const audioCtx = new Audiocontext();
 const soundbuffers = new Map();
 const activeFetches = new Map()
 
-preloadSound("/assets/audio/jump.wav")
-preloadSound("/assets/audio/coin.wav")
-preloadSound("/assets/audio/checkpoint.wav")
-preloadSound("/assets/audio/death.wav")
-preloadSound("/assets/audio/victory.wav")
-preloadSound("/assets/audio/deathmusic.wav")
-
+function preloadSounds() {
+  preloadSound("/assets/audio/jump.wav")
+  preloadSound("/assets/audio/coin.wav")
+  preloadSound("/assets/audio/checkpoint.wav")
+  preloadSound("/assets/audio/death.wav")
+  preloadSound("/assets/audio/victory.wav")
+  preloadSound("/assets/audio/deathmusic.wav")
+}
 async function preloadSound(url) {
   if (soundbuffers.has(url)) return soundbuffers.get(url)
   if (activeFetches.has(url)) return activeFetches.get(url)
