@@ -5,17 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- preload modules -->
-  <link rel="modulepreload" href="/javascript/site.js">
-  <link rel="modulepreload" href="/javascript/load-editor-level.js">
-  <link rel="modulepreload" href="/javascript/editor.js">
-  <link rel="modulepreload" href="/javascript/renderer.js">
-  <link rel="modulepreload" href="/javascript/file-utils.js">
-  <link rel="modulepreload" href="/javascript/ui.js">
-  <link rel="modulepreload" href="/javascript/platformer.js">
-  <link rel="modulepreload" href="/javascript/state.js">
-  <link rel="modulepreload" href="/javascript/api.js">
-
   <script type="module" src="/javascript/site.js" defer></script>
   <script type="module" src="/javascript/load-editor-level.js" defer></script>
   <link rel="stylesheet" href="/styles/style.css">
@@ -214,6 +203,10 @@
               <input type="number" class="number width" min="10" max="200" placeholder="100">
               <button class="resize">Resize</button>
             </div>
+          </div>
+          <div class="menu-item">
+            <label for="require-coins">Require all coins to finish</label>
+            <input type="checkbox" class="toggle" id="require-coins">
           </div>
         </div>
         <!-- Physics -->

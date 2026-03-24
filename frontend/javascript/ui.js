@@ -514,7 +514,6 @@ function mainEditorUi() {
             }
           } else {
             beforeTile = editor.map.tiles[idx] >> 4
-            console.log(beforeTile)
             if (!editor.limitedPlacedTiles.includes(editor.selectedTile)) {
               editor.map.tiles[idx] = editor.selectedTile << 4
               if (mechanicsHas(editor.selectedTile, "onePerLevel")) {
@@ -596,6 +595,13 @@ function menuUi() {
   const zoomSlider = document.getElementById('zoom-level-input')
   const resizeLevel = document.querySelector(".resize")
   const tilesetInput = document.getElementById('tileset-input')
+  const requireCoins = document.getElementById('require-coins')
+
+  requireCoins.checked = player.requireCoins
+
+  requireCoins.addEventListener("input", () => {
+    player.requireCoins = requireCoins.checked
+  })
 
   resizeLevel.addEventListener("click", () => {
     const heightEl = document.querySelector(".resize-wrapper .height")
