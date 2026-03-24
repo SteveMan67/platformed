@@ -211,6 +211,8 @@ function getJumpSpeed(jumpLengthInTiles, jumpForce, yInertia, tilesize) {
 }
 
 function scanLevelOnPlay() {
+  player.collectedCoins = 0
+  player.coinsInLevel = 0
   // enemies
   const tiles = mode == "play" ? player.tiles : editor.map.tiles;
   for (let i = 0; i < tiles.length; i++) {
@@ -247,8 +249,10 @@ function scanLevelOnPlay() {
         vy: 0,
         startX: worldX,
         startY: worldY,
-        direction: 1,
-      });
+        direction: 1
+      })
+    } else if (tileId !== 0 && mechanicsHas(tileId, "coin")) {
+      player.coinsInLevel++
     }
   }
   console.log(player.movingBlocks);
@@ -556,7 +560,14 @@ function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
     }
   }
   if (mechanics.includes("end")) {
-    endLevel();
+    console.log(player.requireCoins, player.collectedCoins, player.coinsInLevel)
+    if (player.requireCoins && player.collectedCoins == player.coinsInLevel) {
+      endLevel()
+    } else if (!player.requireCoins) {
+      endLevel()
+    } else {
+      killPlayer()
+    }
   }
   if (mechanics.includes("bouncePad")) {
     if (checkPixelCollsion(tiles[tileIdx], tx, ty, x, y, w, h)) {
@@ -651,6 +662,9 @@ function checkCollision(dt, x, y, w, h, simulate = false) {
 
       if (player.x !== oldX || player.y !== oldY) return false;
       if (tileId !== 0) {
+        if (mechanicsHas(tileId, "noCollision")) {
+          continue
+        }
         if (mechanicsHas(tileId, "trigger")) {
           touchingTrigger = true;
         }

@@ -92,6 +92,7 @@ export async function importMap(e) {
 }
 
 export async function loadMapFromData(json) {
+  player.requireCoins = json.requireCoins || false
   player.jumpHeight = json.jumpHeight ?? 2.5;
   player.jumpWidth = json.jumpWidth ?? 7;
   player.yInertia = json.yInertia ?? 1;
@@ -229,7 +230,8 @@ export function createMap(width = editor.map.w, height = editor.map.h, data = Ar
   const json = {}
   json.width = width
   json.height = height
-  json.physicsVersion = 2
+  json.requireCoins = player.requireCoins
+  json.physicsVersion = player.physicsVersion
   json.jumpHeight = player.jumpHeight
   json.jumpWidth = player.jumpWidth
   json.wallJump = player.wallJump

@@ -527,7 +527,7 @@ function mainEditorUi() {
               }
             }
           }
-          changedBlocks.push({ idx: idx, before: beforeTile, after: editor.selectedTile >> 4 })
+          changedBlocks.push({ idx: idx, before: beforeTile, after: editor.selectedTile })
           changedIndexes.push(idx)
         }
       }
@@ -584,7 +584,7 @@ function menuUi() {
       }
 
       if (menuElement?.classList.contains("hidden")) {
-        openMenu()
+      er openMenu()
       }
     }
   })
@@ -595,6 +595,13 @@ function menuUi() {
   const zoomSlider = document.getElementById('zoom-level-input')
   const resizeLevel = document.querySelector(".resize")
   const tilesetInput = document.getElementById('tileset-input')
+  const requireCoins = document.getElementById('require-coins')
+
+  requireCoins.checked = player.requireCoins
+
+  requireCoins.addEventListener("input", () => {
+    player.requireCoins = requireCoins.checked
+  })
 
   resizeLevel.addEventListener("click", () => {
     const heightEl = document.querySelector(".resize-wrapper .height")

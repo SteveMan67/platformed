@@ -23,7 +23,7 @@
     {
       "label": "Run Bun Server (Bash)",
       "type": "shell",
-      "command": "/home/codespace/.bun/bin/bun run /backend/server.ts",
+      "command": "PORT=9020 /home/codespace/.bun/bin/bun run /backend/server.ts",
       "options": {
         "cwd": "${workspaceFolder}",
         "env": {
@@ -39,6 +39,19 @@
       "group": {
         "kind": "build",
         "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Start Postgres",
+      "type": "shell",
+      "command": "sudo service postgresql start",
+      "options": {
+        "cwd": "${workspaceFolder}",
       },
       "presentation": {
         "reveal": "always",
