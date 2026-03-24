@@ -584,7 +584,7 @@ function menuUi() {
       }
 
       if (menuElement?.classList.contains("hidden")) {
-        openMenu()
+      er openMenu()
       }
     }
   })

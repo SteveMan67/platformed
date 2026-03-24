@@ -5,26 +5,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- preload modules -->
-  <link rel="modulepreload" href="/assets/site-Dc0sKON_.js">
-  <link rel="modulepreload" href="data:text/javascript;base64,aW1wb3J0IHsgbG9hZE1hcEZyb21EYXRhLCBsb2FkT3duZXJEYXRhIH0gZnJvbSAnLi9maWxlLXV0aWxzLmpzJwppbXBvcnQgeyBpbml0IH0gZnJvbSAnL2phdmFzY3JpcHQvc2l0ZS5qcycKaW1wb3J0IHsgc3RhdGUgfSBmcm9tICcvamF2YXNjcmlwdC9zdGF0ZS5qcycKY29uc3QgeyB1c2VyIH0gPSBzdGF0ZQoKY29uc3Qgc2VydmVyVXJsID0gd2luZG93LmxvY2F0aW9uLm9yaWdpbgoKLy8gZmV0Y2ggdGhlIGxldmVsIGlmIHRoZXJlIGlzIGEgbGV2ZWwgaW4gdGhlIAoKYXN5bmMgZnVuY3Rpb24gZ2V0TGV2ZWwobGV2ZWwpIHsKICB0cnkgewogICAgY29uc3QgcmF3ID0gYXdhaXQgZmV0Y2goYCR7c2VydmVyVXJsfS9hcGkvbGV2ZWw/bGV2ZWxJZD0ke2xldmVsfWApCiAgICBjb25zdCBsZXZlbHMgPSByYXcuanNvbigpCiAgICB3aW5kb3cuZGlzcGF0Y2hFdmVudChuZXcgQ3VzdG9tRXZlbnQoJ2xldmVsOmxvYWRlZCcsIHsgZGV0YWlsOiBsZXZlbHMgfSkpCiAgICByZXR1cm4gYXdhaXQgbGV2ZWxzCiAgfSBjYXRjaCB7CiAgfQp9CgpmZXRjaChgJHtzZXJ2ZXJVcmx9L2FwaS9tZWApCiAgLnRoZW4ocmVzID0+IHJlcy5qc29uKCkpCiAgLnRoZW4ocmVzID0+IHsKICAgIHVzZXIuaWQgPSByZXMudXNlcgogIH0pCgpsZXQgbGV2ZWxOdW0KCnRyeSB7CiAgbGV2ZWxOdW0gPSBOdW1iZXIod2luZG93LmxvY2F0aW9uLmhyZWYubWF0Y2goL1wvZWRpdG9yXC8oXGQrKSg/OltcLz8jXXwkKS8pWzFdKQp9IGNhdGNoIHsKICBsZXZlbE51bSA9IG51bGw7Cn0KCmlmIChsZXZlbE51bSkgewoKICBnZXRMZXZlbChsZXZlbE51bSkudGhlbihsZXZlbCA9PiB7CiAgICBpZiAobGV2ZWwgJiYgbGV2ZWxOdW0gJiYgbGV2ZWwuZXJyb3IgPT0gbnVsbCkgewogICAgICBjb25zdCBsZXZlbERhdGEgPSBsZXZlbC5kYXRhCiAgICAgIGxvYWRNYXBGcm9tRGF0YShsZXZlbERhdGEpCiAgICAgIGxvYWRPd25lckRhdGEobGV2ZWwpCiAgICB9IGVsc2UgaWYgKGxldmVsICYmIGxldmVsLmVycm9yKSB7CiAgICB9CiAgICBpbml0KCkKICB9KQp9IGVsc2UgewogIGluaXQoKQp9Cg==">
-  <link rel="modulepreload" href="/assets/editor-DddHS1rb.js">
-  <link rel="modulepreload" href="/assets/renderer-BoRRT36H.js">
-  <link rel="modulepreload" href="/assets/file-utils-BSS5yJS9.js">
-  <link rel="modulepreload" href="/assets/ui-BoNSMFFG.js">
-  <link rel="modulepreload" href="/assets/platformer-BVvffWW9.js">
-  <link rel="modulepreload" href="/assets/state-B9cj3I7j.js">
-  <link rel="modulepreload" href="data:text/javascript;base64,Y29uc3Qgc2VydmVyVXJsID0gd2luZG93LmxvY2F0aW9uLm9yaWdpbgoKY29uc3Qgc2VydmVyVVJMID0gd2luZG93LmxvY2F0aW9uLm9yaWdpbgoKZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIHVwbG9hZExldmVsKGRhdGFMaXN0KSB7CiAgY29uc3QgcGF5bG9hZCA9IHt9CiAgZGF0YUxpc3QuZm9yRWFjaChkYXRhcG9pbnQgPT4gewogICAgcGF5bG9hZFtkYXRhcG9pbnRbMF1dID0gZGF0YXBvaW50WzFdCiAgfSkKCiAgY29uc3QgdXBsb2FkID0gYXdhaXQgZmV0Y2goYCR7c2VydmVyVVJMfS9hcGkvdXBsb2FkYCwgewogICAgbWV0aG9kOiAnUE9TVCcsCiAgICBoZWFkZXJzOiB7ICdDb250ZW50LVR5cGUnOiAnYXBwbGljYXRpb24vanNvbicgfSwKICAgIGNyZWRlbnRpYWxzOiAnaW5jbHVkZScsCiAgICBib2R5OiBKU09OLnN0cmluZ2lmeShwYXlsb2FkKQogIH0pCiAgY29uc3QgbGV2ZWxJZCA9IGF3YWl0IHVwbG9hZC5qc29uKCkKICByZXR1cm4gbGV2ZWxJZC5sZXZlbElkCn0KCmV4cG9ydCBmdW5jdGlvbiBwbGF5KGxldmVsSWQsIGZpbmlzaGVkKSB7CiAgY29uc3QgcGF5bG9hZCA9IHsgbGV2ZWxJZDogbGV2ZWxJZCwgZmluaXNoZWQ6IGZpbmlzaGVkIH0KCiAgZmV0Y2goYCR7c2VydmVyVXJsfS9hcGkvcGxheWAsIHsKICAgIG1ldGhvZDogIlBPU1QiLAogICAgYm9keTogSlNPTi5zdHJpbmdpZnkocGF5bG9hZCkKICB9KQp9Cg==">
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
   <title>Platformed - Editor</title>
-  <script type="module" crossorigin src="/assets/editor-gqJanDAG.js"></script>
+  <script type="module" crossorigin src="/assets/editor-DaNgyV9j.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-EeOZK34R.js">
-  <link rel="modulepreload" crossorigin href="/assets/site-ByICbRhk.js">
+  <link rel="modulepreload" crossorigin href="/assets/site-O2DM2tqp.js">
   <link rel="stylesheet" crossorigin href="/assets/login-GD92ah_R.css">
-  <link rel="stylesheet" crossorigin href="/assets/style-BWZR587q.css">
+  <link rel="stylesheet" crossorigin href="/assets/style-DMsxgixn.css">
 </head>
 
 <body>
@@ -215,6 +204,10 @@
               <input type="number" class="number width" min="10" max="200" placeholder="100">
               <button class="resize">Resize</button>
             </div>
+          </div>
+          <div class="menu-item">
+            <label for="require-coins">Require all coins to finish</label>
+            <input type="checkbox" class="toggle" id="require-coins">
           </div>
         </div>
         <!-- Physics -->
