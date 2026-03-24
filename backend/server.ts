@@ -1,7 +1,7 @@
 import postgres from "postgres"
 import { authenticate, type authResponse, getCookies } from "./auth.ts"
 
-const STATIC_DIR = 'dist'
+const STATIC_DIR = 'frontend'
 
 async function serveFile(req: Request, filePath: string) {
   let theme = 'cream'
@@ -70,7 +70,6 @@ const sql = postgres(DATABASE_URL)
 
 
 const server = Bun.serve({
-  port: 9020,
   hostname: "0.0.0.0",
   routes: {
 

@@ -104,6 +104,15 @@
 }
 
 .svg {
+  transition: transform 500ms ease-out;
+}
+
+.svg:active {
+  transform: scale(0.9);
+}
+
+
+.svg {
   mask-size: contain;
   mask-repeat: no-repeat;
   mask-position: center;
@@ -370,7 +379,7 @@ body {
 }
 
 .sidebar-one {
-  width: auto;
+  width: fit-content;
   display: flex;
   flex-direction: column;
   align-items: center;

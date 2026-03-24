@@ -177,6 +177,7 @@ function updateBottomBar(tx, ty) {
 
 export function undo() {
   const latestChange = editor.history[editor.history.length - 1]
+  console.log(latestChange)
   if (!latestChange) return
   if (latestChange.type == "replaceBlocks") {
     if (!latestChange.replacedBlocks) return

@@ -514,6 +514,7 @@ function mainEditorUi() {
             }
           } else {
             beforeTile = editor.map.tiles[idx] >> 4
+            console.log(beforeTile)
             if (!editor.limitedPlacedTiles.includes(editor.selectedTile)) {
               editor.map.tiles[idx] = editor.selectedTile << 4
               if (mechanicsHas(editor.selectedTile, "onePerLevel")) {
@@ -527,7 +528,7 @@ function mainEditorUi() {
               }
             }
           }
-          changedBlocks.push({ idx: idx, before: beforeTile, after: editor.selectedTile >> 4 })
+          changedBlocks.push({ idx: idx, before: beforeTile, after: editor.selectedTile })
           changedIndexes.push(idx)
         }
       }
