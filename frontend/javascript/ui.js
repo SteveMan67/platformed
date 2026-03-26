@@ -12,19 +12,14 @@ export function openMenu(menuClass) {
   const menuOverlay = document.querySelector(".overlay")
   const menus = document.querySelectorAll(".menu")
   if (!menuClass) {
-    console.log(1)
     menuOverlay.classList.add("hidden")
     for (const menu of menus) {
       menu.classList.add("hidden")
     }
   } else {
-    console.log(2)
     menuOverlay.classList.remove("hidden")
     for (const menu of menus) {
       if (menu.classList.contains(menuClass)) {
-        console.log(3)
-        console.log(menuClass)
-        console.log(menu)
         menu.classList.remove("hidden")
         menuOverlay.classList.remove("hidden")
       } else {
@@ -124,7 +119,6 @@ export function toggleTriggerDialog(open, tx, ty) {
   if (open) {
     openMenu("trigger-dialog")
     activeTrigger = player.triggers.find(f => f.x == tx && f.y == ty)
-    console.log(activeTrigger)
     if (activeTrigger && activeTrigger.execute) {
       addStepsToUI(activeTrigger.execute)
     }
@@ -193,7 +187,6 @@ function getOptionHTML(stepData) {
       </select>
     `
   } else if (stepData.type == "delay") {
-    console.log(stepData)
     html += `
       ms <input type="number" class="number ms" value="${stepData.time || 500}" min="0">
     `
@@ -211,6 +204,16 @@ export function mobile() {
 
 export function needsSmallerLevel() {
   return canvas.width < 900 && canvas.height < (player.tileSize * 15)
+}
+
+function updateCoinsDisplay() {
+  const coinDisplay = document.querySelector(".collected-coins")
+
+  coinDisplay.innerText = `${player.collectedCoins}/${player.coinsInLevel}`
+}
+
+export function updateDisplay() {
+  updateCoinsDisplay()
 }
 
 /**
@@ -584,7 +587,7 @@ function menuUi() {
       }
 
       if (menuElement?.classList.contains("hidden")) {
-      er openMenu()
+        openMenu()
       }
     }
   })
@@ -766,7 +769,6 @@ function menuUi() {
 
   const swatches = document.querySelector(".color-theme .swatches")
   for (const theme of colorSchemes) {
-    console.log(theme)
     const swatch = document.createElement('div')
     swatch.innerHTML = `
       <div class="swatch">
@@ -775,10 +777,8 @@ function menuUi() {
       </div>
       <p>${theme.name}</p>
     `
-    console.log(swatch)
     swatch.addEventListener("click", () => {
       changeColorTheme(theme.id)
-      console.log(1)
       fetch(`${serverUrl}/api/theme`, {
         method: "PATCH",
         credentials: "include",
@@ -805,7 +805,6 @@ function menuUi() {
 
     const form = e.target
     if (form.username.value && form.password.value) {
-      console.log("hello")
       const payload = {
         username: form.username.value,
         password: form.password.value
@@ -822,7 +821,6 @@ function menuUi() {
       if (res.ok) {
         openMenu()
         const json = await res.json()
-        console.log(json)
         user.id = json.id
         updateMap()
       }
@@ -869,16 +867,13 @@ function menuUi() {
       activeTrigger.execute = execute
       openMenu()
     } catch (e) {
-      console.log(e)
       tsError.innerText = e
     }
   })
 
 
   applyTrigger.addEventListener('click', (e) => {
-    console.log("1")
     if (!activeTrigger) return
-    console.log("2")
 
     const newExecuteArray = []
     const stepElements = document.querySelectorAll('.steps .step')
@@ -956,7 +951,6 @@ function ux() {
 }
 
 export function addEventListeners() {
-  console.log("setting event listeners")
 
   mainEditorUi()
   menuUi()

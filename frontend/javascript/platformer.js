@@ -3,6 +3,7 @@ import {
   sortByCategory,
   needsSmallerLevel,
   pollGamepad,
+  updateDisplay,
 } from "./ui.js";
 import {
   canvas,
@@ -211,8 +212,8 @@ function getJumpSpeed(jumpLengthInTiles, jumpForce, yInertia, tilesize) {
 }
 
 function scanLevelOnPlay() {
-  player.collectedCoins = 0
-  player.coinsInLevel = 0
+  player.collectedCoins = 0;
+  player.coinsInLevel = 0;
   // enemies
   const tiles = mode == "play" ? player.tiles : editor.map.tiles;
   for (let i = 0; i < tiles.length; i++) {
@@ -249,13 +250,13 @@ function scanLevelOnPlay() {
         vy: 0,
         startX: worldX,
         startY: worldY,
-        direction: 1
-      })
+        direction: 1,
+      });
     } else if (tileId !== 0 && mechanicsHas(tileId, "coin")) {
-      player.coinsInLevel++
+      player.coinsInLevel++;
     }
   }
-  console.log(player.movingBlocks);
+  updateDisplay();
 }
 
 export function updatePhysicsConstants() {
@@ -560,13 +561,12 @@ function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
     }
   }
   if (mechanics.includes("end")) {
-    console.log(player.requireCoins, player.collectedCoins, player.coinsInLevel)
     if (player.requireCoins && player.collectedCoins == player.coinsInLevel) {
-      endLevel()
+      endLevel();
     } else if (!player.requireCoins) {
-      endLevel()
+      endLevel();
     } else {
-      killPlayer()
+      killPlayer();
     }
   }
   if (mechanics.includes("bouncePad")) {
@@ -598,6 +598,7 @@ function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
           player.tileSize,
         ).max;
       }
+      player.limitJumpControl = true;
     }
   }
   if (mechanics.includes("checkpoint")) {
@@ -615,6 +616,7 @@ function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
       player.collectedCoins++;
       player.collectedCoinList.push(idx);
       playSound("/assets/audio/coin.wav", 0.25);
+      updateDisplay();
     }
   }
   if (mechanics.includes("dissipate")) {
@@ -663,7 +665,7 @@ function checkCollision(dt, x, y, w, h, simulate = false) {
       if (player.x !== oldX || player.y !== oldY) return false;
       if (tileId !== 0) {
         if (mechanicsHas(tileId, "noCollision")) {
-          continue
+          continue;
         }
         if (mechanicsHas(tileId, "trigger")) {
           touchingTrigger = true;
@@ -894,8 +896,8 @@ function updatePhysics(dt) {
     player.vy += gravity * dt;
   }
 
-  if (player.vy < -player.minJump && !key("up") && !input.jumpButton) {
-    player.vy = -player.minJump;
+  if (player.grounded) {
+    player.limitJumpControl = false;
   }
 
   if (player.vy > player.tileSize * 0.8) {
@@ -1071,7 +1073,7 @@ function updatePhysics(dt) {
     } else if (player.vy < 0) {
       player.y =
         (Math.floor((player.y + offY) / player.tileSize) + 1) *
-          player.tileSize -
+        player.tileSize -
         offY +
         0.01;
     }
@@ -1079,6 +1081,17 @@ function updatePhysics(dt) {
   } else if (!player.onMovingPlatform) {
     player.grounded = false;
   }
+
+  if (
+    player.vy < -player.minJump &&
+    !key("up") &&
+    !input.jumpButton &&
+    !player.limitJumpControl &&
+    !player.grounded
+  ) {
+    player.vy = -player.minJump;
+  }
+
 
   if (player.y > editor.map.h * player.tileSize) {
     killPlayer();

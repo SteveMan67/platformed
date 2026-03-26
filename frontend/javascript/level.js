@@ -37,7 +37,6 @@ function addEditButton(owned, levelId) {
     `
     insertPlace.appendChild(metadataA)
   }
-  console.log(b)
 }
 
 const levelName = document.querySelector(".name")
@@ -66,7 +65,6 @@ playAgain.addEventListener("click", () => {
 })
 
 window.addEventListener("level:finished", () => {
-  console.log("you won!")
   winScreen.classList.remove("hidden")
 })
 
@@ -95,7 +93,6 @@ joystickHitbox?.addEventListener("touchmove", (e) => {
   }
 
   input.joystickX = Math.floor(dx / 50 * 100) / 100
-  console.log(Math.floor(dx / 50 * 100) / 100)
 
   joystick.style.transform = `translate(calc(${dx}px - 50%), calc(${dy}px - 50%))`
 })
@@ -157,7 +154,6 @@ fetch(`${serverUrl}/api/me`)
   .then(res => {
     if (!res.ok) {
       const link = document.querySelector(".link-button.my-levels")
-      console.log(link)
       link.href = `/login?redirect=${encodeURIComponent(`level/${levelNum}`)}`
       link.innerText = "Sign In"
     }
@@ -165,7 +161,6 @@ fetch(`${serverUrl}/api/me`)
 
 
 getLevel(levelNum).then(level => {
-  console.log(level)
   if (!level || !levelNum || level.error) {
     window.location.href = "/"
   } else {
@@ -188,7 +183,6 @@ const approvalButton = document.getElementById("thumbs-up")
 const disapprovalButton = document.getElementById("thumbs-down")
 const approvalWrapper = document.querySelector(".thumbs-up-wrapper")
 const disapprovalWrapper = document.querySelector(".thumbs-down-wrapper")
-console.log(approvalButton, disapprovalButton)
 
 async function rateLevel(ratedGood) {
   await fetch(`${serverUrl}/api/rate?levelId=${levelNum}&rating=${ratedGood}`, {

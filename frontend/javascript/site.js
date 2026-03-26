@@ -92,7 +92,6 @@ export function key(key) {
 export function init() {
   setInputEventListeners()
   loadTileset(editor.tilesetPath).then(({ tileset, characterImage }) => {
-    console.log(characterImage)
     editor.tileset = splitStripImages(tileset)
     loadPlayerSprites(characterImage)
     if (inEditor) {

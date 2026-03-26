@@ -103,7 +103,6 @@ export async function loadMapFromData(json) {
   }
   if (json.zoom) {
     if (needsSmallerLevel()) {
-      console.log(json.zoom)
       player.tileSize = Math.round(Math.max(json.zoom / 1.5, 40))
       updatePhysicsConstants()
     }
@@ -267,9 +266,7 @@ export function createMap(width = editor.map.w, height = editor.map.h, data = Ar
 }
 
 export function loadPlayerSprites(playerImg) {
-  console.log("hello")
   if (!playerImg) return
-  console.log("hi")
   const h = playerImg.naturalHeight
   const w = playerImg.naturalWidth
   const sprites = []
@@ -304,7 +301,6 @@ async function loadSpriteSheetTileset(manifest) {
 
   const tileWidth = manifest.tileWidth
   const width = spriteSheet.naturalWidth / tileWidth
-  console.log(`width: ${width}`)
   for (const tile of manifest.tiles) {
     const dpr = window.devicePixelRatio
     const canvas = document.createElement("canvas")
@@ -396,7 +392,6 @@ async function loadSpriteSheetTileset(manifest) {
     }
     tileset.push(tileObject)
   }
-  console.log(tileset)
   return tileset
 }
 
@@ -411,7 +406,6 @@ export async function loadTileset(manifestPath) {
     .then(response => response.json())
     .then(async (manifest) => {
       if (manifest.type == "spritesheet") {
-        console.log("spritesheet")
         const tileset = await loadSpriteSheetTileset(manifest)
 
         const rawCharacterImage = fetch(manifest.path + "/" + manifest.characterFile)
@@ -430,7 +424,6 @@ export async function loadTileset(manifestPath) {
 
         loadedTilesets.set(manifestPath, tileset)
         loadedPlayers.set(manifestPath, characterImage)
-        console.log(characterImage)
         return { tileset, characterImage }
       }
 
@@ -580,7 +573,6 @@ export function splitStripImages(tileset) {
 }
 
 export async function updateMap() {
-  console.log(user)
   let me
   if (!user || user.id == null) {
     // check whether the cookie exists
@@ -593,7 +585,6 @@ export async function updateMap() {
 
     if (me.ok) {
       const userJson = await me.json()
-      console.log(userJson)
       if (userJson.user !== undefined) {
         user.id = userJson.user
       }
@@ -645,7 +636,6 @@ export async function updateMap() {
     const levelId = await uploadLevel([
       ["data", createMap()]
     ])
-    console.log(await levelId)
     window.location.href = `/level/${await levelId}`
   }
 }
