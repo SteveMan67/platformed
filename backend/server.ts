@@ -490,7 +490,7 @@ const server = Bun.serve({
 
       return new Response(
         JSON.stringify(response),
-        withCors({ headers: { "Content-Type": "application/json" } }, CORS),
+        withCors({ status: 200, headers: { "Content-Type": "application/json" } }, CORS),
       );
     }
 
@@ -517,6 +517,7 @@ const server = Bun.serve({
         }
 
         return new Response(JSON.stringify(levels), {
+          status: 200,
           headers: {
             "Content-Type": "application/json",
           },
@@ -613,6 +614,7 @@ const server = Bun.serve({
         return new Response("Updated Play Counter", { status: 200 });
       }
     }
+
     // --- Edit a Level
     if (pathname == "/api/edit" && req.method == "PATCH") {
       const raw = await readJson(req);
@@ -656,7 +658,7 @@ const server = Bun.serve({
         return new Response(
           "Incorrect Authorization",
           withCors(
-            { status: 200, headers: { "Content-Type": "application/json" } },
+            { status: 401, headers: { "Content-Type": "application/json" } },
             CORS,
           ),
         );
@@ -679,15 +681,13 @@ const server = Bun.serve({
         }
         return new Response(
           JSON.stringify(level),
-          withCors({ headers: { "Content-Type": "application/json" } }, CORS),
+          withCors({ status: 200, headers: { "Content-Type": "application/json" } }, CORS),
         );
       } else {
         return new Response(
-          JSON.stringify({
-            error: "Not signed in",
-          }),
+          "Not signed in"
           withCors(
-            { status: 404, headers: { "Content-Type": "application/json" } },
+            { status: 401, headers: { "Content-Type": "application/json" } },
             CORS,
           ),
         );
