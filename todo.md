@@ -19,6 +19,8 @@
 **Level Share**
 
 - options page
+- sign out button
+
 
 **Editor**
 

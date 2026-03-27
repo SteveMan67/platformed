@@ -14,5 +14,8 @@
     }
   ],
   "python-envs.defaultEnvManager": "ms-python.python:system",
-  "python-envs.pythonProjects": []
+  "python-envs.pythonProjects": [],
+  "terminal.integrated.env.windows": {
+    "PATH": "C:\\USERS\\Timothy\\.bun\\bin;${env:Path}"
+  }
 }

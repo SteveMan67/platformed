@@ -383,9 +383,10 @@ const server = Bun.serve({
       const authentication = await authenticate(req);
       if (authentication?.signedIn) {
         const matches =
-          await sql`select preferred_theme from users where id = ${authentication.user} limit 1`;
+          await sql`select preferred_theme, username from users where id = ${authentication.user} limit 1`;
         return new Response(
           JSON.stringify({
+            username: matches[0]?.username,
             user: authentication.user,
             theme: matches[0]?.preferred_theme,
           }),
