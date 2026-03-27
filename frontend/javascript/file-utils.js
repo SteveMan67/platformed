@@ -98,6 +98,7 @@ export async function loadMapFromData(json) {
   player.yInertia = json.yInertia ?? 1;
   player.xInertia = json.xInertia ?? 1.5;
   player.physicsVersion = json.physicsVersion ?? 1
+  editor.tileset = json.tilesetPath ?? "/assets/medium.json"
   if (json.bouncePadHeight) {
     player.bouncePadHeight = json.bouncePadHeight;
   }
