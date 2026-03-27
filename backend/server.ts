@@ -351,7 +351,7 @@ const server = Bun.serve({
           `;
           // set their session cookie so they don't have to log in after registering
           const expiresAt = Date.now() + 60 * 60 * 24 * 14 * 1000;
-          const sessionId = sql`
+          const sessionId = await sql`
             INSERT INTO sessions(token_hash, expires_at, user_id) 
             VALUES(${hashedCookie}, ${expiresAt}, ${userId[0].id})
             RETURNING id
@@ -374,7 +374,7 @@ const server = Bun.serve({
         }
       } catch (e) {
         console.error(e);
-        return new Response("Server Error", withCors({ status: 400 }, CORS));
+        return new Response("Bad Response", withCors({ status: 400 }, CORS));
       }
     }
 
