@@ -684,7 +684,7 @@ const server = Bun.serve({
       } else {
         return new Response(
           JSON.stringify({
-            error: "Must specify a level id with the user parameter",
+            error: "Not signed in",
           }),
           withCors(
             { status: 404, headers: { "Content-Type": "application/json" } },
