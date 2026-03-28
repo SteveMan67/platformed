@@ -109,4 +109,6 @@ Rate a level thumbs up or thumbs down
 
 **RESPONSES**
 
- `400` - a parameter is missing
+`400` - a parameter is missing
+
+`200` - rated successfully

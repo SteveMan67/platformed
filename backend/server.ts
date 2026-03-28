@@ -159,6 +159,8 @@ const server = Bun.serve({
           update users set preferred_theme = ${payload.theme} where id = ${authentication?.user}
         `;
         return new Response("Updated Theme", { status: 200 });
+      } else {
+        return new Response("Invalid Auth", { status: 401 })
       }
     }
 
