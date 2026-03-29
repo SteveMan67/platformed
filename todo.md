@@ -22,7 +22,12 @@
 
 **Editor**
 
-- drag minimap around
 - drag triggers around
 - only highlight selected trigger (if any) and have different colors for different operations
 - drag trigger steps around
+- drag minimap around
+
+**Documenation**
+
+- tileset
+- level data
