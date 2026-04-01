@@ -1,7 +1,7 @@
 import postgres from "postgres";
 import { authenticate, type authResponse, getCookies } from "./auth.ts";
 
-const STATIC_DIR = "frontend";
+const STATIC_DIR = "dist";
 
 async function serveFile(req: Request, filePath: string) {
   let theme = "cream";
@@ -687,7 +687,7 @@ const server = Bun.serve({
         );
       } else {
         return new Response(
-          "Not signed in"
+          "Not signed in",
           withCors(
             { status: 401, headers: { "Content-Type": "application/json" } },
             CORS,

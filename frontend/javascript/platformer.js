@@ -664,11 +664,11 @@ function checkCollision(dt, x, y, w, h, simulate = false) {
 
       if (player.x !== oldX || player.y !== oldY) return false;
       if (tileId !== 0) {
-        if (mechanicsHas(tileId, "noCollision")) {
-          continue;
-        }
         if (mechanicsHas(tileId, "trigger")) {
           touchingTrigger = true;
+        }
+        if (mechanicsHas(tileId, "noCollision")) {
+          continue;
         }
         if (mechanicsHas(tileId, "killOnTouch")) {
           continue;

@@ -4,6 +4,7 @@
 - add trigger limit
 - pixel collision not working for dissipation block
 - triggers rapidly alternate
+- trigger delays are stored as strings
 
 **Platformer**
 
@@ -19,6 +20,8 @@
 
 - options page
 - sign out button
+- you can still request levels from the server that are private
+- opening a page of a level you've rated should show your rating
 
 **Editor**
 
@@ -27,7 +30,7 @@
 - drag trigger steps around
 - drag minimap around
 
-**Documenation**
+**Documentation**
 
-- tileset
 - level data
+- trigger storage
