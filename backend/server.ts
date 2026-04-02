@@ -407,6 +407,8 @@ const server = Bun.serve({
       if (levelId) {
         const level =
           await sql`select id, public, data, name, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels where id = ${levelId} limit 1`;
+
+
         if (!level[0] || level.length === 0) {
           return new Response(
             JSON.stringify({ error: "Level not found" }),
@@ -415,6 +417,13 @@ const server = Bun.serve({
               CORS,
             ),
           );
+        }
+
+        if (!level[0].public) {
+          return new Response(
+            "Level is private",
+            { status: 401 }
+          )
         }
 
         const returnedJson = level[0];
