@@ -1,7 +1,8 @@
 import postgres from "postgres";
 import { authenticate, type authResponse, getCookies } from "./auth.ts";
 
-const STATIC_DIR = "dist";
+// const STATIC_DIR = "dist"
+const STATIC_DIR = "frontend";
 
 async function serveFile(req: Request, filePath: string) {
   let theme = "cream";
@@ -420,8 +421,17 @@ const server = Bun.serve({
         returnedJson.owned =
           returnedJson.owner == authentication?.user || false;
 
-        const username =
-          await sql`select username from users where id = ${returnedJson.owner}`;
+        let currentRating = null
+
+        if (authentication?.user) {
+          const rating = await sql`select thumbs_up from ratings where user_id = ${authentication.user} AND level_id = ${levelId}`
+          console.log(rating)
+          currentRating = rating !== [] ? rating[0].thumbs_up : null
+        }
+
+        returnedJson.current_user_rating = currentRating
+
+        const username = await sql`select username from users where id = ${returnedJson.owner}`;
         if (username[0]) {
           returnedJson.username = username[0].username;
         }

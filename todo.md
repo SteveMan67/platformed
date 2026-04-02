@@ -32,5 +32,4 @@
 
 **Documentation**
 
-- level data
 - trigger storage

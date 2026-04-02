@@ -47,13 +47,13 @@ RLE, or run length encoding compresses data by storing runs of numbers instead o
 
 `[0, 0, 0, 0, 0, 5, 6, 1, 1, 1, 0]`
 
-RLE would encode that as:
+RE would encode that as:
 
 `[[0, 5], 5, 6, [1, 3], 0]`
 
 This takes a level down to about 4KB.
 
-**Layer Types**
+### **Layer Types**
 
 `"tileLayer"` - stores the tileIds of every single block in the level
 
