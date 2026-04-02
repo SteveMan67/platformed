@@ -21,7 +21,6 @@
 - options page
 - sign out button
 - you can still request levels from the server that are private
-- opening a page of a level you've rated should show your rating
 
 **Editor**
 

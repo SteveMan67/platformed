@@ -425,7 +425,6 @@ const server = Bun.serve({
 
         if (authentication?.user) {
           const rating = await sql`select thumbs_up from ratings where user_id = ${authentication.user} AND level_id = ${levelId}`
-          console.log(rating)
           currentRating = rating !== [] ? rating[0].thumbs_up : null
         }
 

@@ -7,7 +7,21 @@ const serverUrl = window.location.origin
 async function getLevel(level = 1) {
   try {
     const raw = await fetch(`${serverUrl}/api/level?levelId=${level}`)
-    const levels = raw.json()
+    const levels = await raw.json()
+
+    const approvalWrapper = document.querySelector(".thumbs-up-wrapper")
+    const disapprovalWrapper = document.querySelector(".thumbs-down-wrapper")
+
+    console.log(levels)
+
+    console.log(levels.current_user_rating)
+
+    if (levels.current_user_rating) {
+      approvalWrapper.classList.add("clicked")
+    } else if (levels.current_user_rating === false) {
+      disapprovalWrapper.classList.add("clicked")
+    }
+
     window.dispatchEvent(new CustomEvent('level:loaded', { detail: levels }))
     return await levels
   } catch (e) {
