@@ -408,7 +408,6 @@ const server = Bun.serve({
         const level =
           await sql`select id, public, data, name, width, height, owner, tags, image_url, approvals, disapprovals, approval_percentage, total_plays, finished_plays, description, level_style from levels where id = ${levelId} limit 1`;
 
-
         if (!level[0] || level.length === 0) {
           return new Response(
             JSON.stringify({ error: "Level not found" }),
@@ -434,7 +433,7 @@ const server = Bun.serve({
 
         if (authentication?.user) {
           const rating = await sql`select thumbs_up from ratings where user_id = ${authentication.user} AND level_id = ${levelId}`
-          currentRating = rating !== [] ? rating[0].thumbs_up : null
+          currentRating = rating[0]?.thumbs_up
         }
 
         returnedJson.current_user_rating = currentRating
