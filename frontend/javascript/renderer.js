@@ -233,15 +233,95 @@ export function drawPlayer(dt) {
   ctx.drawImage(player.sprites[selectedFrame], Math.floor(player.x - player.cam.x), Math.floor(player.y - player.cam.y), player.w, player.h)
 }
 
+function sameItems(arr1, arr2) {
+  if (!arr1 || !arr2) return false
+  const set1 = new Set(arr1)
+  const set2 = new Set(arr2)
+  return arr1.length === arr2.length && [...set1].every(item => set2.has(item))
+}
+
+function indexOk(index, sortedTiles) {
+  return index !== -1 && !sortedTiles.includes(index)
+}
+
 export async function updateTileset(path) {
   editor.tilesetPath = path
   const { tileset, characterImage } = await loadTileset(editor.tilesetPath)
+
+  const oldTileset = editor.tileset
+  console.log(editor)
+  console.log(editor.tileset)
+  let sortedTiles = []
+
+  if (oldTileset && oldTileset.length) {
+    const newTileset = splitStripImages(tileset)
+
+    // make an array showing where each tile should go
+    for (let i = 0; i < oldTileset.length; i++) {
+      const oldTile = oldTileset[i]
+
+      // default to the empty tile
+      const emptyTile = newTileset.findIndex(f => f.type === "empty")
+      let newTileIndex
+      if (emptyTile !== -1) {
+        newTileIndex = emptyTile
+      } else {
+        newTileIndex = 0
+      }
+
+      console.log(oldTile)
+
+      const indexOfSameName = newTileset.findIndex(f => f?.name && f?.name === oldTile?.name)
+      const indexOfSameMechanics = newTileset.findIndex(f => sameItems(f?.mechanics, oldTile?.mechanics))
+      const indexOfSameTypeAndCategory = newTileset.findIndex(f => f?.type && f?.type === oldTile?.type && f?.category === oldTile?.category)
+      const sameIndex = newTileset.findIndex(f => f?.id && f?.id === oldTile?.id)
+
+
+      console.log(indexOfSameName)
+      console.log(indexOfSameMechanics)
+      console.log(indexOfSameTypeAndCategory)
+      console.log(sameIndex)
+      // find tiles with the same name, then mechanics, then type and category, then index
+      if (indexOk(indexOfSameName, sortedTiles)) {
+        console.log("indexOfSameName")
+        newTileIndex = indexOfSameName
+      } else if (indexOk(indexOfSameMechanics, sortedTiles)) {
+        console.log("indexOfSameMechanics")
+        newTileIndex = indexOfSameMechanics
+      } else if (indexOk(indexOfSameTypeAndCategory, sortedTiles)) {
+        console.log("indexOfSameTypeAndCategory")
+        newTileIndex = indexOfSameTypeAndCategory
+      } else if (indexOk(sameIndex, sortedTiles)) {
+        console.log("sameIndex")
+        newTileIndex = sameIndex
+      }
+
+      sortedTiles[i] = newTileIndex
+    }
+
+    console.log(sortedTiles)
+    // sort all the tiles in the level according to the list
+
+    const tiles = inEditor ? editor.map.tiles : player.tiles
+    if (tiles) {
+      for (let i = 0; i < tiles.length; i++) {
+        const entry = tiles[i]
+        const blockInfo = entry & 15
+        const mappedIndex = sortedTiles[entry >> 4]
+        tiles[i] = ((mappedIndex !== undefined ? mappedIndex : 0) << 4) + blockInfo
+      }
+    }
+
+  } else {
+  }
+
   editor.tileset = splitStripImages(tileset)
   loadPlayerSprites(characterImage)
   if (inEditor) {
     addTileSelection()
   }
 }
+
 export function getCameraCoords() {
   let x, y
   const cameraBoxLR = needsSmallerLevel() ? 0.15 : 0.25
@@ -272,7 +352,7 @@ export function drawMovingTiles() {
   })
 }
 
-export function drawEnemies(dt) {
+export function drawEnemies() {
   enemies.forEach(enemy => {
     ctx.drawImage(editor.tileset[enemy.tileId].image, enemy.x - player.cam.x, enemy.y - player.cam.y, player.tileSize, player.tileSize)
   })

@@ -20,7 +20,7 @@
 
 - options page
 - sign out button
-- you can still request levels from the server that are private
+- favicon
 
 **Editor**
 

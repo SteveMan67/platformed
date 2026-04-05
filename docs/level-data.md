@@ -37,26 +37,4 @@ This is the information that the level share uses to display levels:
 - `spawn` an object with x and y properties showing where the player should spawn
 - `triggers` - a list of triggers in the level
 
-## Layers
-
-Each layer has a `"type"` property that determines what type of layer it is. There can only be one type of each layer. They also have a `data` property that stores the actual data of that layer in an array.
-
-## **RLE Encoding**
-
-RLE, or run length encoding compresses data by storing runs of numbers instead of each number individually. For example, instead of storing
-
-`[0, 0, 0, 0, 0, 5, 6, 1, 1, 1, 0]`
-
-RE would encode that as:
-
-`[[0, 5], 5, 6, [1, 3], 0]`
-
-This takes a level down to about 4KB.
-
-### **Layer Types**
-
-`"tileLayer"` - stores the tileIds of every single block in the level
-
-This uses RLE to store each
-
 `"rotation"` - stores rotation of the blocks in the level
