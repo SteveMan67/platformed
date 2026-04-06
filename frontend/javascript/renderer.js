@@ -249,8 +249,6 @@ export async function updateTileset(path) {
   const { tileset, characterImage } = await loadTileset(editor.tilesetPath)
 
   const oldTileset = editor.tileset
-  console.log(editor)
-  console.log(editor.tileset)
   let sortedTiles = []
 
   if (oldTileset && oldTileset.length) {
@@ -269,7 +267,6 @@ export async function updateTileset(path) {
         newTileIndex = 0
       }
 
-      console.log(oldTile)
 
       const indexOfSameName = newTileset.findIndex(f => f?.name && f?.name === oldTile?.name)
       const indexOfSameMechanics = newTileset.findIndex(f => sameItems(f?.mechanics, oldTile?.mechanics))
@@ -277,29 +274,20 @@ export async function updateTileset(path) {
       const sameIndex = newTileset.findIndex(f => f?.id && f?.id === oldTile?.id)
 
 
-      console.log(indexOfSameName)
-      console.log(indexOfSameMechanics)
-      console.log(indexOfSameTypeAndCategory)
-      console.log(sameIndex)
       // find tiles with the same name, then mechanics, then type and category, then index
       if (indexOk(indexOfSameName, sortedTiles)) {
-        console.log("indexOfSameName")
         newTileIndex = indexOfSameName
       } else if (indexOk(indexOfSameMechanics, sortedTiles)) {
-        console.log("indexOfSameMechanics")
         newTileIndex = indexOfSameMechanics
       } else if (indexOk(indexOfSameTypeAndCategory, sortedTiles)) {
-        console.log("indexOfSameTypeAndCategory")
         newTileIndex = indexOfSameTypeAndCategory
       } else if (indexOk(sameIndex, sortedTiles)) {
-        console.log("sameIndex")
         newTileIndex = sameIndex
       }
 
       sortedTiles[i] = newTileIndex
     }
 
-    console.log(sortedTiles)
     // sort all the tiles in the level according to the list
 
     const tiles = inEditor ? editor.map.tiles : player.tiles
