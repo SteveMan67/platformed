@@ -105,7 +105,3 @@ The player spritesheet is a 10x1 strip of tiles.
 # Submitting your own tileset
 
 To submit your own tileset, make a pull request with all the player files and the json file. Have fun!
-
-**One final note:**
-
-Currently switching tilesets just uses whatever tileId that the previous had, and if it doesn't have one for that id, there's no block in the level. I'm currently working on a function to automatically switch between the tilesets regardless of id, but for the time being make sure the `"id"` property of each tile matches up with the existing tilesets.
