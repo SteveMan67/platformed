@@ -12,7 +12,6 @@
 - enemy texture
 - lava, water, ladders
 - moving blocks
-- collect all coins in level to finish
 - add dissipation animation
 - tileset switching looks for matching names instead of just using the id
 

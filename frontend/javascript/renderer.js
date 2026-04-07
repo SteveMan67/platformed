@@ -1,7 +1,7 @@
 import { splitStripImages } from "./file-utils.js";
 import { loadTileset } from "./file-utils.js";
 import { loadPlayerSprites } from "./file-utils.js";
-import { enemies } from "./platformer.js";
+import { enemies, mechanicsHas } from "./platformer.js";
 import { inEditor, input, mode, key } from "./site.js";
 import { state } from "./state.js";
 import { addTileSelection, needsSmallerLevel } from "./ui.js";
@@ -93,6 +93,17 @@ export function drawMap(tileSize = editor.tileSize, cam = editor.cam) {
       }
       if (editor.tileset[tileId] && editor.tileset[tileId].mechanics && editor.tileset[tileId].mechanics.includes("swapTrigger2") && !player.toggledTile && mode == 'play') {
         showTile = false
+      }
+      if (mechanicsHas(tileId, "dissipate") && mode === 'play') {
+        const dissipation = player.dissipations.find(f => f.tileIdx === (y * editor.map.w) + x)
+
+        if (
+          dissipation &&
+          dissipation.timer <= dissipation.timeToDissipate
+          && dissipation.timer > 0
+        ) {
+          showTile = false
+        }
       }
       if (player.collectedCoinList.includes(y * editor.map.w + x) && mode === 'play') {
         showTile = false;

@@ -209,7 +209,7 @@ export function needsSmallerLevel() {
 function updateCoinsDisplay() {
   const coinDisplay = document.querySelector(".collected-coins")
 
-  if (coinDisplay) {
+  if (coinDisplay && player.requireCoins) {
     coinDisplay.innerText = `${player.collectedCoins}/${player.coinsInLevel}`
   }
 }

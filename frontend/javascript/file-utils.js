@@ -170,36 +170,6 @@ export function decodeRLE(rle) {
   return out
 }
 
-export function loadMap(path) {
-  return fetch(path)
-    .then(response => response.json())
-    .then(json => {
-      const tileLayer = json.layers.find(l => l.type === "tilelayer")
-      const rotationLayer = json.layers.find(l => l.type === "rotation")
-      const rawRotationLayer = decodeRLE(rotationLayer)
-      let rawTileLayer = decodeRLE(tileLayer.data)
-      if (rawTileLayer.length !== json.width * json.height) {
-        console.warn('readData: data length not expected value', rawTileLayer.length, json.width * json.height)
-      }
-      rawTileLayer = rawTileLayer.map(id => id << 4)
-      for (let i = 0; i < rawTileLayer.length; i++) {
-        if (typeIs(rawTileLayer[i] >> 4)) {
-          rawTileLayer[i] = rawTileLayer[i] + rawRotationLayer[i]
-        }
-      }
-      editor.width = json.width
-      editor.height = json.height
-      let tiles = calculateAdjacencies(rawTileLayer, json.width, json.height)
-      tiles = new Uint16Array(tiles)
-      const map = {
-        tiles,
-        w: json.width,
-        h: json.height
-      }
-      return map
-    })
-}
-
 export function encodeRLE(list) {
   const rle = []
   let runVal = list[0]
@@ -517,6 +487,7 @@ export async function loadTileset(manifestPath) {
         })
     })
 }
+
 export function splitStripImages(tileset) {
   // split strip images 
   const newTileset = []

@@ -1,4 +1,4 @@
-:root {
+style:root {
   --bg-primary: #f1e8d4;
   --bg-accent: #f1e8d4;
   --bg-level: #cae3f6;
@@ -420,7 +420,7 @@ body {
   transform: translateX(4px);
 }
 
-.category-blocks > * {
+.category-blocks>* {
   margin: 10px 0;
   height: 50px;
   width: 50px;
@@ -495,7 +495,7 @@ body {
   cursor: pointer;
 }
 
-div.eraser > img {
+div.eraser>img {
   width: 50px;
   height: 50px;
 }
@@ -515,7 +515,7 @@ div.eraser > img {
   object-fit: cover;
 }
 
-.actions > * {
+.actions>* {
   margin-right: 20px;
 }
 
@@ -562,6 +562,21 @@ i::before {
   top: 0;
   right: 0;
   margin: 20px;
+  background-color: var(--bg-primary);
+  border: var(--border);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-info p {
+  margin: 0;
+  padding: 5px 10px;
+}
+
+.game-info p:empty {
+  display: none;
 }
 
 .minimap {
@@ -906,7 +921,7 @@ input::-webkit-inner-spin-button {
   cursor: pointer;
 }
 
-.buttons > * {
+.buttons>* {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -998,26 +1013,11 @@ input[type="radio"] {
   transform: translateX(22px) translateY(-50%);
 }
 
-.menu-content
-  input[type="radio"]:nth-of-type(1):checked
-  ~ .tabs
-  li:nth-of-type(1),
-.menu-content
-  input[type="radio"]:nth-of-type(2):checked
-  ~ .tabs
-  li:nth-of-type(2),
-.menu-content
-  input[type="radio"]:nth-of-type(3):checked
-  ~ .tabs
-  li:nth-of-type(3),
-.menu-content
-  input[type="radio"]:nth-of-type(4):checked
-  ~ .tabs
-  li:nth-of-type(4),
-.menu-content
-  input[type="radio"]:nth-of-type(5):checked
-  ~ .tabs
-  li:nth-of-type(5) {
+.menu-content input[type="radio"]:nth-of-type(1):checked~.tabs li:nth-of-type(1),
+.menu-content input[type="radio"]:nth-of-type(2):checked~.tabs li:nth-of-type(2),
+.menu-content input[type="radio"]:nth-of-type(3):checked~.tabs li:nth-of-type(3),
+.menu-content input[type="radio"]:nth-of-type(4):checked~.tabs li:nth-of-type(4),
+.menu-content input[type="radio"]:nth-of-type(5):checked~.tabs li:nth-of-type(5) {
   background-color: var(--bg-primary);
   border: 3px solid var(--border);
   border-bottom: none;
@@ -1163,7 +1163,7 @@ input[type="radio"] {
   flex-wrap: wrap;
 }
 
-.color-theme .swatches > div {
+.color-theme .swatches>div {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1184,7 +1184,7 @@ input[type="radio"] {
   margin: 5px auto;
 }
 
-.color-theme .swatch > div {
+.color-theme .swatch>div {
   height: 100%;
   aspect-ratio: 1;
 }
@@ -1248,26 +1248,11 @@ input[type="radio"] {
   margin: 0 20px;
 }
 
-.menu-content
-  input[type="radio"]:nth-of-type(1):checked
-  ~ .tab-content
-  .tab:nth-of-type(1),
-.menu-content
-  input[type="radio"]:nth-of-type(2):checked
-  ~ .tab-content
-  .tab:nth-of-type(2),
-.menu-content
-  input[type="radio"]:nth-of-type(3):checked
-  ~ .tab-content
-  .tab:nth-of-type(3),
-.menu-content
-  input[type="radio"]:nth-of-type(4):checked
-  ~ .tab-content
-  .tab:nth-of-type(4),
-.menu-content
-  input[type="radio"]:nth-of-type(5):checked
-  ~ .tab-content
-  .tab:nth-of-type(5) {
+.menu-content input[type="radio"]:nth-of-type(1):checked~.tab-content .tab:nth-of-type(1),
+.menu-content input[type="radio"]:nth-of-type(2):checked~.tab-content .tab:nth-of-type(2),
+.menu-content input[type="radio"]:nth-of-type(3):checked~.tab-content .tab:nth-of-type(3),
+.menu-content input[type="radio"]:nth-of-type(4):checked~.tab-content .tab:nth-of-type(4),
+.menu-content input[type="radio"]:nth-of-type(5):checked~.tab-content .tab:nth-of-type(5) {
   display: block;
   overflow: scroll;
   scrollbar-width: none;
@@ -1340,4 +1325,3 @@ div.menu-item div.description-border input[type="text"] {
   border-radius: 20px;
   font-family: "Fredoka", sans-serif;
 }
-
