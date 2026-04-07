@@ -652,7 +652,7 @@ function checkCollision(dt, x, y, w, h, simulate = false) {
 
   for (let py = startY; py <= endY; py++) {
     for (let px = startX; px <= endX; px++) {
-      if ((px < 0 || px >= editor.map.w || py < 0) && !simulate) return true;
+      if ((px < 0 || px >= editor.map.w || py < 0)) return true;
       const idx = py * editor.map.w + px;
       const tileId = tiles[idx] >> 4;
 
@@ -664,32 +664,33 @@ function checkCollision(dt, x, y, w, h, simulate = false) {
 
       if (player.x !== oldX || player.y !== oldY) return false;
       if (tileId !== 0) {
+        let skipCollision = false
         if (mechanicsHas(tileId, "trigger")) {
           touchingTrigger = true;
         }
         if (mechanicsHas(tileId, "noCollision")) {
-          continue;
+          skipCollision = true
         }
         if (mechanicsHas(tileId, "killOnTouch")) {
-          continue;
+          skipCollision = true
         }
         if (mechanicsHas(tileId, "hidden")) {
-          continue;
+          skipCollision = true
         }
         if (mechanicsHas(tileId, "bouncePad")) {
-          continue;
+          skipCollision = true
         }
         if (mechanicsHas(tileId, "noCollision")) {
-          continue;
-        }
-        if (mechanicsHas(tileId, "pixelCollision")) {
-          return checkPixelCollsion(tiles[idx], px, py, x, y, w, h);
+          skipCollision = true
         }
         if (mechanicsHas(tileId, "swapTrigger1") && player.toggledTile) {
-          continue;
+          skipCollision = true
+        }
+        if (mechanicsHas(tileId, "pixelCollision")) {
+          skipCollision = !checkPixelCollsion(tiles[idx], px, py, x, y, w, h);
         }
         if (mechanicsHas(tileId, "swapTrigger2") && !player.toggledTile) {
-          continue;
+          skipCollision = true
         }
         if (mechanicsHas(tileId, "dissipate")) {
           const dissipation = player.dissipations.find(
@@ -700,14 +701,18 @@ function checkCollision(dt, x, y, w, h, simulate = false) {
             dissipation.timer <= dissipation.timeToDissipate &&
             dissipation.timer > 0
           ) {
-            continue;
+            skipCollision = true
           }
         }
-        if (player.collectedCoinList.includes(idx)) continue;
+        if (player.collectedCoinList.includes(idx)) skipCollision = true
         if (!editor.tileset[tileId]) {
-          continue;
+          skipCollision = true
         }
-        return true;
+
+        if (!skipCollision) {
+          return true;
+        }
+        continue
       }
     }
   }
@@ -1001,38 +1006,34 @@ function updatePhysics(dt) {
     player.hitboxH,
   );
   if (tileHitX) {
+    let dir = 0
     if (player.vx > 0) {
-      const hitRight = player.x + offX + player.hitboxW;
-      player.x =
-        Math.floor(hitRight / player.tileSize) * player.tileSize -
-        player.hitboxW -
-        offX -
-        0.01;
+      dir = -1
     } else if (player.vx < 0) {
-      const hitLeft = player.x + offX;
-      player.x =
-        (Math.floor(hitLeft / player.tileSize) + 1) * player.tileSize -
-        offX +
-        0.01;
+      dir = 1
     } else {
-      const centerX = player.x + offX + player.hitboxW / 2;
-      const relativeX = centerX % player.tileSize;
-      if (relativeX > player.tileSize / 2) {
-        const hitRight = player.x + offX + player.hitboxW;
-        player.x =
-          Math.floor(hitRight / player.tileSize) * player.tileSize -
-          player.hitboxW -
-          offX -
-          0.01;
+      const centerX = player.x + offX + player.hitboxW / 2
+      const relativeX = centerX % player.tileSize
+      dir = relativeX > player.tileSize / 2 ? -1 : 1
+    }
+
+    let maxPush = 0.5
+    while (checkCollision(dt, player.x + offX + (dir * maxPush), player.y + offY, player.hitboxW, player.hitboxH, true) && maxPush < player.tileSize) {
+      maxPush *= 2
+    }
+
+    let minPush = 0
+    for (let i = 0; i < 10; i++) {
+      let mid = (minPush + maxPush) / 2
+      if (checkCollision(dt, player.x + offX + (dir * mid), player.y + offY, player.hitboxW, player.hitboxH, true)) {
+        minPush = mid
       } else {
-        const hitLeft = player.x + offX;
-        player.x =
-          (Math.floor(hitLeft / player.tileSize) + 1) * player.tileSize -
-          offX +
-          0.01;
+        maxPush = mid
       }
     }
-    player.vx = 0;
+
+    player.x += (dir * maxPush) + (dir * 0.01)
+    player.vx = 0
   }
 
   player.y += player.vy * dt;
@@ -1058,26 +1059,40 @@ function updatePhysics(dt) {
 
   const tileHitY = checkCollision(
     dt,
-    player.x + offX,
+    player.x + offX + 0.03,
     player.y + offY,
-    player.hitboxW,
+    player.hitboxW - 0.06,
     player.hitboxH,
   );
   if (tileHitY) {
+    let dir = 0
     if (player.vy >= 0) {
-      const hitBottom = player.y + offY + player.hitboxH;
-      const tileTop = Math.floor(hitBottom / player.tileSize) * player.tileSize;
-      player.y = tileTop - player.hitboxH - offY - 0.01;
-      player.grounded = true;
-      player.coyoteTimer = player.coyoteTime;
+      dir = -1
     } else if (player.vy < 0) {
-      player.y =
-        (Math.floor((player.y + offY) / player.tileSize) + 1) *
-        player.tileSize -
-        offY +
-        0.01;
+      dir = 1
     }
-    player.vy = 0;
+
+    let maxPush = 0.5
+    while (checkCollision(dt, player.x + offX + 0.05, player.y + offY + (dir * maxPush), player.hitboxW - 0.1, player.hitboxH, true) && maxPush < player.tileSize) {
+      maxPush *= 2
+    }
+
+    let minPush = 0
+    for (let i = 0; i < 10; i++) {
+      let mid = (minPush + maxPush) / 2
+      if (checkCollision(dt, player.x + offX + 0.05, player.y + offY + (dir * mid), player.hitboxW - 0.1, player.hitboxH, true)) {
+        minPush = mid
+      } else {
+        maxPush = mid
+      }
+    }
+    player.y += (dir * maxPush) + (dir * 0.01)
+
+    if (player.vy >= 0) {
+      player.grounded = true
+      player.coyoteTimer = player.coyoteTime
+    }
+    player.vy = 0
   } else if (!player.onMovingPlatform) {
     player.grounded = false;
   }
