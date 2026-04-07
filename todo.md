@@ -2,8 +2,6 @@
 
 - trigger detection
 - add trigger limit
-- pixel collision not working for dissipation block
-- triggers rapidly alternate
 - trigger delays are stored as strings
 
 **Platformer**
