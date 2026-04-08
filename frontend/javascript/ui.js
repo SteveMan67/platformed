@@ -194,7 +194,7 @@ function getOptionHTML(stepData) {
     html += getTriggerScriptForLine(stepData)
   }
 
-  html += `<img src="/assets/icons/delete.svg" alt="delete" class="delete-step">`
+  html += `<div class="svg delete on-accent"></div>`
   return html
 }
 

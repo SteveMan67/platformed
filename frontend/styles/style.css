@@ -377,6 +377,22 @@ body {
   mask-image: url("/assets/icons/settings.svg");
 }
 
+.svg.delete {
+  mask-image: url("/assets/icons/delete.svg");
+  height: 35px;
+  width: 35px;
+}
+
+.svg.delete.on-accent {
+  background-color: var(--bg-primary)
+}
+
+.svg.new {
+  mask-image: url("/assets/icons/plus.svg");
+  width: 25px;
+  height: 25px;
+}
+
 .sidebar-one {
   width: fit-content;
   display: flex;
