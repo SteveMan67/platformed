@@ -266,7 +266,7 @@ export function updatePhysicsConstants() {
   player.w = player.tileSize;
   player.h = player.tileSize;
   player.hitboxW = 0.8 * player.tileSize;
-  player.hitboxH = 0.95 * player.tileSize;
+  player.hitboxH = 0.9 * player.tileSize;
   player.stopThreshold = 0.4 * ratio;
 }
 
@@ -628,7 +628,7 @@ function mechanics(dt, tileIdx, tileId, tx, ty, x, y, w, h) {
   }
 }
 
-function checkCollision(dt, x, y, w, h, simulate = false) {
+function checkCollision(dt, x, y, w, h, simulate = false, noMovingTiles = false) {
   const tiles = mode == "play" ? player.tiles : editor.map.tiles;
   const startX = Math.floor(x / player.tileSize);
   const endX = Math.floor((x + w - 0.01) / player.tileSize);
@@ -702,12 +702,13 @@ function checkCollision(dt, x, y, w, h, simulate = false) {
     }
   }
 
-  for (const block of player.movingBlocks) {
-    if (aabbIntersect(x, y, w, h, block.x, block.y, block.w, block.h)) {
-      return true
+  if (!noMovingTiles) {
+    for (const block of player.movingBlocks) {
+      if (aabbIntersect(x, y, w, h, block.x, block.y, block.w, block.h)) {
+        return true
+      }
     }
   }
-
 
   return false;
 }
@@ -777,7 +778,9 @@ function updateMovingBlocks(dt) {
     if (isStandingOn) {
       player.onMovingPlatform = true;
       if (!alreadyMovedByPlatform) {
-        player.x += dx;
+        if (!checkCollision(dt, player.x + offX + dx, player.y + offY + dy, pw, ph, true)) {
+          player.x += dx
+        }
         alreadyMovedByPlatform = true;
       }
 
@@ -810,14 +813,6 @@ function updateMovingBlocks(dt) {
         }
       }
 
-      const tileHit = checkCollision(
-        dt,
-        player.x + offX,
-        player.y + offY,
-        pw,
-        ph,
-      );
-
       const margin = 2;
       let isSquished = false;
 
@@ -829,8 +824,9 @@ function updateMovingBlocks(dt) {
           pw,
           ph - margin * 2,
           true,
+          true
         );
-      } else if (hit.axis === "y" && hit.block.vx !== 0) {
+      } else if (hit.axis === "y" && hit.block.vy !== 0) {
         isSquished = checkCollision(
           dt,
           player.x + offX + margin,
@@ -838,6 +834,7 @@ function updateMovingBlocks(dt) {
           pw - margin * 2,
           ph,
           true,
+          true
         );
       }
 
@@ -1028,6 +1025,9 @@ function updatePhysics(dt) {
       dir = -1
     } else if (player.vy < 0) {
       dir = 1
+    } else {
+      const centerY = player.y + offY + player.hitboxH / 2
+      const relativeY = centerY % player.tileSize
     }
 
     let maxPush = 0.5
@@ -1247,8 +1247,8 @@ export function platformerLoop(dt) {
       dissipation.timer -= timeScale;
     }
   });
+  updateMovingBlocks(timeScale);
   if (!player.died) {
-    updateMovingBlocks(timeScale);
     updatePhysics(timeScale);
   }
   updateEnemyPhysics(timeScale);
@@ -1262,9 +1262,6 @@ export function platformerLoop(dt) {
       const progress =
         1 - Math.max(0, player.dieCameraTimer) / player.dieCameraTime;
       const ease = -(Math.cos(Math.PI * progress) - 1) / 2;
-      const mapW = editor.map.w * player.tileSize;
-      const mapH = editor.map.h * player.tileSize;
-      ("#C29A62");
       let targetX = getCameraCoords().x;
       let targetY = getCameraCoords().y;
 

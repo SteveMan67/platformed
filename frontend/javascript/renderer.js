@@ -69,6 +69,11 @@ export function drawMinimap() {
   ctx.strokeRect(startX, startY, width, height)
 }
 
+export function renderDebugView(listOfVariables) {
+  for (const v of listOfVariables) {
+  }
+}
+
 export function drawMap(tileSize = editor.tileSize, cam = editor.cam) {
 
   const startX = Math.floor(cam.x / tileSize);
