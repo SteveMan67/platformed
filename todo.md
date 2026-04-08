@@ -10,8 +10,6 @@
 - enemy texture
 - lava, water, ladders
 - moving blocks
-- add dissipation animation
-- tileset switching looks for matching names instead of just using the id
 
 **Level Share**
 

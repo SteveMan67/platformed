@@ -19,26 +19,9 @@ import { state } from "./state.js";
 import { createMap } from "./file-utils.js";
 const { player, editor } = state;
 
-function getVariant(num) {
-  return num >> 4;
-}
-
-function getTileId(num) {
-  return num & 15;
-}
-
 export const enemies = [];
 
-function isStrip(img) {
-  if (img) {
-    const w = img.naturalWidth,
-      h = img.naturalHeight;
-    if (w && h) {
-      return w == h * 16;
-    }
-  }
-}
-
+// I do these a lot so it's helpful to have a helper function
 export function mechanicsHas(tileId, mechanic) {
   return (
     editor.tileset[tileId] &&
@@ -84,16 +67,17 @@ export function calculateAdjacency(
   w = editor.width,
   h = editor.height,
 ) {
-  // calculate the adjacency for a given tile
   let variant = 0;
 
-  tileId = typeof tileId == "number" ? tileId : tiles[tileIdx] >> 4;
+  tileId = typeof tileId === "number" ? tileId : tiles[tileIdx] >> 4;
   if (tileId == 0) return 0;
 
+  // we don't need to calculate adjacencies for rotation
   if (tileset[tileId] && tileset[tileId].type == "rotation") {
     return tiles[tileIdx];
   }
 
+  // calculate which tiles are where around the tile so we know what variant to use 
   const getNeighborId = (idx) => {
     const val = tiles[idx];
     return val ? val >> 4 : 0;
@@ -134,9 +118,10 @@ export function calculateAdjacency(
 }
 
 /**
- * Calculates the adjacency and 4 surrounding adjacencies for a tile
+ * Calculates the adjacency and 4 surrounding adjacencies for a given tile index
+ * also sets the tile index to tile passed in
  * @param {number} idx - The index of the tile
- * @param {number} tile - The tileId of the tile
+ * @param {number} tile - The tileId of the tile @default editor.selectedTile
  * @param {Uint16Array} tiles - what tileset to use
  * @returns The raw center tile
  */
@@ -716,6 +701,14 @@ function checkCollision(dt, x, y, w, h, simulate = false) {
       }
     }
   }
+
+  for (const block of player.movingBlocks) {
+    if (aabbIntersect(x, y, w, h, block.x, block.y, block.w, block.h)) {
+      return true
+    }
+  }
+
+
   return false;
 }
 
@@ -806,14 +799,13 @@ function updateMovingBlocks(dt) {
         } else {
           player.x = block.x + block.w - offX + 0.01;
         }
-        player.vx = hit.block.vx;
       } else {
         if (hit.ny < 0) {
           player.y = block.y - ph - offY - 0.01;
           player.vy = hit.block.vy;
           player.grounded = true;
         } else {
-          player.y == block.y + block.h - offY + 0.01;
+          player.y = block.y + block.h - offY + 0.01;
           if (player.vy < 0) player.vy = 0;
         }
       }
@@ -982,22 +974,6 @@ function updatePhysics(dt) {
   player.x += player.vx * dt;
   touchingTrigger = false;
 
-  const blockHitX = getMovingBlockHit(
-    player.x + offX,
-    player.y + offY,
-    player.hitboxW,
-    player.hitboxH,
-  );
-
-  if (blockHitX && blockHitX.axis === "x") {
-    if (blockHitX.nx < 0) {
-      player.x = blockHitX.block.x - player.hitboxW - offX - 0.01;
-    } else {
-      player.x = blockHitX.block.x + blockHitX.block.w - offX + 0.01;
-    }
-    player.vx = blockHitX.block.vx;
-  }
-
   const tileHitX = checkCollision(
     dt,
     player.x + offX,
@@ -1038,24 +1014,6 @@ function updatePhysics(dt) {
 
   player.y += player.vy * dt;
   player.grounded = false;
-
-  const blockHitY = getMovingBlockHit(
-    player.x + offX,
-    player.y + offY,
-    player.hitboxW,
-    player.hitboxH,
-  );
-
-  if (blockHitY && blockHitY.axis === "y") {
-    if (blockHitY.ny < 0) {
-      player.y = blockHitY.block.y - player.hitboxH - offY - 0.01;
-      player.grounded = true;
-      player.coyoteTimer = player.coyoteTime;
-    } else {
-      player.y = blockHitY.block.y + blockHitY.block.h - offY + 0.01;
-    }
-    player.vy = blockHitY.block.vy;
-  }
 
   const tileHitY = checkCollision(
     dt,
@@ -1120,8 +1078,7 @@ function updatePhysics(dt) {
       player.hitboxW,
       player.hitboxH - 4,
       true,
-    ) ||
-    (blockHitX && blockHitX.nx > 0);
+    )
   const touchingRight =
     checkCollision(
       dt,
@@ -1130,8 +1087,7 @@ function updatePhysics(dt) {
       player.hitboxW,
       player.hitboxH - 4,
       true,
-    ) ||
-    (blockHitX && blockHitX.nx < 0);
+    )
 
   if (!touchingTrigger) {
     player.standingOnTrigger = false;
