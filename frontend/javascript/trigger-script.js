@@ -121,6 +121,10 @@ export async function readTriggerScript(script) {
         step = { type: 'end' }
         execute.push(step)
         break
+      case 'SWAP':
+        step = {
+          type: 'toggleBlocks'
+        }
       default:
         throw new Error(`Unknown Command "${command}" at line ${i + 1}`)
     }

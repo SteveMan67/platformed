@@ -1,6 +1,7 @@
-Trigger script allows you to code what a trigger should do when triggered with code. 
+Trigger script allows you to code what a trigger should do when triggered with code.
 
 ## How it works
+
 Each line is a command with options following it. It is case insensitive.
 
 ## Commands
@@ -9,11 +10,11 @@ Each line is a command with options following it. It is case insensitive.
 
 alter a block's tileId (changing what block it is) or rotate a tile
 
-#### Syntax: 
+#### Syntax
 
 `CHANGE <x> <y> BLOCK <tileId> ROTATE <rotation>`
 
-#### Options:
+#### Options
 
 `<x> <y>` - the position of the block to be altered
 
@@ -27,27 +28,27 @@ alter a block's tileId (changing what block it is) or rotate a tile
 
 teleport to a given position
 
-#### Syntax:
+#### Syntax
 
 `TELEPORT <x> <y> INSTANT`
 
-#### Options:
+#### Options
 
 `<x> <y>` - where to teleport the player
 
 `INSTANT` - Include to make the teleport instant
 
---- 
+---
 
 ### DELAY
 
 wait a specified amount of milliseconds
 
-#### Syntax:
+#### Syntax
 
 `DELAY <ms>`
 
-#### Options:
+#### Options
 
 `<ms>` - how long to delay in milliseconds
 
@@ -57,23 +58,23 @@ wait a specified amount of milliseconds
 
 fill a selection for `(x1, y1)` to `(x2, y2)`
 
-#### Syntax: 
+#### Syntax
 
 `FILL <x1> <y1> <x2> <y2> BLOCK <tileId>`
 
-#### Options:
+#### Options
 
 `<x1> <y1> <x2> <y2>` - The start and end coordinates of where to fill
 
 `BLOCK <tileId>` - Sets the tileId of the tile fill with
 
---- 
+---
 
 ### IF
 
 check whether a statement is true and execute code
 
-#### Syntax:
+#### Syntax
 
 `IF BLOCK <x> <y> IS <property> <value>`
 
@@ -85,29 +86,40 @@ check whether a statement is true and execute code
 
 ---
 
-### ELSE 
+### ELSE
 
 specify what code to run after an if statement if the condition is false
 
-#### Syntax:
+#### Syntax
 
 `ELSE`
 
---- 
+---
 
 ### END
 
 specifies the end for an if/else statement
 
-#### Syntax:
+#### Syntax
 
 `END`
 
---- 
+---
+
+### SWAP
+
+Toggles the red and blue blocks on and off
+
+#### Syntax
+
+`SWAP`
+
+---
 
 ## Example Scripts
 
 __Toggles a tile between ground and air__
+
 ```
 if block 2 9 is tileid 1 then
 change 2 9 block 0
@@ -117,11 +129,13 @@ end
 ```
 
 __Teleport to (1, 10)__
+
 ```
 teleport 1 10 instant
 ```
 
 __Fills from (1, 4) to (2, 5), waits half a second, then deletes it__
+
 ```
 fill 1 4 2 5 block 1
 delay 500
@@ -129,11 +143,14 @@ fill 1 4 2 5 block 0
 ```
 
 __Changes block (1, 4) to tileId 4 and rotates it twice__
+
 ```
 change 1 4 block 4 rotate 2
 ```
 
 __Changes block (1, 5) to tileId 0 (air)__
+
 ```
 change 1 5 block 0 
 ```
+
