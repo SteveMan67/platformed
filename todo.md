@@ -4,7 +4,6 @@
 - add trigger limit
 - trigger delays are stored as strings
 - delay triggers are kinda broken (I think)
-- moving platforms allow you to glitch through walls
 
 **Platformer**
 
@@ -27,7 +26,12 @@
 - drag trigger steps around
 - drag minimap around
 - drag trigger steps
+- ctrl s to save
 
 **Documentation**
 
 - trigger storage
+
+**Trigger Script**
+
+- add swap red and blue function

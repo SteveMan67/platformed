@@ -48,7 +48,7 @@ export async function readTriggerScript(script) {
       case 'DELAY':
         const ms = parseInt(tokens[1], 10)
 
-        step = { type: 'delay', ms: ms }
+        step = { type: 'delay', time: ms }
         execute.push(step)
         break
       case 'CHANGE':
@@ -125,6 +125,8 @@ export async function readTriggerScript(script) {
         step = {
           type: 'toggleBlocks'
         }
+        execute.push(step)
+        break
       default:
         throw new Error(`Unknown Command "${command}" at line ${i + 1}`)
     }
@@ -185,8 +187,8 @@ export function getTriggerScriptForLine(command) {
       line = `FILL ${command.startX} ${command.startY} ${command.endX} ${command.endY} BLOCK ${command.block}`
       break
     case "delay":
-      if (command.ms === undefined) break
-      line = `DELAY ${command.ms}`
+      if (command.time === undefined) break
+      line = `DELAY ${command.time}`
       break
   }
   return line

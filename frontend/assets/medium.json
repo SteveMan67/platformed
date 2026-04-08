@@ -127,7 +127,8 @@
       "type": "rotation",
       "triggerAdjacency": false,
       "mechanics": [
-        "dissipate"
+        "dissipate",
+        "pixelCollision"
       ]
     },
     {
