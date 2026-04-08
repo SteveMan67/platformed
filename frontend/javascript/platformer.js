@@ -889,14 +889,14 @@ function updatePhysics(dt) {
   }
 
   const gravity = (0.7 * player.yInertia + 0.5) * (player.tileSize / 64);
-  if (!player.onMovingPlatform) {
-    player.vy += gravity * dt;
-  }
+
+  player.vy += gravity * dt;
 
   if (player.grounded) {
     player.limitJumpControl = false;
   }
 
+  // limit velocity 
   if (player.vy > player.tileSize * 0.8) {
     player.vy = player.tileSize * 0.8;
   }
@@ -1055,6 +1055,7 @@ function updatePhysics(dt) {
     player.grounded = false;
   }
 
+  // limit the jump height if the up button is released
   if (
     player.vy < -player.minJump &&
     !key("up") &&

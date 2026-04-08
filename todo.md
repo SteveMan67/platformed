@@ -3,6 +3,7 @@
 - trigger detection
 - add trigger limit
 - trigger delays are stored as strings
+- delay triggers are kinda broken (I think)
 
 **Platformer**
 
@@ -10,6 +11,7 @@
 - enemy texture
 - lava, water, ladders
 - moving blocks
+- debug mode where I can see variables at runtime
 
 **Level Share**
 
