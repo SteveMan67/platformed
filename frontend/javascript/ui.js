@@ -544,7 +544,7 @@ function mainEditorUi() {
       editor.history.push(historyEntry)
       drawMinimap()
     }
-    if ((e.ctrlKey || e.metaKey) && e.code == "KeyZ") {
+    if ((e.ctrlKey || e.metaKey) && e.code === "KeyZ") {
       if (e.shiftKey) {
         e.preventDefault()
         redo()
@@ -555,6 +555,14 @@ function mainEditorUi() {
     }
   })
 
+  document.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+      console.log("s")
+      e.stopPropagation()
+      e.preventDefault()
+      updateMap()
+    }
+  })
 
 }
 
