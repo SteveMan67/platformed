@@ -992,7 +992,7 @@ function updatePhysics(dt) {
 
     let maxPush = 0.5
     while (checkCollision(dt, player.x + offX + (dir * maxPush), player.y + offY, player.hitboxW, player.hitboxH, true) && maxPush < player.tileSize) {
-      maxPush += 2
+      maxPush *= 2
     }
 
     let minPush = 0
@@ -1030,9 +1030,9 @@ function updatePhysics(dt) {
       const relativeY = centerY % player.tileSize
     }
 
-    let maxPush = 0.5
+    let maxPush = 0.05
     while (checkCollision(dt, player.x + offX + 0.05, player.y + offY + (dir * maxPush), player.hitboxW - 0.1, player.hitboxH, true) && maxPush < player.tileSize) {
-      maxPush += 0.5
+      maxPush *= 2
     }
 
     let minPush = 0

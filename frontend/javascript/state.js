@@ -95,6 +95,7 @@ export const state = {
     }
   ],
   player: {
+    mute: false,
     requireCoins: false,
     coinsInLevel: 0,
     movingBlocks: [],

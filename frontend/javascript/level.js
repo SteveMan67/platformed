@@ -76,6 +76,7 @@ let startY = 0
 
 playAgain.addEventListener("click", () => {
   winScreen.classList.add("hidden")
+  window.dispatchEvent(new CustomEvent("level:restart"))
 })
 
 window.addEventListener("level:finished", () => {

@@ -9,13 +9,14 @@ import { state } from "./state.js"
 import { play } from "./api.js";
 import { drawMinimap } from "./renderer.js";
 
-const { editor } = state
+const { editor, player } = state
 export let mode = "editor"
 
 export const inEditor = !window.location.pathname.startsWith("/level")
 
 export function endLevel() {
   window.dispatchEvent(new CustomEvent("level:finished"))
+  player.mute = true
   mode = inEditor ? "editor" : "play"
   setTimeout(inEditor ? initEditor : initPlatformer, 1)
   playSound("/assets/audio/victory.wav")
@@ -29,6 +30,10 @@ export function endLevel() {
     setMode("editor")
   }
 }
+
+window.addEventListener("level:restart", () => {
+  player.mute = false
+})
 
 export const input = {
   x: 0,
@@ -141,6 +146,7 @@ async function preloadSound(url) {
 }
 
 export function playSound(url, randomness = 0) {
+  if (player.mute) return
   if (audioCtx.state === 'suspended') audioCtx.resume()
 
   const buffer = soundbuffers.get(url)
