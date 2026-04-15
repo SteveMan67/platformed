@@ -1,0 +1,46 @@
+.topbar {
+  grid-area: topbar;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.topbar .main {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+}
+
+.topbar .link-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar .link-wrapper img {
+  width: 25px;
+  aspect-ratio: 1;
+}
+
+.topbar .main a.main-link {
+  color: var(--text-on-primary);
+  font-size: 20px;
+}
+
+.title {
+  color: var(--text-on-primary);
+  text-decoration: none;
+  font-size: 35px;
+  font-weight: 500;
+  padding-left: 20px;
+}
+
+.title a {
+  color: var(--text-on-primary);
+  text-decoration: none;
+}
+
+/*# sourceMappingURL=topbar.css.map */

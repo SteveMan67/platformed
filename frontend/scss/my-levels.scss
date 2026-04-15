@@ -1,0 +1,22 @@
+/* SECTION svgs */
+
+.quick-actions .svg {
+  width: 35px;
+  height: 35px;
+}
+
+.svg.edit {
+  mask-image: url("/assets/icons/edit.svg");
+}
+
+.svg.view {
+  mask-image: url("/assets/icons/view.svg");
+}
+
+.svg.delete {
+  mask-image: url("/assets/icons/delete.svg");
+}
+
+.svg.settings {
+  mask-image: url("/assets/icons/settings.svg");
+}

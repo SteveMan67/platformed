@@ -1,0 +1,148 @@
+* {
+  color: var(--text-on-primary);
+}
+
+body {
+  background-color: var(--bg-primary);
+  font-family: "Fredoka", sans-serif;
+  font-weight: 500;
+  margin: 0;
+  scrollbar-width: none;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.grid {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-rows: 80px 1fr;
+}
+
+nav {
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+}
+
+nav h1 {
+  font-weight: 500;
+  font-size: 35px;
+}
+
+.login-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-self: center;
+}
+
+.login h1 {
+  font-weight: 400;
+  font-size: 40px;
+  justify-self: center;
+}
+
+.login form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login label {
+  font-size: 20px;
+  padding: 7px;
+}
+
+.login input {
+  margin: 7px;
+  background-color: var(--bg-primary);
+  border: 3px solid var(--border);
+  border-radius: 17px;
+  width: min(400px, 95vw);
+  height: 25px;
+  font-size: 20px;
+  font-weight: 400;
+  font-family: "Fredoka", sans-serif;
+  padding-left: 10px;
+}
+
+.login input:-webkit-autofill {
+  background-color: var(--bg-primary) !important;
+}
+
+.login input[type=submit] {
+  width: 100px;
+  background-color: var(--action);
+  color: var(--text-on-action);
+  font-family: "Fredoka", sans-serif;
+  font-size: 20px;
+  height: 33px;
+  border: none;
+  -webkit-text-fill-color: var(--bg-primary);
+  /* styles the placeholder */
+  font-size: 20px;
+}
+
+.form-bottom {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-bottom a {
+  color: var(--action);
+  margin-right: 7px;
+}
+
+label.error-text {
+  color: white;
+  margin: 7px;
+  padding: 1px;
+  padding-left: 10px;
+  height: 25px;
+  border: 2px solid rgb(255, 0, 0);
+  border-radius: 17px;
+  background-color: rgba(255, 0, 0, 0.4);
+}
+
+label.error-text:empty {
+  display: none;
+}
+
+.title {
+  font-size: 35px;
+  font-weight: 500;
+  color: var(--text-on-primary);
+  text-decoration: none;
+}
+
+.oauth {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.hack-club-oauth {
+  border: 3px solid var(--border);
+  height: 25px;
+  padding: 1px 10px;
+  border-radius: 50px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin: 7px;
+  cursor: pointer;
+  color: var(--text-on-primary);
+  text-decoration: none;
+}
+
+.hack-club-oauth div {
+  font-size: 20px;
+  color: var(--text-on-primary);
+  text-decoration: none;
+}
+
+/*# sourceMappingURL=login.css.map */

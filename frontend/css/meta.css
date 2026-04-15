@@ -1,0 +1,91 @@
+.main-content {
+  display: flex;
+  flex-direction: column;
+  width: min(90vw, 700px);
+}
+
+.back img {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+.back-wrapper p {
+  font-size: 20px;
+}
+
+.back-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+input[type=text] {
+  background-color: transparent;
+  text-decoration: underline;
+  -webkit-text-fill-color: var(--text-on-primary);
+  border: none;
+  font-size: 35px;
+  line-height: 1.2;
+  font-family: "Fredoka", sans-serif;
+  outline: none;
+}
+
+.main-content .menu-item {
+  margin: 10px 0;
+}
+
+p.menu-item {
+  font-size: 25px;
+}
+
+.description.menu-item {
+  width: 100%;
+  border: 3px solid var(--border);
+  border-radius: 15px;
+}
+
+.menu-item.description textarea {
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: pre-wrap;
+  text-align: left;
+  padding: 5px;
+  font-size: 18px;
+  min-height: 100px;
+  line-height: 1.2;
+  background-color: transparent;
+  border: none;
+  border-radius: inherit;
+  font-family: "Fredoka", sans-serif;
+  outline: none;
+}
+
+a {
+  color: var(--border);
+  text-decoration: none;
+}
+
+button {
+  background-color: var(--action);
+  color: var(--text-on-action);
+  outline: none;
+  border: 3px solid var(--action);
+  border-radius: 10px;
+  width: fit-content;
+  padding: 5px 15px;
+  font-size: 20px;
+  font-family: "Fredoka", sans-serif;
+}
+
+.svg.arrow-left {
+  mask-image: url("/assets/icons/arrow-left.svg");
+  height: 25px;
+  width: 25px;
+  margin-right: 15px;
+}
+
+/*# sourceMappingURL=meta.css.map */

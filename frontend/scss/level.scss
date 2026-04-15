@@ -155,6 +155,28 @@ body .game.fullscreen {
 
 }
 
+.game-info {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 20px;
+  background-color: var(--bg-primary);
+  border: var(--border);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-info p {
+  margin: 0;
+  padding: 5px 10px;
+}
+
+.game-info p:empty {
+  display: none;
+}
+
 .fullscreen~.fullscreen-control {
   position: fixed;
   top: 0;

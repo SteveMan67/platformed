@@ -1,0 +1,37 @@
+/* SECTION main styles */
+* {
+  color: var(--text-on-primary);
+}
+
+body {
+  background-color: var(--bg-primary);
+  font-family: "Fredoka", sans-serif;
+  margin: 0;
+  scrollbar-width: none;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* SECTION styles for all svgs  */
+
+.svg {
+  transition: transform 500ms ease-out;
+}
+
+.svg:active {
+  transform: scale(0.9);
+}
+
+.svg {
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  background-color: var(--text-on-primary);
+  height: 50px;
+  width: 50px;
+}
