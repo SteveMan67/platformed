@@ -31,7 +31,6 @@ body .game {
 .game,
 .mobile-controls {
   touch-action: none;
-  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -82,21 +81,17 @@ body .game.fullscreen {
   justify-content: center;
   z-index: 15;
 }
-
-.win-screen.hidden {
+.win-screen .hidden {
   display: none;
 }
-
 .win-screen p {
   font-size: 35px;
   margin: 10px;
 }
-
 .win-screen a {
   color: var(--text-on-primary);
   font-size: 25px;
 }
-
 .win-screen button {
   outline: none;
   border: none;
@@ -106,12 +101,7 @@ body .game.fullscreen {
   background-color: var(--action);
   border-radius: 500px;
   padding: 5px 15px;
-  font-family: "Fredoka", sans-serif;
   margin: 10px;
-}
-
-.mobile-controls.hidden {
-  display: none;
 }
 
 .mobile-controls .joystick {
@@ -122,7 +112,6 @@ body .game.fullscreen {
   position: relative;
   margin: 10px;
 }
-
 .mobile-controls .joystick .knob {
   position: absolute;
   top: 50%;
@@ -134,7 +123,6 @@ body .game.fullscreen {
   background-color: rgba(255, 255, 255, 0.5);
   z-index: 9;
 }
-
 .mobile-controls .jump {
   width: 100px;
   height: 100px;
@@ -146,7 +134,6 @@ body .game.fullscreen {
   align-items: center;
   justify-content: center;
 }
-
 .mobile-controls .jump img {
   width: 75px;
   fill: transparent;
@@ -165,12 +152,10 @@ body .game.fullscreen {
   align-items: center;
   justify-content: center;
 }
-
 .game-info p {
   margin: 0;
   padding: 5px 10px;
 }
-
 .game-info p:empty {
   display: none;
 }
@@ -216,6 +201,11 @@ canvas {
   display: flex;
   align-items: center;
 }
+.name-wrapper p {
+  margin: 0;
+  margin-left: 15px;
+  font-size: 25px;
+}
 
 .name {
   font-size: 30px;
@@ -235,6 +225,10 @@ canvas {
 .info {
   margin-top: 10px;
 }
+.info p,
+.info h2 {
+  margin-bottom: 0;
+}
 
 .row {
   width: min(90vw, 1200px);
@@ -248,7 +242,6 @@ canvas {
   display: flex;
   flex-direction: row;
 }
-
 .plays-wrapper > * {
   font-size: 25px;
   margin: 0;
@@ -261,6 +254,11 @@ canvas {
   align-items: center;
   margin: 0;
 }
+.approval-wrapper .svg {
+  width: 36px;
+  aspect-ratio: 1;
+  margin-left: 10px;
+}
 
 .edit {
   font-size: 25px;
@@ -268,7 +266,6 @@ canvas {
   outline: none;
   border: none;
   color: var(--text-on-action);
-  font-family: "Fredoka", sans-serif;
   border-radius: 10px;
   margin-left: 20px;
   padding: 5px 15px;
@@ -277,12 +274,11 @@ canvas {
   text-decoration: none;
   align-items: center;
 }
-
 .edit p {
   color: var(--text-on-action);
+  margin: 0;
 }
-
-a.edit div {
+.edit div {
   width: 26px;
   height: 26px;
   padding: 0;
@@ -297,17 +293,6 @@ a.edit div {
   margin-left: 10px;
 }
 
-.approval-wrapper .svg {
-  width: 36px;
-  aspect-ratio: 1;
-  margin-left: 10px;
-  position: relative;
-}
-
-.edit p {
-  margin: 0;
-}
-
 .description {
   font-size: 20px;
 }
@@ -318,45 +303,19 @@ a.edit div {
   overflow: visible;
   display: flex;
 }
-
 .thumbs-up-wrapper div,
 .thumbs-down-wrapper div {
   display: none;
 }
-
 .thumbs-up-wrapper.clicked .fill,
 .thumbs-down-wrapper.clicked .fill {
   display: block;
 }
-
 .thumbs-up-wrapper:not(.clicked) .nofill,
 .thumbs-down-wrapper:not(.clicked) .nofill {
   display: block;
 }
 
-/*
-.thumbs-up-wrapper::before,
-.thumbs-down-wrapper::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  border-radius: 50%;
-  transform: translate(-40%, -55%);
-  width: 0;
-  aspect-ratio: 1;
-  background: radial-gradient(rgba(0, 0, 0, 0.2) 25%, transparent 100%);
-  transition: width 150ms ease, background 150ms ease;
-
-}
-
-.thumbs-down-wrapper.clicked::before,
-.thumbs-up-wrapper.clicked::before {
-  width: 40px;
-  background: radial-gradient(rgba(0, 0, 0, 0.1) 25%, transparent 100%);
-  border: 2px solid rgba(0, 0, 0, 0.5);
-}
-*/
 .loading-screen {
   position: absolute;
   width: 100%;
@@ -368,7 +327,6 @@ a.edit div {
   align-items: center;
   z-index: 11;
 }
-
 .loading-screen p {
   font-size: 25px;
   margin: 10px;
@@ -389,31 +347,25 @@ a.edit div {
   border-radius: inherit;
 }
 
-.svg.thumbs-up.fill {
+.svg .thumbs-up.fill {
   mask-image: url("/assets/icons/thumbs-up-fill.svg");
 }
-
-.svg.thumbs-up.nofill {
+.svg .thumbs-up.nofill {
   mask-image: url("/assets/icons/thumbs-up.svg");
 }
-
-.svg.thumbs-down.fill {
+.svg .thumbs-down.fill {
   mask-image: url("/assets/icons/thumbs-down-fill.svg");
 }
-
-.svg.thumbs-down.nofill {
+.svg .thumbs-down.nofill {
   mask-image: url("/assets/icons/thumbs-down.svg");
 }
-
-.svg.settings {
+.svg .settings {
   mask-image: url("/assets/icons/settings.svg");
 }
-
-.svg.maximize {
+.svg .maximize {
   mask-image: url("/assets/icons/maximize.svg");
 }
-
-.svg.minimize {
+.svg .minimize {
   mask-image: url("/assets/icons/minimize.svg");
 }
 

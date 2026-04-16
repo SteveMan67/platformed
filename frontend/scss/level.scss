@@ -31,7 +31,6 @@ body .game {
 .game,
 .mobile-controls {
   touch-action: none;
-  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -82,78 +81,75 @@ body .game.fullscreen {
   align-items: center;
   justify-content: center;
   z-index: 15;
+
+  .hidden {
+    display: none;
+  }
+
+  p {
+    font-size: 35px;
+    margin: 10px;
+  }
+
+  a {
+    color: var(--text-on-primary);
+    font-size: 25px;
+  }
+
+  button {
+    outline: none;
+    border: none;
+    background: transparent;
+    font-size: 25px;
+    color: var(--text-on-action);
+    background-color: var(--action);
+    border-radius: 500px;
+    padding: 5px 15px;
+    margin: 10px;
+  }
 }
 
-.win-screen.hidden {
-  display: none;
+.mobile-controls {
+  .joystick {
+    background-color: rgb(255 255 255 / 20%);
+    width: 200px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    position: relative;
+    margin: 10px;
+
+    .knob {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 75px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background-color: rgb(255 255 255 / 50%);
+      z-index: 9;
+    }
+  }
+
+  .jump {
+    width: 100px;
+    height: 100px;
+    background-color: rgb(255 255 255 / 20%);
+    margin: 10px;
+    margin-bottom: 50px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 75px;
+      fill: transparent;
+      aspect-ratio: 1;
+    }
+  }
 }
 
-.win-screen p {
-  font-size: 35px;
-  margin: 10px;
-}
-
-.win-screen a {
-  color: var(--text-on-primary);
-  font-size: 25px;
-}
-
-.win-screen button {
-  outline: none;
-  border: none;
-  background: transparent;
-  font-size: 25px;
-  color: var(--text-on-action);
-  background-color: var(--action);
-  border-radius: 500px;
-  padding: 5px 15px;
-  font-family: "Fredoka", sans-serif;
-  margin: 10px;
-}
-
-.mobile-controls.hidden {
-  display: none;
-}
-
-.mobile-controls .joystick {
-  background-color: rgba(255, 255, 255, 0.2);
-  width: 200px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  position: relative;
-  margin: 10px;
-}
-
-.mobile-controls .joystick .knob {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 75px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.5);
-  z-index: 9;
-}
-
-.mobile-controls .jump {
-  width: 100px;
-  height: 100px;
-  background-color: rgba(255, 255, 255, 0.2);
-  margin: 10px;
-  margin-bottom: 50px;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.mobile-controls .jump img {
-  width: 75px;
-  fill: transparent;
-  aspect-ratio: 1;
-
-}
 
 .game-info {
   position: absolute;
@@ -166,15 +162,15 @@ body .game.fullscreen {
   display: flex;
   align-items: center;
   justify-content: center;
-}
 
-.game-info p {
-  margin: 0;
-  padding: 5px 10px;
-}
+  p {
+    margin: 0;
+    padding: 5px 10px;
 
-.game-info p:empty {
-  display: none;
+    &:empty {
+      display: none;
+    }
+  }
 }
 
 .fullscreen~.fullscreen-control {
@@ -217,6 +213,12 @@ canvas {
 .name-wrapper {
   display: flex;
   align-items: center;
+
+  p {
+    margin: 0;
+    margin-left: 15px;
+    font-size: 25px
+  }
 }
 
 .name {
@@ -236,6 +238,11 @@ canvas {
 
 .info {
   margin-top: 10px;
+
+  p,
+  h2 {
+    margin-bottom: 0;
+  }
 }
 
 .row {
@@ -249,12 +256,12 @@ canvas {
 .plays-wrapper {
   display: flex;
   flex-direction: row;
-}
 
-.plays-wrapper>* {
-  font-size: 25px;
-  margin: 0;
-  margin-left: 10px;
+  &>* {
+    font-size: 25px;
+    margin: 0;
+    margin-left: 10px;
+  }
 }
 
 .approval-wrapper {
@@ -262,6 +269,12 @@ canvas {
   flex-direction: row;
   align-items: center;
   margin: 0;
+
+  .svg {
+    width: 36px;
+    aspect-ratio: 1;
+    margin-left: 10px;
+  }
 }
 
 .edit {
@@ -270,7 +283,6 @@ canvas {
   outline: none;
   border: none;
   color: var(--text-on-action);
-  font-family: "Fredoka", sans-serif;
   border-radius: 10px;
   margin-left: 20px;
   padding: 5px 15px;
@@ -278,36 +290,26 @@ canvas {
   flex-direction: row;
   text-decoration: none;
   align-items: center;
-}
 
-.edit p {
-  color: var(--text-on-action);
-}
+  p {
+    color: var(--text-on-action);
+    margin: 0;
+  }
 
-a.edit div {
-  width: 26px;
-  height: 26px;
-  padding: 0;
-  margin-left: 10px;
-  mask-image: url('/assets/icons/edit.svg');
-  background-color: var(--text-on-action);
+  div {
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    margin-left: 10px;
+    mask-image: url('/assets/icons/edit.svg');
+    background-color: var(--text-on-action);
+  }
 }
 
 .settings img {
   width: 36px;
   aspect-ratio: 1;
   margin-left: 10px;
-}
-
-.approval-wrapper .svg {
-  width: 36px;
-  aspect-ratio: 1;
-  margin-left: 10px;
-  position: relative;
-}
-
-.edit p {
-  margin: 0;
 }
 
 .description {
@@ -319,46 +321,19 @@ a.edit div {
   position: relative;
   overflow: visible;
   display: flex;
-}
 
-.thumbs-up-wrapper div,
-.thumbs-down-wrapper div {
-  display: none;
-}
+  div {
+    display: none;
+  }
 
-.thumbs-up-wrapper.clicked .fill,
-.thumbs-down-wrapper.clicked .fill {
-  display: block;
-}
+  &.clicked .fill {
+    display: block;
+  }
 
-.thumbs-up-wrapper:not(.clicked) .nofill,
-.thumbs-down-wrapper:not(.clicked) .nofill {
-  display: block;
+  &:not(.clicked) .nofill {
+    display: block;
+  }
 }
-
-/*
-.thumbs-up-wrapper::before,
-.thumbs-down-wrapper::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  border-radius: 50%;
-  transform: translate(-40%, -55%);
-  width: 0;
-  aspect-ratio: 1;
-  background: radial-gradient(rgba(0, 0, 0, 0.2) 25%, transparent 100%);
-  transition: width 150ms ease, background 150ms ease;
-
-}
-
-.thumbs-down-wrapper.clicked::before,
-.thumbs-up-wrapper.clicked::before {
-  width: 40px;
-  background: radial-gradient(rgba(0, 0, 0, 0.1) 25%, transparent 100%);
-  border: 2px solid rgba(0, 0, 0, 0.5);
-}
-*/
 
 .loading-screen {
   position: absolute;
@@ -370,12 +345,12 @@ a.edit div {
   justify-content: center;
   align-items: center;
   z-index: 11;
-}
 
-.loading-screen p {
-  font-size: 25px;
-  margin: 10px;
-  font-weight: 500;
+  p {
+    font-size: 25px;
+    margin: 10px;
+    font-weight: 500;
+  }
 }
 
 .progress-bar {
@@ -392,32 +367,33 @@ a.edit div {
   border-radius: inherit;
 }
 
-.approval-wrapper .svg {}
+.svg {
+  .thumbs-up.fill {
+    mask-image: url("/assets/icons/thumbs-up-fill.svg");
+  }
 
-.svg.thumbs-up.fill {
-  mask-image: url("/assets/icons/thumbs-up-fill.svg");
-}
+  .thumbs-up.nofill {
+    mask-image: url("/assets/icons/thumbs-up.svg");
+  }
 
-.svg.thumbs-up.nofill {
-  mask-image: url("/assets/icons/thumbs-up.svg");
-}
+  .thumbs-down.fill {
+    mask-image: url("/assets/icons/thumbs-down-fill.svg");
+  }
 
-.svg.thumbs-down.fill {
-  mask-image: url("/assets/icons/thumbs-down-fill.svg");
-}
+  .thumbs-down.nofill {
+    mask-image: url("/assets/icons/thumbs-down.svg");
+  }
 
-.svg.thumbs-down.nofill {
-  mask-image: url("/assets/icons/thumbs-down.svg");
-}
+  .settings {
+    mask-image: url("/assets/icons/settings.svg");
+  }
 
-.svg.settings {
-  mask-image: url("/assets/icons/settings.svg");
-}
+  .maximize {
+    mask-image: url("/assets/icons/maximize.svg");
+  }
 
-.svg.maximize {
-  mask-image: url("/assets/icons/maximize.svg");
-}
+  .minimize {
+    mask-image: url("/assets/icons/minimize.svg");
+  }
 
-.svg.minimize {
-  mask-image: url("/assets/icons/minimize.svg");
 }

@@ -11,7 +11,6 @@
   border: none;
   background-color: var(--bg-primary);
   border-radius: 10px;
-  font-family: "Fredoka", sans-serif;
   appearance: textfield;
 }
 
@@ -35,8 +34,6 @@ input[type="number"]::-webkit-inner-spin-button {
   box-sizing: border-box;
   height: 34px;
   aspect-ratio: 5/3;
-  background-color: var(--bg-primary);
-  border: 3px solid var(--border);
   border-radius: 50px;
   position: relative;
   cursor: pointer;
@@ -102,7 +99,9 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="text"] {
   color: var(--text-on-primary);
   -webkit-text-fill-color: var(--text-on-primary);
+
   /* styles the placeholder */
+
   background-color: transparent;
   border: none;
   font-size: 20px;
@@ -139,7 +138,6 @@ input[type="text"]:-webkit-autofill:hover {
 select {
   background-color: var(--bg-primary);
   border: none !important;
-  font-family: "Fredoka", sans-serif;
   font-size: 20px;
   font-weight: 500;
   text-align: end;
@@ -213,7 +211,6 @@ button {
   font-size: 20px;
   background-color: var(--action);
   color: var(--bg-primary);
-  font-family: "Fredoka", sans-serif;
   border-radius: 500px;
 }
 
@@ -224,7 +221,6 @@ input[type="submit"] {
   font-size: 20px;
   color: var(--text-on-action);
   border-radius: 20px;
-  font-family: "Fredoka", sans-serif;
 }
 
 input[type="button"] {
@@ -233,5 +229,4 @@ input[type="button"] {
   padding: 5px 15px;
   font-size: 20px;
   border-radius: 20px;
-  font-family: "Fredoka", sans-serif;
 }

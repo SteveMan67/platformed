@@ -6,11 +6,12 @@ $border-width: 3px;
 * {
   color: var(--text-on-primary);
   scrollbar-width: none;
+  box-sizing: border-box;
 }
 
 body {
   background-color: var(--bg-primary);
-  font-family: "Fredoka", sans-serif;
+  font-family: Fredoka, sans-serif;
   margin: 0;
   scrollbar-width: none;
   width: 100vw;

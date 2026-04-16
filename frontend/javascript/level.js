@@ -180,9 +180,9 @@ getLevel(levelNum).then(level => {
     window.location.href = "/"
   } else {
     levelName.innerHTML = level.name
-    username.innerText = level.username
+    username.innerHTML = level.username
     approvalPercentage.innerHTML = `${Math.floor(level.approval_percentage)}%`
-    description.innerHTML = level.description
+    description.innerHTML = level.escription
     plays.innerHTML = level.total_plays
     finishes.innerHTML = level.finished_plays
     addEditButton(level.owned || false, level.id)

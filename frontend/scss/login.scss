@@ -1,10 +1,12 @@
+@use 'theme';
+@use 'main';
+
 * {
   color: var(--text-on-primary);
 }
 
 body {
   background-color: var(--bg-primary);
-  font-family: "Fredoka", sans-serif;
   font-weight: 500;
   margin: 0;
   scrollbar-width: none;
@@ -62,7 +64,6 @@ nav h1 {
   height: 25px;
   font-size: 20px;
   font-weight: 400;
-  font-family: "Fredoka", sans-serif;
   padding-left: 10px;
 }
 
@@ -74,8 +75,6 @@ nav h1 {
   width: 100px;
   background-color: var(--action);
   color: var(--text-on-action);
-  font-family: "Fredoka", sans-serif;
-  font-size: 20px;
   height: 33px;
   border: none;
   -webkit-text-fill-color: var(--bg-primary);
@@ -101,9 +100,9 @@ label.error-text {
   padding: 1px;
   padding-left: 10px;
   height: 25px;
-  border: 2px solid rgb(255, 0, 0);
+  border: 2px solid rgb(255 0 0);
   border-radius: 17px;
-  background-color: rgba(255, 0, 0, 0.4)
+  background-color: rgb(255 0 0 / 40%)
 }
 
 label.error-text:empty {
