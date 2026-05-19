@@ -8,6 +8,7 @@
 
 - general all around polish
 - refactor styles
+  - keep doing each site with scss
 
 **Platformer**
 
@@ -23,6 +24,7 @@
 - options page
 - sign out button
 - favicon
+- html codes aren't working
 
 **Editor**
 

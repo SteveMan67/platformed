@@ -8,6 +8,14 @@
   },
   "devDependencies": {
     "@types/bun": "^1.3.11",
+    "sass": "^1.99.0",
+    "stylelint-config-standard-scss": "^17.0.0",
     "vite": "^8.0.1"
+  },
+  "scripts": {
+    "dev": "vite --config vite-config.js",
+    "build": "vite build --config vite-config.js",
+    "preview": "vite preview",
+    "scss:watch": "sass --watch ./frontend/scss:./frontend/css"
   }
 }
