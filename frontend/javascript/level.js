@@ -180,9 +180,15 @@ getLevel(levelNum).then(level => {
     window.location.href = "/"
   } else {
     levelName.innerHTML = level.name
+<<<<<<< Updated upstream
     username.innerHTML = level.username
     approvalPercentage.innerHTML = `${Math.floor(level.approval_percentage)}%`
     description.innerHTML = level.escription
+=======
+    username.innerText = level.username
+    approvalPercentage.innerHTML = `${Math.floor(level.approval_percentage)}%`
+    description.innerHTML = level.description
+>>>>>>> Stashed changes
     plays.innerHTML = level.total_plays
     finishes.innerHTML = level.finished_plays
     addEditButton(level.owned || false, level.id)
